@@ -1,0 +1,74 @@
+@props([
+    'title' => 'CoreX OS — The Real Estate Operating System',
+    'description' => 'CoreX OS is the all-in-one operating system for a real estate agency — listings, deals, documents, e-signature, compliance and a domain AI in one source of truth. Book a demo.',
+])
+<!DOCTYPE html>
+<html lang="en" class="dark no-js scroll-pt-24">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#050505">
+    <style>[x-cloak]{display:none!important}</style>
+
+    {{-- Apply saved theme before paint to avoid a flash of the wrong theme. --}}
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('corex-theme');
+                var root = document.documentElement;
+                if (t === 'light') { root.classList.remove('dark'); root.classList.add('light'); }
+                else { root.classList.add('dark'); root.classList.remove('light'); }
+            } catch (e) {}
+        })();
+    </script>
+
+    <title>{{ $title }}</title>
+    <meta name="description" content="{{ $description }}">
+
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Open Graph / Twitter --}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CoreX OS">
+    <meta property="og:title" content="{{ $title }}">
+    <meta property="og:description" content="{{ $description }}">
+    <meta name="twitter:card" content="summary_large_image">
+
+    {{-- Fonts: Inter (UI) + JetBrains Mono (mono/code accents) --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23050505'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='18' font-weight='700' text-anchor='middle' fill='%2333c4e0'%3EC%3C/text%3E%3C/svg%3E">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @verbatim
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "CoreX OS",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "description": "The all-in-one operating system for a real estate agency — listings, contacts, deals, documents, e-signature, compliance and a domain AI in a single source of truth.",
+            "offers": { "@type": "Offer", "priceCurrency": "ZAR" },
+            "publisher": { "@type": "Organization", "name": "Home Finders Coastal", "areaServed": "KZN South Coast, South Africa" }
+        }
+    </script>
+    @endverbatim
+</head>
+<body class="min-h-screen antialiased overflow-x-hidden">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:z-[100] focus:top-4 focus:left-4 focus:rounded-md focus:bg-[color:var(--color-brand)] focus:px-4 focus:py-2 focus:text-white focus:text-sm">
+        Skip to content
+    </a>
+
+    <x-nav />
+
+    <main id="main">
+        {{ $slot }}
+    </main>
+
+    <x-footer />
+</body>
+</html>
