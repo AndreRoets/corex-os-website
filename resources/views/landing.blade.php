@@ -8,16 +8,21 @@
     <x-collapsible target="flows" label="Flows" icon="workflow">
         <x-sections.flows />
     </x-collapsible>
-    <x-collapsible target="features" label="Modules" icon="database">
-        <x-sections.features />
-    </x-collapsible>
     <x-collapsible target="ellie" label="Ellie AI" icon="sparkles">
         <x-sections.ellie />
     </x-collapsible>
-    <x-collapsible target="compliance" label="Compliance" icon="shield-check">
+
+    {{-- Mid-page CTA: convert here, before the deep reference sections. --}}
+    <x-sections.cta />
+
+    {{-- Reference-heavy sections — collapsed by default on desktop (deep). --}}
+    <x-collapsible target="features" label="Modules" icon="database" deep>
+        <x-sections.features />
+    </x-collapsible>
+    <x-collapsible target="compliance" label="Compliance" icon="shield-check" deep>
         <x-sections.compliance />
     </x-collapsible>
-    <x-collapsible target="control" label="Control" icon="lock">
+    <x-collapsible target="control" label="Control" icon="lock" deep>
         <x-sections.control />
     </x-collapsible>
     <x-sections.open-development />

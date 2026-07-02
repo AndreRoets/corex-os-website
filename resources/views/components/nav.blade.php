@@ -2,8 +2,8 @@
     $links = [
         ['#pillars', 'Pillars'],
         ['#flows', 'Flows'],
-        ['#features', 'Modules'],
         ['#ellie', 'Ellie AI'],
+        ['#features', 'Modules'],
         ['#compliance', 'Compliance'],
         ['#control', 'Control'],
     ];
@@ -25,7 +25,9 @@
 
         <div class="hidden lg:flex items-center gap-1">
             @foreach ($links as [$href, $label])
-                <a href="{{ $href }}" class="rounded-md px-3 py-2 text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ $label }}</a>
+                <a href="{{ $href }}"
+                   @click.prevent="$store.site.revealSection('{{ \Illuminate\Support\Str::after($href, '#') }}')"
+                   class="rounded-md px-3 py-2 text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ $label }}</a>
             @endforeach
         </div>
 

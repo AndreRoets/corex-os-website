@@ -15,30 +15,56 @@ Alpine.store('site', {
     theme: document.documentElement.classList.contains('light') ? 'light' : 'dark',
     mobileNavOpen: false,
 
-    /* Mobile accordion: id of the currently expanded section (null = all collapsed).
-       On desktop every section is always open, so `desktop` short-circuits isOpen(). */
+    /* Mobile accordion: id of the currently expanded section (null = all collapsed). */
     openSection: null,
     desktop: window.matchMedia('(min-width: 1024px)').matches,
 
+    /* "Deep" (reference-heavy) sections collapse on desktop too, independently,
+       collapsed by default — keeping the desktop page to a short persuasive spine.
+       Spine sections (not listed here) are always open on desktop. */
+    deepOpen: { features: false, compliance: false, control: false },
+
+    isDeep(id) {
+        return Object.prototype.hasOwnProperty.call(this.deepOpen, id);
+    },
+
     isOpen(id) {
-        return this.desktop || this.openSection === id;
+        if (this.desktop) {
+            // Deep sections toggle independently; everything else is always open.
+            return this.isDeep(id) ? this.deepOpen[id] : true;
+        }
+        return this.openSection === id;
     },
 
     toggleSection(id) {
+        if (this.desktop) {
+            if (this.isDeep(id)) this.deepOpen[id] = !this.deepOpen[id];
+            return;
+        }
         this.openSection = this.openSection === id ? null : id;
     },
 
-    /* Expand a section (from the mobile menu) and scroll to it once Alpine has
-       rendered the change. Called with the event default prevented, so the
-       native #hash jump — which can't target a collapsed element — is bypassed. */
-    goToSection(id) {
-        this.openSection = id;
+    /* Expand a section (from a nav link) and scroll to it once Alpine has rendered
+       the change. Works on both breakpoints; called with the event default
+       prevented so the native #hash jump — which can't target a collapsed element —
+       is bypassed. */
+    revealSection(id) {
+        if (this.desktop) {
+            if (this.isDeep(id)) this.deepOpen[id] = true;
+        } else {
+            this.openSection = id;
+        }
         this.mobileNavOpen = false;
         requestAnimationFrame(() =>
             requestAnimationFrame(() => {
                 document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
             })
         );
+    },
+
+    /* Back-compat alias used by the mobile menu. */
+    goToSection(id) {
+        this.revealSection(id);
     },
 
     toggleTheme() {
