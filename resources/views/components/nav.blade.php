@@ -95,7 +95,7 @@
 
         <div class="mt-8 flex flex-col gap-1">
             @foreach ($links as [$href, $label])
-                <a href="{{ $href }}" @click="$store.site.mobileNavOpen = false" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">{{ $label }}</a>
+                <a href="{{ $href }}" @click.prevent="$store.site.goToSection('{{ \Illuminate\Support\Str::after($href, '#') }}')" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">{{ $label }}</a>
             @endforeach
         </div>
 

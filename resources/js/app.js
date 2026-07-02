@@ -15,6 +15,32 @@ Alpine.store('site', {
     theme: document.documentElement.classList.contains('light') ? 'light' : 'dark',
     mobileNavOpen: false,
 
+    /* Mobile accordion: id of the currently expanded section (null = all collapsed).
+       On desktop every section is always open, so `desktop` short-circuits isOpen(). */
+    openSection: null,
+    desktop: window.matchMedia('(min-width: 1024px)').matches,
+
+    isOpen(id) {
+        return this.desktop || this.openSection === id;
+    },
+
+    toggleSection(id) {
+        this.openSection = this.openSection === id ? null : id;
+    },
+
+    /* Expand a section (from the mobile menu) and scroll to it once Alpine has
+       rendered the change. Called with the event default prevented, so the
+       native #hash jump — which can't target a collapsed element — is bypassed. */
+    goToSection(id) {
+        this.openSection = id;
+        this.mobileNavOpen = false;
+        requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+            })
+        );
+    },
+
     toggleTheme() {
         this.theme = this.theme === 'dark' ? 'light' : 'dark';
         const root = document.documentElement;
@@ -30,6 +56,11 @@ Alpine.store('site', {
 
 window.Alpine = Alpine;
 Alpine.start();
+
+/* Keep the accordion's desktop flag in sync across the lg breakpoint. */
+window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
+    Alpine.store('site').desktop = e.matches;
+});
 
 /* Scroll-reveal: progressive enhancement layered on top of CSS. */
 document.documentElement.classList.remove('no-js');
