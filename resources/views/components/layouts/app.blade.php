@@ -55,7 +55,7 @@
             "operatingSystem": "Web",
             "description": "The all-in-one operating system for a real estate agency — listings, contacts, deals, documents, e-signature, compliance and a domain AI in a single source of truth.",
             "offers": { "@type": "Offer", "priceCurrency": "ZAR" },
-            "publisher": { "@type": "Organization", "name": "Home Finders Coastal", "areaServed": "KZN South Coast, South Africa" }
+            "publisher": { "@type": "Organization", "name": "CoreX OS", "areaServed": "KZN South Coast, South Africa" }
         }
     </script>
     @endverbatim

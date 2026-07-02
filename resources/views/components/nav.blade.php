@@ -5,7 +5,7 @@
         ['#features', 'Modules'],
         ['#ellie', 'Ellie AI'],
         ['#compliance', 'Compliance'],
-        ['#why', 'Why CoreX'],
+        ['#control', 'Control'],
     ];
 @endphp
 

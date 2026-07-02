@@ -15,7 +15,8 @@
             ['#features', 'Prospecting'],
         ],
         'Company' => [
-            ['#why', 'Why CoreX'],
+            ['#control', 'Total control'],
+            ['#open-development', 'Open development'],
             ['#demo', 'Book a demo'],
             ['mailto:hello@corexos.co.za', 'Contact'],
         ],
@@ -31,8 +32,8 @@
                     <x-logo class="text-lg" />
                 </a>
                 <p class="mt-4 max-w-xs text-sm leading-relaxed text-[color:var(--color-muted)]">
-                    The real estate operating system. One system, one source of truth — built for
-                    <span class="text-ink">Home Finders Coastal</span> and licensed to agencies.
+                    The real estate operating system. One system, one source of truth —
+                    <span class="text-ink">built for real estate agencies</span> and licensed to grow with them.
                 </p>
                 <p class="mt-5 flex items-center gap-2 text-sm text-[color:var(--color-faint)]">
                     <x-icon name="map-pin" class="w-4 h-4" />
@@ -56,7 +57,7 @@
 
         <div class="mt-14 flex flex-col-reverse items-start gap-4 border-t border-[color:var(--color-border)] pt-8 sm:flex-row sm:items-center sm:justify-between">
             <p class="text-xs text-[color:var(--color-faint)]">
-                &copy; {{ date('Y') }} CoreX OS · Home Finders Coastal. All rights reserved.
+                &copy; {{ date('Y') }} CoreX OS. All rights reserved.
             </p>
             <p class="text-xs text-[color:var(--color-faint)]">
                 Regulated real estate practice · PPRA · Property Practitioners Act 22 of 2019

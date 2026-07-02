@@ -143,3 +143,37 @@
     opacity: 1;
     transform: none;
 }
+
+/* Flows lifecycle: gentle auto-scrolling marquee (desktop). The track holds two
+   copies of the steps, so translating by -50% loops seamlessly. */
+@keyframes flow-marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.marquee-track {
+    animation: flow-marquee 48s linear infinite;
+}
+
+.marquee-viewport:hover .marquee-track {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+        animation: none;
+        transform: none;
+    }
+    /* Let users pan manually and drop the duplicate copy. */
+    .marquee-viewport {
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+    .marquee-dup {
+        display: none;
+    }
+}
