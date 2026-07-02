@@ -29,8 +29,8 @@
             eyebrow-icon="workflow"
             title='The whole lifecycle, <span class="text-gradient">one click at a time.</span>'
         >
-            CoreX models real estate as a continuous lifecycle. Every stage flows into the next — data carries forward
-            and pre-fills the next step. The agent clicks, makes coffee, and the system has done the work.
+            CoreX models real estate as a continuous lifecycle. Within a deal, the pipeline advances stage by stage —
+            downstream steps activate, deadlines land on your calendar, and progress is RAG-flagged as you go.
         </x-section-heading>
 
         {{-- Track switch --}}
@@ -61,7 +61,7 @@
 
         <p class="reveal mt-10 flex items-center justify-center gap-2 text-center text-sm text-[color:var(--color-muted)]">
             <x-icon name="zap" class="w-4 h-4 text-[color:var(--color-brand)]" />
-            Each step pre-fills the next from the same graph — nothing is ever re-typed.
+            Advance the pipeline stage by stage — every step tracked, dated and RAG-flagged from the same graph.
         </p>
     </div>
 </section>

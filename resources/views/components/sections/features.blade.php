@@ -38,8 +38,8 @@
         ],
         [
             'icon' => 'search', 'name' => 'Prospecting & Market Intelligence', 'span' => 'lg:col-span-2',
-            'desc' => 'Tracked properties, comparative market analysis (CMA) and portal-scraping intelligence that tells you what&rsquo;s really moving in the suburb.',
-            'tags' => ['Tracked properties', 'CMA', 'Portal intelligence'],
+            'desc' => 'Tracked properties and portal-scraping intelligence that tells you what&rsquo;s really moving in the suburb, with CMA tooling to support your pricing.',
+            'tags' => ['Tracked properties', 'Portal intelligence', 'CMA tooling'],
         ],
         [
             'icon' => 'calendar', 'name' => 'Calendar', 'span' => '',
@@ -53,12 +53,12 @@
         ],
         [
             'icon' => 'globe', 'name' => 'Client Portal', 'span' => '',
-            'desc' => 'A branded portal where buyers, sellers and landlords track their own deal.',
-            'tags' => [],
+            'desc' => 'A branded client portal where buyers and sellers see their matched properties, manage their consent, and stay connected to their agent.',
+            'tags' => ['Core Matches', 'Consent'],
         ],
         [
             'icon' => 'smartphone', 'name' => 'Mobile', 'span' => '',
-            'desc' => 'The whole operating system on-the-go — capture, sign and advance deals from anywhere.',
+            'desc' => 'Much of CoreX on-the-go — capture contacts, manage matches, check your calendar and talk to Ellie from anywhere.',
             'tags' => [],
         ],
     ];

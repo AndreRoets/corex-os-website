@@ -11,14 +11,14 @@
                     align="left"
                     title='Not a chatbot. A real estate <span class="text-gradient">operations specialist.</span>'
                 >
-                    Ellie is embedded in CoreX and fluent in South African property practice. She knows your listings,
-                    agents, deals and compliance status — and she works by voice or chat.
+                    Ellie is embedded in CoreX and fluent in South African property practice — the Property Practitioners
+                    Act, FICA, POPIA and CPA. Ask her about the law or your agency&rsquo;s playbook, by voice or chat.
                 </x-section-heading>
 
                 <ul class="mt-8 space-y-4">
                     @foreach ([
                         ['shield-check', 'Knows the law', 'PPA, FICA, POPIA and CPA — she reasons within the Property Practitioners Act, not generic web answers.'],
-                        ['database', 'Aware of your graph', 'Listings, agents, deals and compliance state — Ellie answers from your real data, not guesses.'],
+                        ['database', 'Grounded in a knowledge base', 'Ellie answers from a curated knowledge base of SA property practice and your agency&rsquo;s own playbook — searched and cited, not guessed.'],
                         ['mic', 'Voice &amp; chat', 'Ask out loud between viewings or type at your desk — same specialist either way.'],
                         ['users', 'Ellie advises, humans decide', 'She never makes automated changes. Ellie recommends; the agent stays in control.'],
                     ] as [$ico, $t, $d])
@@ -58,7 +58,7 @@
                         {{-- user --}}
                         <div class="flex justify-end">
                             <p class="max-w-[80%] rounded-lg rounded-br-sm bg-[color:var(--color-brand)] px-3.5 py-2.5 text-sm text-white">
-                                The offer on 14 Ridge Rd was just accepted. What do we need before registration?
+                                What FICA documents do we need for a cash buyer who&rsquo;s an individual?
                             </p>
                         </div>
                         {{-- ellie --}}
@@ -67,13 +67,13 @@
                                 <x-icon name="sparkles" class="w-3.5 h-3.5 text-[#04121a]" />
                             </span>
                             <div class="max-w-[85%] rounded-lg rounded-bl-sm border border-[color:var(--color-border)] bg-[color:var(--color-bg-soft)] px-3.5 py-3 text-sm text-ink">
-                                <p>For this sale you&rsquo;ll need three things before lodging transfer:</p>
+                                <p>For an individual cash buyer, FICA due diligence typically calls for:</p>
                                 <ul class="mt-2 space-y-1.5 text-[color:var(--color-muted)]">
-                                    <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 w-3.5 h-3.5 text-[color:var(--color-brand)]" /> A signed Deed of Sale (I&rsquo;ve pre-filled it from the OTP).</li>
-                                    <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 w-3.5 h-3.5 text-[color:var(--color-brand)]" /> FICA on M. Naidoo — currently <span class="text-ink">outstanding</span>.</li>
-                                    <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 w-3.5 h-3.5 text-[color:var(--color-brand)]" /> The transferring attorney linked to the deal.</li>
+                                    <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 w-3.5 h-3.5 text-[color:var(--color-brand)]" /> A certified copy of a green bar-coded or smart ID.</li>
+                                    <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 w-3.5 h-3.5 text-[color:var(--color-brand)]" /> Proof of residential address, under three months old.</li>
+                                    <li class="flex items-start gap-2"><x-icon name="check" class="mt-0.5 w-3.5 h-3.5 text-[color:var(--color-brand)]" /> Proof of the source of funds for the purchase.</li>
                                 </ul>
-                                <p class="mt-2 text-[11px] text-[color:var(--color-faint)]">I can draft the FICA request for you to review — I won&rsquo;t send anything without your go-ahead.</p>
+                                <p class="mt-2 text-[11px] text-[color:var(--color-faint)]">Drawn from FICA client due-diligence guidance — confirm against your agency&rsquo;s risk policy.</p>
                             </div>
                         </div>
                     </div>

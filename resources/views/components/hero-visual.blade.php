@@ -82,7 +82,7 @@
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <p class="text-xs text-[color:var(--color-muted)]">Advance to next stage</p>
-                        <p class="text-sm font-medium text-ink" x-show="step < steps.length" x-text="'Generate ' + steps[Math.min(step, steps.length - 1)] + ' — pre-filled'"></p>
+                        <p class="text-sm font-medium text-ink" x-show="step < steps.length" x-text="'Move to ' + steps[Math.min(step, steps.length - 1)] + ' — next deadline set'"></p>
                         <p class="text-sm font-medium text-[color:var(--color-brand-400)]" x-show="step >= steps.length" x-cloak>Agent paid · deal closed</p>
                     </div>
                     <button
@@ -101,7 +101,7 @@
                 </div>
                 <p class="mt-3 flex items-center gap-1.5 text-[11px] text-[color:var(--color-faint)]">
                     <x-icon name="coffee" class="w-3.5 h-3.5" />
-                    Click, make coffee — the system does the work.
+                    Click to advance — CoreX sets up what comes next.
                 </p>
             </div>
         </div>
