@@ -27,9 +27,7 @@
         <div class="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5" aria-label="CoreX OS home">
-                    <span class="grid h-8 w-8 place-items-center rounded-md bg-[color:var(--color-navy)] ring-1 ring-inset ring-[color:color-mix(in_srgb,var(--color-cyan)_45%,transparent)]">
-                        <span class="font-mono text-sm font-bold text-[color:var(--color-cyan)]">C</span>
-                    </span>
+                    <x-brand-mark size="md" />
                     <x-logo class="text-lg" />
                 </a>
                 <p class="mt-4 max-w-xs text-sm leading-relaxed text-[color:var(--color-muted)]">

@@ -6,7 +6,7 @@
             align="left"
             title='An agency runs on <span class="text-gradient">five disconnected tools.</span> The data pays the price.'
         >
-            A portal here, accounting there, signatures somewhere else, and spreadsheets holding it all together.
+            A portal here, a CRM there, signatures somewhere else, and spreadsheets holding it all together.
             The same deal gets re-typed four times, nothing reconciles, and no one can answer a simple question with confidence.
         </x-section-heading>
 
@@ -22,7 +22,7 @@
                     @php
                         $islands = [
                             ['Property24', 'Listings & leads'],
-                            ['Sage', 'Accounting & commission'],
+                            ['A generic CRM', 'Contacts & pipeline'],
                             ['DocuSign', 'Signatures'],
                             ['Spreadsheets', 'Deals, FICA, everything else'],
                         ];
@@ -60,9 +60,7 @@
 
                 <div class="mt-6 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-bg-soft)] p-5">
                     <div class="flex items-center gap-2">
-                        <span class="grid h-8 w-8 place-items-center rounded-md bg-[color:var(--color-navy)]">
-                            <span class="font-mono text-sm font-bold text-[color:var(--color-cyan)]">C</span>
-                        </span>
+                        <x-brand-mark size="sm" />
                         <div>
                             <x-logo class="text-base" />
                             <p class="text-[11px] text-[color:var(--color-faint)]">Listings · Contacts · Deals · Docs · Signing · Compliance · AI</p>

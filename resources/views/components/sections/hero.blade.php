@@ -59,7 +59,7 @@
                 Built to replace the stack agencies juggle today
             </p>
             <div class="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-[color:var(--color-muted)]">
-                @foreach (['Property24', 'Sage', 'DocuSign', 'Monday', 'Spreadsheets', 'Standalone FICA tools'] as $tool)
+                @foreach (['Property24', 'DocuSign', 'Monday', 'A generic CRM', 'Spreadsheets', 'Standalone FICA tools'] as $tool)
                     <span class="flex items-center gap-2">
                         <x-icon name="x-alt" class="w-3.5 h-3.5 text-[color:var(--color-faint)]" />
                         {{ $tool }}

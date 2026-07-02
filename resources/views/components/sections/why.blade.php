@@ -1,7 +1,7 @@
 @php
     $principles = [
         ['layers', 'Integration is the moat', 'A bolt-on integration syncs two databases. CoreX has one. Competitors can copy a feature — they can&rsquo;t copy the graph underneath it.'],
-        ['target', 'Best-in-class or rebuild', 'Every module has to beat the tool it replaces — DocuSign, Property24, Sage, Monday — not merely match it. If it can&rsquo;t, we rebuild until it does.'],
+        ['target', 'Best-in-class or rebuild', 'Every module has to beat the tool it replaces — DocuSign, Property24, Monday — not merely match it. If it can&rsquo;t, we rebuild until it does.'],
         ['zap', 'No shortcuts', 'Chrome-rendered legal documents. Real identity gates. Proper compliance. We do complicated so the agency can do simple.'],
         ['agent', 'Built for agents, not for screens', 'The computer work is automated so agents do the property work — listing, negotiating, closing. Software should disappear into the job.'],
         ['sparkles', 'AI enhances, never replaces', 'Ellie advises and drafts; people decide and sign. Automation removes the busywork, never the judgement.'],
@@ -9,7 +9,7 @@
     ];
 
     $faqs = [
-        ['Is CoreX a CRM or a listing portal?', 'Neither on its own. CoreX is the operating system for the whole agency — listings, contacts, deals, documents, signing, compliance and AI in one graph. It replaces the CRM, the portal workflow, the accounting hand-off and the document tools, rather than sitting alongside them.'],
+        ['Is CoreX a CRM or a listing portal?', 'Neither on its own. CoreX is the operating system for the whole agency — listings, contacts, deals, documents, signing, compliance and AI in one graph. It replaces the CRM, the portal workflow and the document tools, rather than sitting alongside them.'],
         ['Can other agencies use it, or just Home Finders Coastal?', 'CoreX was built for Home Finders Coastal on the KZN South Coast and architected to be licensed to other agencies. It is multi-tenant by design — your agency&rsquo;s data, branding and branches stay your own.'],
         ['Does it work with Property24?', 'Yes. CoreX parses Property24 listing emails to extract detail and suburb automatically, and syndicates your listings back to the portal — while the deal itself lives in CoreX.'],
         ['Are the documents legally sound?', 'Documents are authored in HTML/Blade and rendered to PDF through real Chrome (Puppeteer) for legal-grade fidelity, with electronic signing (canvas capture, sequential signing, identity gates) or wet-ink scan &amp; flatten for paper.'],

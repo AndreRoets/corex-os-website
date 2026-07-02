@@ -117,7 +117,7 @@
                             <div>
                                 <label for="message" class="mb-1.5 block text-sm font-medium text-ink">Anything you&rsquo;d like to see? <span class="text-[color:var(--color-faint)]">(optional)</span></label>
                                 <textarea id="message" name="message" rows="3"
-                                          class="{{ $fieldBase }} resize-y @error('message') border-[#e11d48] @else border-[color:var(--color-border)] @enderror" placeholder="We currently juggle Property24, Sage and DocuSign…">{{ old('message') }}</textarea>
+                                          class="{{ $fieldBase }} resize-y @error('message') border-[#e11d48] @else border-[color:var(--color-border)] @enderror" placeholder="We currently juggle Property24, DocuSign and spreadsheets…">{{ old('message') }}</textarea>
                                 @error('message') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
                             </div>
 

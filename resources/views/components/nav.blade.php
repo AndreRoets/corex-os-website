@@ -19,9 +19,7 @@
 >
     <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 h-16" aria-label="Primary">
         <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0" aria-label="CoreX OS home">
-            <span class="grid h-8 w-8 place-items-center rounded-md bg-[color:var(--color-navy)] ring-1 ring-inset ring-[color:color-mix(in_srgb,var(--color-cyan)_45%,transparent)]">
-                <span class="font-mono text-sm font-bold text-[color:var(--color-cyan)]">C</span>
-            </span>
+            <x-brand-mark size="md" />
             <x-logo class="text-lg" />
         </a>
 
@@ -86,7 +84,10 @@
         class="absolute right-0 top-0 h-full w-[82%] max-w-sm bg-[color:var(--color-surface)] border-l border-[color:var(--color-border)] p-6 flex flex-col"
     >
         <div class="flex items-center justify-between">
-            <x-logo class="text-lg" />
+            <span class="flex items-center gap-2.5">
+                <x-brand-mark size="md" />
+                <x-logo class="text-lg" />
+            </span>
             <button @click="$store.site.mobileNavOpen = false" class="grid h-9 w-9 place-items-center rounded-md border border-[color:var(--color-border)] text-ink" aria-label="Close menu">
                 <x-icon name="close" class="w-5 h-5" />
             </button>
