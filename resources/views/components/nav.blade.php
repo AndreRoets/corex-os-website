@@ -45,7 +45,7 @@
                 <x-icon name="moon" class="w-[18px] h-[18px]" x-show="$store.site.theme === 'light'" x-cloak />
             </button>
 
-            <x-btn href="{{ route('home') }}#demo" size="sm" class="hidden sm:inline-flex">Book a demo</x-btn>
+            <x-btn href="{{ route('home') }}#demo" size="xs" class="hidden sm:inline-flex whitespace-nowrap shrink-0 lg:text-sm lg:px-3.5 lg:py-2">Book a demo</x-btn>
 
             {{-- Mobile menu button --}}
             <button

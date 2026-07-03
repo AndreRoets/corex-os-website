@@ -197,16 +197,16 @@
             >
                 {{-- Controls --}}
                 <div class="flex flex-col gap-6">
-                    <div class="flex flex-wrap items-end justify-between gap-4">
-                        <div>
+                    <div class="flex items-end justify-between gap-3 sm:gap-4">
+                        <div class="min-w-0">
                             <p class="font-mono text-xs uppercase tracking-[0.16em] text-[color:var(--color-faint)]">Agents</p>
-                            <p class="mt-1 text-4xl font-semibold text-ink">
+                            <p class="mt-1 text-3xl sm:text-4xl font-semibold text-ink">
                                 <span x-text="isMaxed ? '40+' : agents"></span>
-                                <span class="text-lg font-normal text-[color:var(--color-muted)]">agent<span x-show="agents !== 1">s</span></span>
+                                <span class="text-base sm:text-lg font-normal text-[color:var(--color-muted)]">agent<span x-show="agents !== 1">s</span></span>
                             </p>
                         </div>
                         {{-- Billing toggle --}}
-                        <div class="inline-flex rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-1 text-sm">
+                        <div class="inline-flex shrink-0 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-1 text-sm">
                             <button type="button" @click="annual = false"
                                     class="rounded px-3.5 py-1.5 font-medium transition duration-300"
                                     :class="!annual ? 'bg-[color:var(--color-brand)] text-white' : 'text-[color:var(--color-muted)] hover:text-ink'">Monthly</button>

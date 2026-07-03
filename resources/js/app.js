@@ -15,8 +15,10 @@ Alpine.store('site', {
     theme: document.documentElement.classList.contains('light') ? 'light' : 'dark',
     mobileNavOpen: false,
 
-    /* Mobile accordion: id of the currently expanded section (null = all collapsed). */
-    openSection: null,
+    /* Mobile: map of expanded section ids. Multiple can be open at once so opening
+       one section never collapses another above it (which would shift the page up
+       and make the newly-opened section appear above the viewport). */
+    openSections: {},
     desktop: window.matchMedia('(min-width: 1024px)').matches,
 
     /* "Deep" (reference-heavy) sections collapse on desktop too, independently,
@@ -33,7 +35,7 @@ Alpine.store('site', {
             // Deep sections toggle independently; everything else is always open.
             return this.isDeep(id) ? this.deepOpen[id] : true;
         }
-        return this.openSection === id;
+        return !!this.openSections[id];
     },
 
     toggleSection(id) {
@@ -41,7 +43,7 @@ Alpine.store('site', {
             if (this.isDeep(id)) this.deepOpen[id] = !this.deepOpen[id];
             return;
         }
-        this.openSection = this.openSection === id ? null : id;
+        this.openSections[id] = !this.openSections[id];
     },
 
     /* Expand a section (from a nav link) and scroll to it once Alpine has rendered
@@ -52,7 +54,7 @@ Alpine.store('site', {
         if (this.desktop) {
             if (this.isDeep(id)) this.deepOpen[id] = true;
         } else {
-            this.openSection = id;
+            this.openSections[id] = true;
         }
         this.mobileNavOpen = false;
         requestAnimationFrame(() =>
