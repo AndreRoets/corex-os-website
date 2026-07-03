@@ -90,6 +90,16 @@ window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
     Alpine.store('site').desktop = e.matches;
 });
 
+/* Cross-page hash links (e.g. footer → home#features) land with a collapsed
+   target section, so the native #hash jump has nothing to scroll to. Expand and
+   scroll to it once Alpine is ready. */
+(() => {
+    const id = window.location.hash.slice(1);
+    if (id && document.getElementById(id)) {
+        requestAnimationFrame(() => Alpine.store('site').revealSection(id));
+    }
+})();
+
 /* Scroll-reveal: progressive enhancement layered on top of CSS. */
 document.documentElement.classList.remove('no-js');
 

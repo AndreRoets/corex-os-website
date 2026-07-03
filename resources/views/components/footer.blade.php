@@ -48,7 +48,15 @@
                     <ul class="mt-4 space-y-2.5">
                         @foreach ($items as [$href, $label])
                             <li>
-                                <a href="{{ $href }}" class="text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ $label }}</a>
+                                @if (\Illuminate\Support\Str::startsWith($href, '#'))
+                                    @php $t = \Illuminate\Support\Str::after($href, '#'); @endphp
+                                    <a href="{{ route('home') }}#{{ $t }}"
+                                       x-data
+                                       @click="if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.revealSection('{{ $t }}') }"
+                                       class="text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ $label }}</a>
+                                @else
+                                    <a href="{{ $href }}" class="text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ $label }}</a>
+                                @endif
                             </li>
                         @endforeach
                     </ul>
