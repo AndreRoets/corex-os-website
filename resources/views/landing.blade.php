@@ -12,9 +12,6 @@
         <x-sections.ellie />
     </x-collapsible>
 
-    {{-- Mid-page CTA: convert here, before the deep reference sections. --}}
-    <x-sections.cta />
-
     {{-- Reference-heavy sections — collapsed by default on desktop (deep). --}}
     <x-collapsible target="features" label="Modules" icon="database" deep>
         <x-sections.features />
@@ -26,5 +23,6 @@
         <x-sections.control />
     </x-collapsible>
     <x-sections.open-development />
+    <x-sections.pricing-teaser />
     <x-sections.demo />
 </x-layouts.app>

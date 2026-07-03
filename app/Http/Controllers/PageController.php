@@ -10,4 +10,9 @@ class PageController extends Controller
     {
         return view('landing');
     }
+
+    public function pricing(): View
+    {
+        return view('pricing');
+    }
 }

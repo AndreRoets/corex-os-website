@@ -21,9 +21,9 @@
                 <div class="mt-6 grid grid-cols-2 gap-3">
                     @php
                         $islands = [
-                            ['Property24', 'Listings & leads'],
+                            ['A listing portal', 'Listings & leads'],
                             ['A generic CRM', 'Contacts & pipeline'],
-                            ['DocuSign', 'Signatures'],
+                            ['A signing tool', 'Signatures'],
                             ['Spreadsheets', 'Deals, FICA, everything else'],
                         ];
                     @endphp

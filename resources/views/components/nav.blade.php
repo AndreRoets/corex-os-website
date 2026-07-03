@@ -25,10 +25,13 @@
 
         <div class="hidden lg:flex items-center gap-1">
             @foreach ($links as [$href, $label])
-                <a href="{{ $href }}"
-                   @click.prevent="$store.site.revealSection('{{ \Illuminate\Support\Str::after($href, '#') }}')"
+                @php $t = \Illuminate\Support\Str::after($href, '#'); @endphp
+                <a href="{{ route('home') }}#{{ $t }}"
+                   @click="if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.revealSection('{{ $t }}') }"
                    class="rounded-md px-3 py-2 text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ $label }}</a>
             @endforeach
+            <a href="{{ route('pricing') }}"
+               class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('pricing') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Pricing</a>
         </div>
 
         <div class="flex items-center gap-2">
@@ -42,7 +45,7 @@
                 <x-icon name="moon" class="w-[18px] h-[18px]" x-show="$store.site.theme === 'light'" x-cloak />
             </button>
 
-            <x-btn href="#demo" size="sm" class="hidden sm:inline-flex">Book a demo</x-btn>
+            <x-btn href="{{ route('home') }}#demo" size="sm" class="hidden sm:inline-flex">Book a demo</x-btn>
 
             {{-- Mobile menu button --}}
             <button
@@ -97,12 +100,16 @@
 
         <div class="mt-8 flex flex-col gap-1">
             @foreach ($links as [$href, $label])
-                <a href="{{ $href }}" @click.prevent="$store.site.goToSection('{{ \Illuminate\Support\Str::after($href, '#') }}')" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">{{ $label }}</a>
+                @php $t = \Illuminate\Support\Str::after($href, '#'); @endphp
+                <a href="{{ route('home') }}#{{ $t }}"
+                   @click="if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.goToSection('{{ $t }}') }"
+                   class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">{{ $label }}</a>
             @endforeach
+            <a href="{{ route('pricing') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Pricing</a>
         </div>
 
         <div class="mt-auto pt-6">
-            <x-btn href="#demo" size="lg" class="w-full" @click="$store.site.mobileNavOpen = false">
+            <x-btn href="{{ route('home') }}#demo" size="lg" class="w-full" @click="$store.site.mobileNavOpen = false">
                 Book a demo
                 <x-icon name="arrow-right" class="w-4 h-4" />
             </x-btn>

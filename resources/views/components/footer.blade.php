@@ -15,6 +15,7 @@
             ['#features', 'Prospecting'],
         ],
         'Company' => [
+            ['/pricing', 'Pricing'],
             ['#control', 'Total control'],
             ['#open-development', 'Open development'],
             ['#demo', 'Book a demo'],
