@@ -66,7 +66,7 @@
 
         <div class="mt-14 flex flex-col-reverse items-start gap-4 border-t border-[color:var(--color-border)] pt-8 sm:flex-row sm:items-center sm:justify-between">
             <p class="text-xs text-[color:var(--color-faint)]">
-                &copy; {{ date('Y') }} CoreX OS. All rights reserved.
+                &copy; {{ date('Y') }} CoreX OS, a product of R R Technologies. All rights reserved.
             </p>
             <p class="text-xs text-[color:var(--color-faint)]">
                 Regulated real estate practice · PPRA · Property Practitioners Act 22 of 2019
