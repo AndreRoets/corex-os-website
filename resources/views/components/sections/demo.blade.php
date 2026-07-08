@@ -35,12 +35,9 @@
                 </ul>
 
                 <div class="reveal mt-8 flex flex-wrap gap-6 border-t border-[color:var(--color-border)] pt-6 text-sm">
-                    <a href="mailto:hello@corexos.co.za" class="flex items-center gap-2 text-[color:var(--color-muted)] hover:text-ink transition duration-300">
-                        <x-icon name="mail" class="w-4 h-4 text-[color:var(--color-brand-400)]" /> hello@corexos.co.za
+                    <a href="mailto:info@corexweb.co.za" class="flex items-center gap-2 text-[color:var(--color-muted)] hover:text-ink transition duration-300">
+                        <x-icon name="mail" class="w-4 h-4 text-[color:var(--color-brand-400)]" /> info@corexweb.co.za
                     </a>
-                    <span class="flex items-center gap-2 text-[color:var(--color-muted)]">
-                        <x-icon name="map-pin" class="w-4 h-4 text-[color:var(--color-brand-400)]" /> KZN South Coast, South Africa
-                    </span>
                 </div>
             </div>
 

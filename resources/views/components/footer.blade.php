@@ -19,7 +19,7 @@
             ['#control', 'Total control'],
             ['#open-development', 'Open development'],
             ['#demo', 'Book a demo'],
-            ['mailto:hello@corexos.co.za', 'Contact'],
+            ['mailto:info@corexweb.co.za', 'Contact'],
         ],
     ];
 @endphp
@@ -35,10 +35,6 @@
                 <p class="mt-4 max-w-xs text-sm leading-relaxed text-[color:var(--color-muted)]">
                     The real estate operating system. One system, one source of truth —
                     <span class="text-ink">built for real estate agencies</span> and licensed to grow with them.
-                </p>
-                <p class="mt-5 flex items-center gap-2 text-sm text-[color:var(--color-faint)]">
-                    <x-icon name="map-pin" class="w-4 h-4" />
-                    KZN South Coast, South Africa
                 </p>
             </div>
 
