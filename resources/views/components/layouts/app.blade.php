@@ -3,22 +3,25 @@
     'description' => 'CoreX OS is the all-in-one operating system for a real estate agency — listings, deals, documents, e-signature, compliance and a domain AI in one source of truth. Book a demo.',
 ])
 <!DOCTYPE html>
-<html lang="en" class="dark no-js scroll-pt-24">
+<html lang="en" class="light no-js scroll-pt-24">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#050505">
+    <meta name="theme-color" content="#FFFFFF">
     <style>[x-cloak]{display:none!important}</style>
 
-    {{-- Apply saved theme before paint to avoid a flash of the wrong theme. --}}
+    {{-- Theme, applied before paint so there's no flash of the wrong one.
+         Light is the default; dark is only used if the visitor chose it before.
+         The key is shared with /mobile-app, so the choice follows them across. --}}
     <script>
         (function () {
-            try {
-                var t = localStorage.getItem('corex-theme');
-                var root = document.documentElement;
-                if (t === 'light') { root.classList.remove('dark'); root.classList.add('light'); }
-                else { root.classList.add('dark'); root.classList.remove('light'); }
-            } catch (e) {}
+            var dark = false;
+            try { dark = localStorage.getItem('corex-theme') === 'dark'; } catch (e) {}
+            var root = document.documentElement;
+            root.classList.toggle('dark', dark);
+            root.classList.toggle('light', !dark);
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', dark ? '#050505' : '#FFFFFF');
         })();
     </script>
 

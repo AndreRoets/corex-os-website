@@ -6,6 +6,7 @@
             ['#features', 'Modules'],
             ['#ellie', 'Ellie AI'],
             ['#compliance', 'Compliance'],
+            [route('mobile-app'), 'Mobile App'],
         ],
         'Modules' => [
             ['#features', 'Listings'],

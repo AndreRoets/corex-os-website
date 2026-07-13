@@ -15,4 +15,9 @@ class PageController extends Controller
     {
         return view('pricing');
     }
+
+    public function mobileApp(): View
+    {
+        return view('mobile-app');
+    }
 }

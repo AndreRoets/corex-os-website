@@ -71,10 +71,16 @@ Alpine.store('site', {
 
     toggleTheme() {
         this.theme = this.theme === 'dark' ? 'light' : 'dark';
+        const dark = this.theme === 'dark';
         const root = document.documentElement;
-        root.classList.toggle('light', this.theme === 'light');
-        root.classList.toggle('dark', this.theme === 'dark');
+        root.classList.toggle('light', !dark);
+        root.classList.toggle('dark', dark);
+
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', dark ? '#050505' : '#FFFFFF');
+
         try {
+            /* Remembered for next visit, and shared with /mobile-app. */
             localStorage.setItem('corex-theme', this.theme);
         } catch (e) {
             /* storage unavailable — ignore */
@@ -197,6 +203,40 @@ Alpine.data('dataWeb', () => ({
         this.draw();
     },
 
+    /* Edges bow toward the middle of the ring rather than running straight.
+       A straight chord between two modules one apart on the ring (contact–deal,
+       property–portal) passes within 22px of the module sitting between them —
+       inside its 26px circle — so it reads as a connection that doesn't exist.
+       Bowing inward clears every unrelated node, and gives the web its curve. */
+    curve(a, b) {
+        const [x1, y1] = this.pos[a];
+        const [x2, y2] = this.pos[b];
+        const mx = (x1 + x2) / 2;
+        const my = (y1 + y2) / 2;
+
+        /* Pull the control point from the chord's midpoint toward the ring centre.
+           Edges straight across the ring have their midpoint at the centre already
+           (length 0), so they stay straight — there is nothing for them to graze. */
+        const vx = mx - this.cx;
+        const vy = my - this.cy;
+        const len = Math.hypot(vx, vy);
+        const bow = Math.min(46, len);
+        const qx = len ? mx - (vx / len) * bow : mx;
+        const qy = len ? my - (vy / len) * bow : my;
+
+        return { x1, y1, x2, y2, qx, qy };
+    },
+
+    /* Point at k (0–1) along an edge, so pulses ride the curve instead of cutting
+       across it. */
+    pointOn(c, k) {
+        const j = 1 - k;
+        return [
+            j * j * c.x1 + 2 * j * k * c.qx + k * k * c.x2,
+            j * j * c.y1 + 2 * j * k * c.qy + k * k * c.y2,
+        ];
+    },
+
     draw() {
         const edgeLayer = this.$refs.edgeLayer;
         const nodeLayer = this.$refs.nodeLayer;
@@ -204,9 +244,8 @@ Alpine.data('dataWeb', () => ({
 
         edgeLayer.innerHTML = this.edges
             .map(([a, b]) => {
-                const [x1, y1] = this.pos[a];
-                const [x2, y2] = this.pos[b];
-                return `<line class="web-edge" data-edge="${a}-${b}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
+                const c = this.curve(a, b);
+                return `<path class="web-edge" data-edge="${a}-${b}" d="M ${c.x1} ${c.y1} Q ${c.qx} ${c.qy} ${c.x2} ${c.y2}" />`;
             })
             .join('');
 
@@ -262,8 +301,8 @@ Alpine.data('dataWeb', () => ({
 
         this.edges.forEach(([a, b]) => {
             if (a !== id && b !== id) return;
-            const [x1, y1] = this.pos[id];
-            const [x2, y2] = this.pos[a === id ? b : a];
+            /* Always travel outwards from the touched module. */
+            const c = a === id ? this.curve(a, b) : this.curve(b, a);
 
             const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             dot.setAttribute('class', 'web-pulse');
@@ -273,8 +312,9 @@ Alpine.data('dataWeb', () => ({
             const t0 = performance.now();
             const step = (t) => {
                 const k = Math.min(1, (t - t0) / 850);
-                dot.setAttribute('cx', x1 + (x2 - x1) * k);
-                dot.setAttribute('cy', y1 + (y2 - y1) * k);
+                const [x, y] = this.pointOn(c, k);
+                dot.setAttribute('cx', x);
+                dot.setAttribute('cy', y);
                 if (k < 1) requestAnimationFrame(step);
                 else dot.remove();
             };

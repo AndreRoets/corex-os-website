@@ -30,6 +30,8 @@
                    @click="if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.revealSection('{{ $t }}') }"
                    class="rounded-md px-3 py-2 text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ $label }}</a>
             @endforeach
+            <a href="{{ route('mobile-app') }}"
+               class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('mobile-app') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Mobile App</a>
             <a href="{{ route('pricing') }}"
                class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('pricing') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Pricing</a>
         </div>
@@ -105,6 +107,7 @@
                    @click="if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.goToSection('{{ $t }}') }"
                    class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">{{ $label }}</a>
             @endforeach
+            <a href="{{ route('mobile-app') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Mobile App</a>
             <a href="{{ route('pricing') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Pricing</a>
         </div>
 
