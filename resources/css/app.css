@@ -144,6 +144,101 @@
     transform: none;
 }
 
+/* Hero data web — the module ring. Drawn by the `dataWeb` Alpine component;
+   every colour is a theme token so the graph follows light/dark. */
+.web-svg {
+    display: block;
+    width: 100%;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.web-svg:active {
+    cursor: grabbing;
+}
+
+.web-edge {
+    stroke: var(--color-border);
+    stroke-width: 1;
+    transition:
+        stroke 250ms ease,
+        stroke-width 250ms ease;
+}
+
+.web-edge.is-hot {
+    stroke: var(--color-brand);
+    stroke-width: 2;
+}
+
+.web-node {
+    cursor: pointer;
+    /* Nodes are focusable for keyboard use, but the UA focus box around an SVG
+       group is a bare rectangle over the graph. Suppress it — focus is shown on
+       the circle instead (below), and mouse clicks show nothing at all. */
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.web-node circle {
+    fill: var(--color-surface-2);
+    stroke: var(--color-faint);
+    stroke-width: 1.25;
+    transition:
+        fill 250ms ease,
+        stroke 250ms ease,
+        stroke-width 250ms ease;
+}
+
+.web-node.is-hot circle {
+    stroke: var(--color-brand);
+    stroke-width: 1.75;
+}
+
+.web-node.is-sel circle {
+    fill: color-mix(in srgb, var(--color-brand) 18%, var(--color-surface-2));
+    stroke: var(--color-brand-400);
+    stroke-width: 2.25;
+}
+
+.web-node:focus-visible {
+    outline: none;
+}
+
+.web-node:focus-visible circle {
+    stroke: var(--color-cyan);
+    stroke-width: 2.5;
+}
+
+.web-glyph {
+    fill: var(--color-faint);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    transition: fill 250ms ease;
+}
+
+.web-node.is-hot .web-glyph,
+.web-node.is-sel .web-glyph {
+    fill: var(--color-brand-400);
+}
+
+.web-label {
+    fill: var(--color-muted);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    transition: fill 250ms ease;
+}
+
+.web-node.is-sel .web-label {
+    fill: var(--color-ink);
+}
+
+.web-pulse {
+    fill: var(--color-brand-400);
+}
+
 /* Flows lifecycle: gentle auto-scrolling marquee (desktop). The track holds two
    copies of the steps, so translating by -50% loops seamlessly. */
 @keyframes flow-marquee {

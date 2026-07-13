@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoreX OS — the data spiderweb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1526; --navy-2:#101d33; --panel:#14243d;
+    --teal:#00d4aa; --teal-dim:#0a8f76;
+    --gold:#d9b878;
+    --ink:#eaf2f5; --ink-2:#9db2c4; --ink-3:#5f7590;
+    --line:#22344f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--navy);color:var(--ink);font-family:'Figtree',sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:980px;margin:0 auto;padding:48px 24px 64px}
+  .eyebrow{color:var(--teal);font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+  h1{font-size:34px;font-weight:700;margin:10px 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--ink-2);font-size:16px;max-width:640px;line-height:1.6}
+  .stage{background:var(--navy-2);border:1px solid var(--line);border-radius:3px;margin-top:28px;padding:10px;position:relative}
+  .hud{display:flex;align-items:center;gap:14px;padding:8px 10px 2px}
+  #status{font-size:14px;color:var(--ink-2)}
+  #status b{color:var(--teal);font-weight:600}
+  button{background:transparent;border:1px solid var(--teal-dim);color:var(--teal);font:inherit;font-size:13px;font-weight:600;padding:7px 14px;border-radius:2px;cursor:pointer;margin-left:auto}
+  button:hover{background:rgba(0,212,170,.08)}
+  svg{display:block;width:100%;cursor:grab;touch-action:none}
+  svg.dragging{cursor:grabbing}
+  .node circle{fill:var(--panel);stroke:var(--ink-3);stroke-width:1.25;transition:stroke .2s}
+  .node.hot circle{stroke:var(--teal);stroke-width:2}
+  .node.sel circle{stroke:var(--gold);stroke-width:2.5}
+  .node text{fill:var(--ink);font-family:'Figtree',sans-serif;font-size:12.5px;font-weight:500}
+  .node .glyph{fill:var(--teal);font-size:15px;font-weight:700}
+  .node.sel .glyph{fill:var(--gold)}
+  .edge{stroke:var(--line);stroke-width:1;transition:stroke .2s,stroke-width .2s}
+  .edge.hot{stroke:var(--teal);stroke-width:2.25}
+  .sat rect{fill:var(--navy-2);stroke:var(--teal-dim);stroke-width:1}
+  .sat text{fill:var(--ink);font-size:11px;font-weight:500;font-family:'Figtree',sans-serif}
+  .sat line{stroke:var(--teal-dim);stroke-width:1;stroke-dasharray:3 3}
+  #story{min-height:52px;margin-top:14px;padding:14px 16px;border-left:2px solid var(--teal);background:var(--navy-2);border-radius:0;font-size:15px;line-height:1.65;color:var(--ink-2)}
+  #story b{color:var(--ink);font-weight:600}
+  .foot{margin-top:34px;border-top:1px solid var(--line);padding-top:18px;font-size:13px;color:var(--ink-3);line-height:1.7}
+  .foot h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px}
+  @media (prefers-reduced-motion: reduce){ .pulse{display:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">CoreX OS</div>
+  <h1>One piece of data feeds everything</h1>
+  <p class="sub">Nothing in CoreX is standalone. Touch any part of the system and watch the information travel — updating every surface it belongs to and firing the processes that use it. Drag to spin. Click a node.</p>
+
+  <div class="stage">
+    <div class="hud">
+      <span id="status">Touch a node to see the ripple</span>
+      <button id="spin" type="button">Spin the web</button>
+    </div>
+    <svg id="web" viewBox="0 0 940 620" role="img" aria-label="CoreX modules in a ring; clicking one shows its connections and features">
+      <g id="edges"></g><g id="sats"></g><g id="nodes"></g><g id="pulses"></g>
+    </svg>
+  </div>
+
+  <div id="story"><b>Contact</b> — click it and watch: FICA refreshes, the buyer wishlist rescores, outreach honours POPIA and the NCC registry.</div>
+
+  <div class="foot">
+    <h2>Implementation notes — for Andre</h2>
+    <p>Prototype by Claude, 13 Jul 2026 (AT-255). Nodes, edges and feature satellites in this file are ILLUSTRATIVE — the production version must generate its map from the CoreX atlas (.ai/atlas/) so the visual can never drift from the real system. Interaction spec: drag-to-spin, click-to-ripple with travelling pulses, feature-satellite bloom per node, plain-language ripple narration. Palette: navy #0b1526, teal #00d4aa, champagne #d9b878, Figtree, sharp corners. Data lives in the N / E / FEAT / RIP constants below — swap for atlas-derived JSON.</p>
+  </div>
+</div>
+<script>
+const N=[["contact","Contact","C"],["property","Property","P"],["deal","Deal register","D"],["fica","FICA / RMCP","F"],["mic","Market intel","M"],["buyer","Buyer pipeline","B"],["esign","E-sign","E"],["docs","Filing / docs","Fi"],["money","Commission / payroll","R"],["portal","Portals P24 / PP","W"]];
+const E=[["contact","property"],["contact","fica"],["contact","buyer"],["contact","deal"],["contact","docs"],
+["property","deal"],["property","mic"],["property","portal"],["property","docs"],["property","buyer"],
+["deal","money"],["deal","esign"],["deal","docs"],["deal","portal"],["buyer","mic"],["fica","deal"],["fica","docs"],["esign","docs"],["mic","portal"],["money","docs"]];
+const FEAT={contact:["Outreach","POPIA opt-in","NCC registry","WhatsApp log","Dedupe","Roles on property"],
+property:["Syndication","Mandate","CMA value","Map / heat","Photos","File ref"],
+deal:["Pipeline","Wave 2 cascade","Proforma","Purchaser flag","Distribution"],
+fica:["Multi officers","Refer to CO","Doc packs","Audit trail"],
+mic:["Buyer demand","Prospect for buyer","Region filter","Tracked stock"],
+buyer:["Wishlist score","Core Matches","Viewings","MIC tile"],
+esign:["Consent gates","OTP wet-ink","Auto filing","Lapse / revive"],
+docs:["PDF splitter","One filing truth","Shared drive","Templates"],
+money:["VAT commission","Payslips","SARS IT3(a)","Revenue share"],
+portal:["P24 feed","Private Property","Lead ingest","Portal stats"]};
+const RIP={contact:"<b>Contact</b> updated → linked to properties via roles, FICA refreshes, the buyer wishlist rescores in Market intel, and every outreach honours POPIA and the NCC registry. One person — everywhere they matter.",
+property:"<b>Property</b> changed → syndicates to P24 and Private Property, Market intel restocks, matched buyers re-rank, and the filing reference travels with it.",
+deal:"<b>Deal</b> granted → Wave 2 cascades the property status to the portals, the purchaser is flagged, a proforma is raised, commission calculates, and documents distribute per the matrix.",
+buyer:"<b>Buyer</b> wishlist saved → scored against all stock → Market intel shows exactly what to prospect for this buyer.",
+esign:"<b>E-sign</b> ceremony completes → signed documents auto-file to the deal, the property and every party. No manual filing.",
+fica:"<b>FICA</b> approved → the deal unblocks, the compliance trail files itself, the CO dashboard updates.",
+mic:"<b>Market intel</b> reads properties, portals and buyer demand — nothing is ever typed twice.",
+docs:"<b>Filing</b> has one truth — the PDF splitter, DR2 upload and e-sign all obey the same rules.",
+money:"Deal registered → <b>commission</b>, VAT, payslips and the SARS trail — all from data already in the system.",
+portal:"<b>Portal</b> leads flow in → contacts are created → the whole web enriches itself."};
+const svg=document.getElementById('web'),gE=document.getElementById('edges'),gN=document.getElementById('nodes'),gS=document.getElementById('sats'),gP=document.getElementById('pulses');
+const CX=470,CY=305,R=250;let rot=-Math.PI/2,pos={},sel=null;
+function layout(){pos={};N.forEach((n,i)=>{const a=rot+i*2*Math.PI/N.length;pos[n[0]]=[CX+R*Math.cos(a),CY+R*Math.sin(a)*0.82];});draw();}
+function draw(){
+ gE.innerHTML=E.map(e=>{const a=pos[e[0]],b=pos[e[1]];return `<line class="edge" data-e="${e[0]}-${e[1]}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`;}).join('');
+ gN.innerHTML=N.map(n=>{const p=pos[n[0]];return `<g class="node${sel===n[0]?' sel':''}" data-n="${n[0]}"><circle cx="${p[0]}" cy="${p[1]}" r="30"/><text class="glyph" x="${p[0]}" y="${p[1]+5}" text-anchor="middle">${n[2]}</text><text x="${p[0]}" y="${p[1]+50}" text-anchor="middle">${n[1]}</text></g>`;}).join('');
+ if(sel)highlight(sel,false);}
+layout();
+svg.addEventListener('click',ev=>{const g=ev.target.closest('.node');if(g)pulse(g.getAttribute('data-n'));});
+function bloom(id,animate){gS.innerHTML='';const p=pos[id],f=FEAT[id]||[];
+ f.forEach((t,i)=>{const a=-Math.PI/2+i*2*Math.PI/f.length,d=92;const x=p[0]+d*Math.cos(a),y=p[1]+d*Math.sin(a)*0.68,w=t.length*6.8+18;
+ const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','sat');if(animate)g.style.opacity='0';
+ g.innerHTML=`<line x1="${p[0]}" y1="${p[1]}" x2="${x}" y2="${y}"/><rect x="${x-w/2}" y="${y-12}" width="${w}" height="24" rx="2"/><text x="${x}" y="${y+4}" text-anchor="middle">${t}</text>`;
+ gS.appendChild(g);
+ if(animate)setTimeout(()=>{g.style.transition='opacity .3s';g.style.opacity='1';},i*90);});}
+function highlight(id,withSats){
+ document.querySelectorAll('.edge').forEach(l=>l.classList.remove('hot'));
+ document.querySelectorAll('.node').forEach(g=>g.classList.remove('hot','sel'));
+ const touched=new Set([id]);
+ E.forEach(e=>{if(e[0]===id||e[1]===id){touched.add(e[0]);touched.add(e[1]);gE.querySelector(`[data-e="${e[0]}-${e[1]}"]`).classList.add('hot');}});
+ touched.forEach(n=>{const g=gN.querySelector(`[data-n="${n}"]`);if(g)g.classList.add(n===id?'sel':'hot');});
+ if(withSats)bloom(id,true);else bloom(id,false);
+ return touched;}
+function pulse(id){sel=id;
+ const touched=highlight(id,true);
+ gP.innerHTML='';
+ E.forEach(e=>{if(e[0]!==id&&e[1]!==id)return;const a=pos[id],b=pos[e[0]===id?e[1]:e[0]];
+  const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('r','5');dot.setAttribute('fill','#00d4aa');dot.setAttribute('class','pulse');gP.appendChild(dot);
+  const t0=performance.now();(function anim(t){const k=Math.min(1,(t-t0)/900);dot.setAttribute('cx',a[0]+(b[0]-a[0])*k);dot.setAttribute('cy',a[1]+(b[1]-a[1])*k);if(k<1)requestAnimationFrame(anim);else setTimeout(()=>dot.remove(),200);})(t0);});
+ document.getElementById('story').innerHTML=RIP[id]||'';
+ document.getElementById('status').innerHTML=`<b>${N.find(n=>n[0]===id)[1]}</b> touched — ${touched.size-1} modules update, ${(FEAT[id]||[]).length} features fire`;}
+let spinning=false;document.getElementById('spin').onclick=()=>{if(spinning)return;spinning=true;const t0=performance.now(),r0=rot;(function s(t){const k=Math.min(1,(t-t0)/1600);rot=r0+2*Math.PI*(1-Math.pow(1-k,3));layout();if(k<1)requestAnimationFrame(s);else spinning=false;})(t0);};
+let drag=null;
+svg.addEventListener('pointerdown',e=>{drag={x:e.clientX,r:rot};svg.classList.add('dragging');});
+window.addEventListener('pointermove',e=>{if(!drag)return;rot=drag.r+(e.clientX-drag.x)*0.006;layout();});
+window.addEventListener('pointerup',()=>{drag=null;svg.classList.remove('dragging');});
+setTimeout(()=>pulse('contact'),500);
+</script>
+</body>
+</html>

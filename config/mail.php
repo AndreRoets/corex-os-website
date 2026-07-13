@@ -115,4 +115,18 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Demo Request Recipient
+    |--------------------------------------------------------------------------
+    |
+    | Where "Book a demo" enquiries from the marketing site are delivered.
+    |
+    */
+
+    'demo' => [
+        'address' => env('MAIL_DEMO_TO', 'info@corexweb.co.za'),
+        'name' => env('MAIL_DEMO_TO_NAME', 'CoreX OS'),
+    ],
+
 ];
