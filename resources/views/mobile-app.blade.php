@@ -186,6 +186,11 @@ svg{display:block}
 }
 .mark img{width:100%;height:100%;object-fit:contain;display:block}
 .tb-spacer{flex:1}
+/* On desktop this is just a transparent grouping of the tour controls; on a
+   phone it becomes its own wrapping row (see the 760px breakpoint). */
+.tb-row3{display:flex;align-items:center;gap:14px;min-width:0}
+.lbl-long{display:inline}
+.lbl-short{display:none}
 .tb-group{display:flex;align-items:center;gap:6px;padding:4px;border-radius:var(--r-pill);background:var(--fill-chip);border:1px solid var(--border)}
 .tb-btn{
   display:flex;align-items:center;gap:6px;
@@ -303,9 +308,58 @@ svg{display:block}
   .stage{position:static;top:auto;min-height:0;justify-content:center}
   .panel{position:static;top:auto;height:100%;max-height:100%}
 }
+/* Stacked: phone on top, explanation below, page scrolls normally.
+   (The panel's own stacked overrides live with the panel rules below.) */
 @media(max-width:1080px){
-  .layout{grid-template-columns:1fr;gap:24px}
-  .stage{position:static!important}
+  .layout{grid-template-columns:1fr;gap:22px;padding:20px 16px 48px}
+  .stage{position:static!important;top:auto}
+}
+
+/* ---- Phone-sized screens ------------------------------------------------
+   The top bar carries a lot of teaching controls. Rather than let them wrap
+   into a ragged pile, they are re-flowed into three deliberate rows:
+     1. logo ............ theme · restart
+     2. search (full width)
+     3. chapter · side switcher · agency swatches  (scrolls sideways if needed)
+   ------------------------------------------------------------------------ */
+@media(max-width:760px){
+  .topbar{
+    position:static;              /* three rows is too much to pin to the top */
+    flex-wrap:wrap;
+    gap:8px;padding:10px 12px;
+  }
+  .topbar > .chip{display:none}                       /* "Interactive Guide" */
+  .tb-label{display:none}                             /* "CHAPTER", "AGENCY" */
+
+  .wordmark{order:0;font-size:16px}
+  .tb-spacer{order:1;display:block;flex:1}
+  #themeBtn{order:2}
+  #restartBtn{order:3}
+
+  .search{order:4;flex:1 1 100%;max-width:none;min-width:0}
+  .search-results{width:100%}
+
+  /* Row 3 — the tour controls. They WRAP rather than scroll sideways: a
+     horizontal scroll strip hides the agency swatches, and a control the learner
+     cannot see is a control they will never use. */
+  .tb-row3{
+    order:5;flex:1 1 100%;
+    display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+    overflow:visible;
+  }
+  .tb-row3 > *{flex:none}
+  .tb-select{flex:1 1 130px;min-width:0;padding:8px 26px 8px 10px;font-size:12px}
+  .tb-btn{padding:7px 10px;font-size:12px}
+  /* Short labels so the switcher and the swatches share one line on a handset. */
+  .lbl-long{display:none}
+  .lbl-short{display:inline}
+
+  .layout{padding:16px 12px 40px;gap:18px}
+  .phone-caption{font-size:11.5px;padding:0 8px}
+  .panel-head{padding:16px 16px 12px}
+  .panel-body{padding:16px}
+  .panel-foot{padding:12px 16px 16px}
+  .panel h2{font-size:18px}
 }
 
 /* ---- Phone ---- */
@@ -673,10 +727,16 @@ textarea.inp{min-height:auto;resize:none;line-height:1.5}
   display:flex;flex-direction:column;max-height:calc(100vh - 120px);
   position:sticky;top:86px;
 }
-@media(max-width:1080px){.panel{position:static;max-height:none}}
 .panel-head{padding:20px 22px 14px;border-bottom:1px solid var(--border)}
 .panel-body{padding:20px 22px;overflow-y:auto;flex:1}
 .panel-foot{padding:14px 22px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+/* Declared after the base rules so it actually wins. On a stacked page the panel
+   grows with its content and the PAGE scrolls — a scroll box inside a scrolling
+   page is a trap for a thumb. */
+@media(max-width:1080px){
+  .panel{position:static;max-height:none;height:auto}
+  .panel-body{overflow-y:visible}
+}
 .progress{height:4px;border-radius:99px;background:var(--fill-chip);overflow:hidden;margin-top:14px}
 .progress i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent-lite),var(--accent));transition:width .35s cubic-bezier(.22,1,.36,1)}
 .panel h2{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px}
@@ -773,17 +833,23 @@ textarea.inp{min-height:auto;resize:none;line-height:1.5}
 
   <div class="tb-spacer"></div>
 
-  <span class="tb-label">Chapter</span>
-  <select class="tb-select" id="chapterSel" aria-label="Jump to chapter"></select>
+  <div class="tb-row3">
+    <span class="tb-label">Chapter</span>
+    <select class="tb-select" id="chapterSel" aria-label="Jump to chapter"></select>
 
-  <div class="tb-group" role="group" aria-label="Which side of the app">
-    <button class="tb-btn" id="sideAgent" data-side="agent" aria-pressed="true">Agent app</button>
-    <button class="tb-btn" id="sideClient" data-side="client" aria-pressed="false">Client portal</button>
-  </div>
+    <div class="tb-group" role="group" aria-label="Which side of the app">
+      <button class="tb-btn" id="sideAgent" data-side="agent" aria-pressed="true">
+        <span class="lbl-long">Agent app</span><span class="lbl-short">Agent</span>
+      </button>
+      <button class="tb-btn" id="sideClient" data-side="client" aria-pressed="false">
+        <span class="lbl-long">Client portal</span><span class="lbl-short">Client</span>
+      </button>
+    </div>
 
-  <div class="tb-group" title="Agency theme — the app is white-labelled, colours come from the API">
-    <span class="tb-label" style="padding-left:8px">Agency</span>
-    <div class="swatches" id="swatches"></div>
+    <div class="tb-group" title="Agency theme — the app is white-labelled, colours come from the API">
+      <span class="tb-label" style="padding-left:8px">Agency</span>
+      <div class="swatches" id="swatches"></div>
+    </div>
   </div>
 
   <button class="tb-icon" id="themeBtn" title="Light / dark theme" aria-label="Toggle theme"></button>
@@ -4935,6 +5001,7 @@ document.getElementById('searchIco').innerHTML = icon('search',17);
    exactly the part they need to click. So we scale it to the height that's
    actually left over, and the page never scrolls on desktop. */
 const PHONE_H = 868;
+const PHONE_W = 414;
 const GAP = 14;                                    // .stage gap between phone and caption
 
 function fitPhone(){
@@ -4947,10 +5014,15 @@ function fitPhone(){
   // measured, never assumed — guessing it is what pushes the bottom nav off screen.
   root.style.setProperty('--tb', topbar.offsetHeight + 'px');
 
-  // Below 1081px the layout stacks and the page scrolls normally.
+  // Stacked layout: the page scrolls, so height is free — but the phone is 414px
+  // wide and a real handset viewport is often narrower than that. Fit to WIDTH
+  // here, or the whole device hangs off the side of the screen.
   if(window.innerWidth <= 1080){
-    root.style.setProperty('--ps', '1');
     cap.style.display = '';
+    const layout = document.querySelector('.layout');
+    const cs = getComputedStyle(layout);
+    const room = layout.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    root.style.setProperty('--ps', Math.min(1, room / PHONE_W).toFixed(4));
     return;
   }
 
