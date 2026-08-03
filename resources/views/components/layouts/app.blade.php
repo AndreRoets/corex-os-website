@@ -8,6 +8,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#FFFFFF">
+    <meta name="facebook-domain-verification" content="6rfh163dr8rbz0brukx5k0e0lmnbm4">
     <style>[x-cloak]{display:none!important}</style>
 
     {{-- Theme, applied before paint so there's no flash of the wrong one.
