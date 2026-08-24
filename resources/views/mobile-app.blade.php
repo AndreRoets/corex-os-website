@@ -209,6 +209,15 @@ svg{display:block}
   transition:all .18s ease;
 }
 .tb-icon:hover{color:var(--text-primary);border-color:var(--hairline)}
+/* Google Play link — sits next to the feature search */
+.store-btn{
+  display:inline-flex;align-items:center;gap:7px;flex:none;
+  height:36px;padding:0 12px;border-radius:11px;text-decoration:none;
+  border:1px solid var(--accent-border);background:var(--accent-soft);color:var(--accent);
+  font-size:12.5px;font-weight:700;white-space:nowrap;transition:all .18s ease;
+}
+.store-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.store-btn svg{flex:none}
 .tb-label{font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-tertiary);margin-right:2px}
 .tb-select{
   appearance:none;padding:8px 30px 8px 12px;border-radius:10px;
@@ -353,6 +362,8 @@ svg{display:block}
   /* Short labels so the switcher and the swatches share one line on a handset. */
   .lbl-long{display:none}
   .lbl-short{display:inline}
+  /* The store link loses its label here, so square it off around the mark. */
+  .store-btn{width:36px;padding:0;justify-content:center;gap:0}
 
   .layout{padding:16px 12px 40px;gap:18px}
   .phone-caption{font-size:11.5px;padding:0 8px}
@@ -542,6 +553,49 @@ svg{display:block}
 }
 .seg button.on{background:var(--accent);color:#fff;box-shadow:0 6px 14px -8px var(--accent-glow)}
 
+/* Detail tab bar (1.0.10). Pinned under a collapsing hero on the property and
+   contact screens; each tab scrolls its own view. A tab shows just its name,
+   or "Name · N" when it carries a count. */
+.dtabs{
+  display:flex;gap:2px;padding:0 8px;flex:none;overflow-x:auto;
+  border-bottom:1px solid var(--border);background:var(--page-base);
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.dtabs::-webkit-scrollbar{display:none}
+.dtabs button{
+  position:relative;padding:13px 12px 11px;white-space:nowrap;
+  font-size:12.5px;font-weight:700;color:var(--text-tertiary);transition:color .18s ease;
+}
+.dtabs button.on{color:var(--accent)}
+.dtabs button.on::after{
+  content:'';position:absolute;left:8px;right:8px;bottom:-1px;height:2px;
+  border-radius:2px;background:var(--accent);
+}
+.dtabs .n{opacity:.75;font-weight:600}
+
+/* Property Drive (1.0.10) */
+.drive-chips{display:flex;gap:7px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;-ms-overflow-style:none}
+.drive-chips::-webkit-scrollbar{display:none}
+.drive-chips .chip{flex:none;cursor:pointer}
+.chip.sel{background:var(--accent);color:#fff}
+.drive-row{display:flex;align-items:center;gap:11px;padding:10px 0}
+.drive-row + .drive-row{border-top:1px solid var(--border)}
+.drive-act{
+  width:34px;height:34px;flex:none;border-radius:var(--r-small);
+  display:grid;place-items:center;color:var(--text-secondary);transition:background .16s ease,color .16s ease;
+}
+.drive-act:hover:not(:disabled){background:var(--fill-chip);color:var(--accent)}
+.drive-act:disabled{opacity:.35;cursor:not-allowed}
+
+/* Spinner — used by the Drive and the compliance tab while they load */
+.spinner{
+  width:24px;height:24px;border-radius:99px;display:block;
+  border:2.5px solid var(--fill-chip);border-top-color:var(--accent);
+  animation:spinrot .7s linear infinite;
+}
+.spinner.sm{width:16px;height:16px;border-width:2px}
+@keyframes spinrot{to{transform:rotate(360deg)}}
+
 /* Inputs — label ABOVE, no border at rest, 1.5px accent on focus */
 .field{margin-bottom:14px}
 .field > label{display:block;font-size:12.5px;font-weight:600;color:var(--text-secondary);margin-bottom:7px}
@@ -602,7 +656,12 @@ textarea.inp{min-height:auto;resize:none;line-height:1.5}
 .appbar{
   height:60px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px;z-index:20;
 }
-.appbar .title{font-size:18px;font-weight:700;letter-spacing:-.3px;flex:1}
+/* One line, always. Since 1.0.10 the property screen puts a full listing title
+   in here, and a long one must ellipsise rather than wrap into the hero. */
+.appbar .title{
+  font-size:18px;font-weight:700;letter-spacing:-.3px;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 .iconbtn{
   width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
   color:var(--text-secondary);position:relative;transition:background .16s ease;flex:none;
@@ -831,6 +890,21 @@ textarea.inp{min-height:auto;resize:none;line-height:1.5}
     <div class="search-results" id="searchResults" role="listbox" hidden></div>
   </div>
 
+  <!-- Get the real app. A link, not a fetched asset — the page still loads
+       nothing from the network. The mark is drawn inline as four segments. -->
+  <a class="store-btn" id="storeBtn"
+     href="https://play.google.com/store/apps/details?id=za.co.corex_mobile&amp;hl=en_ZA"
+     target="_blank" rel="noopener noreferrer"
+     title="Get CoreX OS on Google Play" aria-label="Get CoreX OS on Google Play">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path fill="#00A0FF" d="M3 2 L3 22 L12.5 12 Z"/>
+      <path fill="#00E676" d="M3 2 L16 9.22 L12.5 12 Z"/>
+      <path fill="#FFCE00" d="M12.5 12 L16 9.22 L21 12 L16 14.78 Z"/>
+      <path fill="#FF3A44" d="M3 22 L16 14.78 L12.5 12 Z"/>
+    </svg>
+    <span class="lbl-long">Get the app</span>
+  </a>
+
   <div class="tb-spacer"></div>
 
   <div class="tb-row3">
@@ -997,6 +1071,15 @@ const P = {
   'send':'M10 14l11 -11M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5',
   'certificate':'M12 9m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0M12.002 19.664l-2.002 -2.664l-3 1l2.5 -5M12 19.664l2 -2.664l3 1l-2.5 -5',
   'crown':'M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4z',
+  /* ---- added in 1.0.10 ---- */
+  'fingerprint':'M12 10a2 2 0 0 1 2 2c0 2.5 -.3 4.4 -1 6M8.5 8.5a5 5 0 0 1 8.5 3.5c0 3 -.4 5.3 -1.2 7M5.5 12a6.5 6.5 0 0 1 3 -5.5M6.3 18a13 13 0 0 0 1.4 -6a4.3 4.3 0 0 1 8.6 0M10.5 20a20 20 0 0 0 1.2 -8',
+  'system-update':'M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0M12 8v8M9 13l3 3l3 -3',
+  'cloud-off':'M6.7 6.7a5 5 0 0 0 .3 10.3h10a4 4 0 0 0 2.5 -7.1M10.5 5.3a5 5 0 0 1 6.5 3.7M3 3l18 18',
+  'folder':'M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2',
+  'file-type-pdf':'M14 3v4a1 1 0 0 0 1 1h4M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6M17 18h2M17 21v-6h3M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2z',
+  'table':'M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2zM3 10h18M10 3v18',
+  'microphone-off':'M9 5a3 3 0 0 1 6 0v5M9 9v2a3 3 0 0 0 4.5 2.6M5 10a7 7 0 0 0 10.5 6M8 21h8M12 17v4M3 3l18 18',
+  'refresh':'M20 11a8.1 8.1 0 0 0 -15.5 -2M4 5v4h4M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4',
 };
 function icon(name, size, stroke){
   const d = P[name] || P['circle'];
@@ -1004,6 +1087,40 @@ function icon(name, size, stroke){
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(stroke||2)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+d+'"/></svg>';
 }
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------------------------------------------------------------------------
+   Display helper for machine values coming off the API. Title-cases WITHOUT
+   lower-casing, so it only ever raises the first letter of each word and any
+   capital already there survives: FICA, OTP, P24 and VAT come through intact.
+   Machine values only — user-typed text (names, notes, descriptions) is
+   rendered exactly as entered and must never pass through here.
+   ------------------------------------------------------------------------- */
+function labelCase(v){
+  if (v === null || v === undefined) return '';
+  const s = String(v).replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!s) return '';
+  return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+/* Same rule, sentence-shaped: only the first word is raised. Used where an enum
+   sits inside a sentence rather than standing alone in a chip. */
+function sentenceCase(v){
+  const s = String(v === null || v === undefined ? '' : v).replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+}
+
+/* ---------------------------------------------------------------------------
+   Build identity. One source for every version string on screen: the login
+   footer, Settings → About, and both update screens.
+   ------------------------------------------------------------------------- */
+const APP = {
+  version:'1.0.10',
+  build:18,
+  get label(){ return this.version + ' (' + this.build + ')'; },   // "1.0.10 (18)"
+  get footer(){ return 'v' + this.version; },                      // "v1.0.10"
+  latestVersion:'1.1.0',       // what the optional nudge is offering
+  latestBuild:22,
+  playStore:'https://play.google.com/store/apps/details?id=za.co.corex_mobile&hl=en_ZA'
+};
 
 /* Monotonic ids. A wall-clock timestamp collides when two records are created
    in the same millisecond, and a collision here would make Ellie's one-tap
@@ -1035,6 +1152,7 @@ const S = {
   drawer:false,
   snack:null,
   nextApptState:'event', // loading | clear | event
+  forceUpdate:false,     // the blocking update gate (1.0.10)
   chapter:0, step:0,
   swipeHintSeen:false,
 };
@@ -1048,6 +1166,33 @@ const ME = {first:'Andre', last:'Roets', name:'Andre Roets', email:'andre@demoag
 const money = n => 'R ' + n.toLocaleString('en-ZA').replace(/,/g,' ');
 
 let DB = {};
+
+/* ---------------------------------------------------------------------------
+   The Property Drive (1.0.10). A read-only per-property view of the documents
+   filed against the listing on the WEB. Uploading, tagging and deleting all
+   happen there; this app only views and downloads. `by` is a person's name —
+   user-typed, so it never goes through labelCase.
+   ------------------------------------------------------------------------- */
+const dfile = (id, name, folder, kind, size, by, ago) => ({id, name, folder, kind, size, by, ago});
+const DRIVES = {
+  1: [ dfile('d1','Mandate.pdf','Mandate','pdf','1.2 MB','Andre Roets','3d ago'),
+       dfile('d2','Sole mandate addendum.pdf','Mandate','pdf','394 KB','Andre Roets','3d ago'),
+       dfile('d3','Seller ID.jpg','FICA','image','2.3 MB','Andre Roets','3d ago'),
+       dfile('d4','Proof of address.pdf','FICA','pdf','184 KB','Lindi Khumalo','2d ago'),
+       dfile('d5','Rates clearance.pdf','FICA','pdf','322 KB','Lindi Khumalo','1d ago'),
+       dfile('d6','Floor plan.pdf','Marketing','pdf','3.2 MB','Andre Roets','1d ago'),
+       dfile('d7','Beach Road brochure.docx','Marketing','doc','748 KB','Andre Roets','6h ago'),
+       dfile('d8','Comparables.xlsx','Marketing','sheet','51 KB','Andre Roets','4h ago'),
+       dfile('d9','Scanned note.pdf',null,'pdf','96 KB','Andre Roets','2h ago') ],
+  2: [ dfile('e1','Mandate.pdf','Mandate','pdf','980 KB','Andre Roets','9d ago'),
+       dfile('e2','Seller ID.jpg','FICA','image','1.5 MB','Andre Roets','9d ago') ],
+  /* 3 is the blocked listing — it deliberately has nothing on file yet. */
+  3: [],
+  4: [ dfile('r1','Offer to purchase.pdf','Deal','pdf','1.1 MB','Lindi Khumalo','5d ago') ],
+  6: [ dfile('l1','Lease agreement.pdf','Lease','pdf','900 KB','Andre Roets','7d ago'),
+       dfile('l2','Entry inspection.jpg','Inspections','image','1.8 MB','Andre Roets','7d ago') ],
+};
+
 function seed(){
   DB = {
   properties:[
@@ -1113,6 +1258,11 @@ function seed(){
     {id:5, first:'Piet', last:'Grobler', phone:'',            email:'piet.grobler@gmail.com', idnum:'',
      type:'Investor', wa:0, waLast:null, notes:'Buys to let. No phone on file yet.',
      consent:{marketing:false, whatsapp:false, data:false}},
+    /* Referred by another branch with nothing captured — this is the contact
+       that exercises the new "No phone, email or ID captured yet" state. */
+    {id:6, first:'Michelle', last:'du Toit', phone:'', email:'', idnum:'',
+     type:'Referral', wa:0, waLast:null, notes:'Referred by the Margate branch — details to follow.',
+     consent:{marketing:false, whatsapp:false, data:false}},
   ],
   events:[
     {id:1, t:'09:30', end:'10:30', title:'Viewing — 12 Beach Road, Uvongo', loc:'12 Beach Road, Uvongo',
@@ -1124,10 +1274,14 @@ function seed(){
      colour:'#3B82F6', pillar:'deal', cls:'Deal', att:2, day:0, desc:'Sole mandate, 90 days.'},
     {id:4, t:'08:00', end:'09:00', title:'Team standup', loc:'Margate office', colour:'#8890A4',
      pillar:null, cls:'Manual', att:6, day:1, desc:''},
+    {id:8, t:'13:00', end:'14:00', title:'Dentist', loc:'', colour:'#8890A4',
+     pillar:null, cls:'Manual', att:0, day:1, desc:'', privateOther:true},
     {id:5, t:'11:00', end:'12:00', title:'Show day — 8 Marine Drive', loc:'8 Marine Drive, Margate',
      colour:'#F97316', pillar:'property', cls:'Viewing', att:0, day:2, desc:'Open show day, 11:00–14:00.'},
     {id:6, t:'10:00', end:'11:00', title:'Lease renewal — 3 Ocean View', loc:'Margate office',
-     colour:'#3B82F6', pillar:'deal', cls:'Lease', att:2, day:5, desc:''},
+     colour:'#3B82F6', pillar:'deal', cls:'Lease', att:2, day:5, desc:'',
+     /* generated by the lease record — editing it here would be overwritten */
+     source:'lease:3 Ocean View'},
     {id:7, t:'15:00', end:'16:00', title:'Compliance review', loc:'', colour:'#F59E0B',
      pillar:null, cls:'Compliance', att:1, day:9, desc:'Quarterly FICA audit.'},
   ],
@@ -1161,8 +1315,8 @@ function seed(){
      body:'R3 750 000 submitted, awaiting your review.', time:'6h ago', unread:false},
     {id:5, sev:'warning', pillar:'agent', title:'Your mandate on 12 Beach Road expires in 14 days',
      body:'Renew it with the seller before it lapses.', time:'2d ago', unread:false},
-    {id:6, sev:'info', pillar:null, title:'CoreX OS v1.0.0 released',
-     body:'Ellie voice commands and AI photo analysis are now live.', time:'3d ago', unread:false},
+    {id:6, sev:'info', pillar:null, title:'CoreX OS v1.0.10 released',
+     body:'Tabbed property and contact screens, the Property Drive, and fingerprint sign-in.', time:'3d ago', unread:false},
   ],
   leads:[
     {id:1, day:1, src:'P24', name:'Nomsa Dlamini', phone:'076 555 0144', wa:true, email:'nomsa.d@gmail.com',
@@ -1194,7 +1348,13 @@ function seed(){
   ],
   photos:[],       // uploaded during the wizard
   wizard:null,     // the in-flight property draft
+  drives:{},       // per-property document store — filled in below
 };
+  /* Every property gets a Drive. Ones with no entry in DRIVES simply have
+     nothing on file yet, which is a state the tour deliberately shows. */
+  DB.properties.forEach(p => {
+    DB.drives[p.id] = {state:'ready', files:(DRIVES[p.id] || []).map(f => ({...f}))};
+  });
 }
 seed();
 
@@ -1403,9 +1563,24 @@ function mainAppBar(unread){
     + '<button class="iconbtn" data-act="go:qr" data-tour="qr">'+icon('qrcode',21)+'</button>'
     + '<button class="iconbtn" data-act="go:notifications" data-tour="bell">'+icon('bell',21)
       + (unread?'<span class="dot-badge"></span>':'')+'</button>'
-    + '<button class="avatar press" data-act="go:me">'+ (S.side==='agent'?ME.initials:CLIENT.initials) +'</button>'
+    /* 1.0.10 removed the initials avatar from here — the account now lives on
+       the Me tab, so the bar is: menu · wordmark · QR · bell. */
     + '</header>';
 }
+/* The blocking update gate. Deliberately has no back arrow and no dismiss —
+   on Android the system back button is swallowed while this is up. */
+function forceUpdateView(){
+  return '<div class="view" style="padding:40px 28px;display:flex;flex-direction:column;'
+    + 'align-items:center;justify-content:center;text-align:center;height:100%">'
+    + '<div style="margin-bottom:22px">'+ibox('system-update','var(--accent)',72,34)+'</div>'
+    + '<div style="font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px">Update required</div>'
+    + '<div class="t-sub" style="line-height:1.6;max-width:290px;margin-bottom:32px">'
+      + 'This version of CoreX is no longer supported. Update to the latest version to carry on.</div>'
+    + '<button class="btn" data-act="openStore" style="max-width:290px">'+icon('system-update',18)+'Update now</button>'
+    + '<div class="t-sub" style="margin-top:20px;font-size:11.5px;color:var(--text-muted)">Installed: '+APP.label+'</div>'
+    + '</div>';
+}
+
 /* A titled sub-screen bar: back arrow + title + optional actions. */
 function subAppBar(title, actions){
   return '<header class="appbar">'
@@ -1420,6 +1595,16 @@ let lastScreen = null;
 
 function render(animate){
   const app = document.getElementById('app');
+
+  /* The force-update gate replaces the ENTIRE app — no app bar, no nav, no
+     sheets, nothing behind it. It sits before the login screen and, once it
+     latches on, it never flickers off mid-session. */
+  if(S.forceUpdate){
+    app.innerHTML = forceUpdateView();
+    updateStatusBar();
+    return;
+  }
+
   const scr = SCREENS[S.screen];
   if(!scr){ app.innerHTML = '<div class="pad">Unknown screen: '+esc(S.screen)+'</div>'; return; }
 
@@ -1495,7 +1680,7 @@ function drawerView(){
             + '<span class="sw'+(S.theme==='dark'?' on':'')+'"></span></button>'
           + '<div class="divider"></div>' + item('logout','Sign out','signout','var(--danger)'))
     + '<span class="grow"></span>'
-    + '<div class="t-sub" style="padding:0 12px;font-size:11px">v1.0.0</div>'
+    + '<div class="t-sub" style="padding:0 12px;font-size:11px">'+APP.footer+'</div>'
     + '</aside>';
 }
 function updateStatusBar(){
@@ -1546,7 +1731,13 @@ ACTS.drawer = () => { S.drawer=true; render(); };
 ACTS.closeDrawer = () => { S.drawer=false; render(); };
 ACTS.closeSheet = closeSheet;
 ACTS.closeDialog = closeDialog;
-ACTS.dialogScrim = () => { if(!S.dialog || S.dialog.dismissible!==false) closeDialog(); };
+ACTS.dialogScrim = () => {
+  if(!S.dialog) return;
+  if(S.dialog.dismissible===false) return;
+  /* Tapping outside the update nudge means Later, so it still snoozes. */
+  if(S.dialog.cancelAct === 'updateLater'){ ACTS.updateLater(); return; }
+  closeDialog();
+};
 ACTS.noop = () => {};
 ACTS.theme = () => setTheme(S.theme==='dark'?'light':'dark');
 ACTS.signout = () => {
@@ -1624,9 +1815,14 @@ SCREENS.splash = {
 const DEMO_PW = 'corex1234';
 const freshLogin = () => ({
   email: ME.email, pw: DEMO_PW,
-  show:false, err:'', loading:false, activate:false, otp:false
+  show:false, err:'', loading:false, activate:false, otp:false,
+  deleted:false,        // set after a delete, so the next sign-in explains itself
+  sessionLost:false     // fingerprint is enrolled but this device has no session
 });
 let loginState = freshLogin();
+/* Fingerprint unlock is offered once, after the first successful password
+   sign-in, and only shows on the login screen once it is actually enabled. */
+let bioOffered = false;
 
 SCREENS.login = {
   chromeless:true, nav:false,
@@ -1661,20 +1857,32 @@ SCREENS.login = {
           {err:L.err})
       + (L.activate
           ? '<button class="btn2" data-act="activate" style="margin-bottom:12px">'+icon('mail',18)+'Activate account</button>' : '')
+      + (L.sessionLost
+          ? '<div class="card" style="padding:12px 14px;margin-bottom:14px"><div class="row" style="gap:9px;align-items:flex-start">'
+            + '<span style="color:var(--accent);display:flex">'+icon('fingerprint',18)+'</span>'
+            + '<span class="t-sub" style="line-height:1.5">Sign in with your password once to switch fingerprint sign-in back on — this device doesn\'t have your session any more.</span>'
+            + '</div></div>' : '')
       + '<button class="btn" data-act="login"'+(L.loading?' disabled':'')+' style="margin-top:4px" data-tour="loginBtn">'
         + (L.loading
             ? '<span style="width:22px;height:22px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:99px;display:block;animation:spin .8s linear infinite"></span><style>@keyframes spin{to{transform:rotate(360deg)}}</style>'
             : 'Continue to your workspace')
       + '</button>'
+      /* Fingerprint unlock, once it is enabled and the device supports it. */
+      + (settings.biometric && settings.biometricAvailable
+          ? '<div style="height:10px"></div>'
+            + '<button class="btn2" data-act="bioUnlock">'+icon('fingerprint',18)+'Unlock with fingerprint</button>' : '')
       + '<div style="height:12px"></div>'
-      + '<button class="btn2" data-act="scanQr">'+icon('qrcode',18)+'Scan agent QR</button>'
+      /* 1.0.10 reframed the QR entry as account creation, so App Review (and
+         clients) can see there is a way to make an account from this screen. */
+      + '<button class="btn2" data-act="scanQr">'+icon('qrcode',18)+'Create your account</button>'
+      + '<div class="t-sub" style="text-align:center;margin-top:8px;font-size:11.5px;line-height:1.5">New client? Create your account by scanning your agent\'s QR.</div>'
       + '<div class="divider" style="margin:22px 0 14px"></div>'
       + '<div class="eyebrow mute" style="text-align:center;margin-bottom:10px">TOUR SHORTCUTS — ONE TAP</div>'
       + '<div class="row" style="gap:10px">'
         + '<button class="btn2 sm" data-act="demoAgent">'+icon('user-circle',17)+'Sign in as Agent</button>'
         + '<button class="btn2 sm" data-act="demoClient">'+icon('users',17)+'Sign in as Client</button>'
       + '</div>'
-      + '<div class="t-sub" style="text-align:center;margin-top:22px;font-size:11px;color:var(--text-muted)">v1.0.0</div>'
+      + '<div class="t-sub" style="text-align:center;margin-top:22px;font-size:11px;color:var(--text-muted)">'+APP.footer+'</div>'
       + '</div>';
   }
 };
@@ -1691,11 +1899,51 @@ ACTS.otpVerify = () => { loginState.otp=false; S.side='client'; syncSide(); ente
 ACTS.activate = () => { loginState.otp = true; loginState.activate=false; render(true); };
 
 function enterApp(side){
+  const wasDeleted = loginState.deleted;
   loginState = freshLogin();          // so signing out lands on a form that works
+  loginState.deleted = wasDeleted;    // a deletion outlives the form reset
   S.side = side;
   S.stack = [];
   tab(side==='agent' ? 'home' : 'chome');
+
+  /* Two things only ever happen once you are already inside the app. Offer
+     fingerprint first; the update nudge waits its turn so they never stack. */
+  if(side==='agent' && !bioOffered && !settings.biometric && settings.biometricAvailable){
+    setTimeout(() => { if(S.screen!=='login') ACTS.bioOffer(); }, 700);
+    return;
+  }
+  maybeOfferUpdate();
 }
+
+/* ============================================================================
+   8b. APP LIFECYCLE — the two update prompts (1.0.10)
+   A hard gate before auth, driven by min_build; and a soft nudge after auth,
+   driven by a separate latest_build. They are mutually exclusive by design.
+   ========================================================================== */
+let updateSnoozedFor = 0;   // the build number "Later" was pressed against
+
+function maybeOfferUpdate(){
+  if(S.forceUpdate) return;                       // the gate wins outright
+  if(updateSnoozedFor === APP.latestBuild) return; // one nudge per release
+  setTimeout(() => {
+    if(S.screen === 'login' || S.forceUpdate) return;  // never on the login screen
+    dialog({
+      title:'Update available', icon:'system-update', iconColour:'var(--accent)',
+      body:'CoreX ' + APP.latestVersion + ' is ready to install. Update to get the latest fixes and features.'
+         + '<div class="t-sub" style="margin-top:8px;font-size:12px;color:var(--text-muted)">You\'re on ' + APP.label + '</div>',
+      cancel:'Later', cancelAct:'updateLater',
+      confirm:'Update now', confirmAct:'updateNow'
+    });
+  }, 900);
+}
+ACTS.updateLater = () => { updateSnoozedFor = APP.latestBuild; closeDialog(); };
+ACTS.updateNow = () => { closeDialog(); window.open(APP.playStore, '_blank', 'noopener'); };
+/* Tapping the scrim counts as Later, not as a dismissal without an answer. */
+ACTS.showUpdateNudge = () => { updateSnoozedFor = 0; maybeOfferUpdate(); };
+
+ACTS.forceUpdateOn  = () => { S.forceUpdate = true;  S.dialog=null; S.sheet=null; S.drawer=false; render(); };
+ACTS.forceUpdateOff = () => { S.forceUpdate = false; render(); };
+ACTS.openStore = () => window.open(APP.playStore, '_blank', 'noopener');
 
 /* THE LOGIN CASCADE — agent first, then client. This is what the tour demystifies. */
 ACTS.login = () => {
@@ -1708,6 +1956,11 @@ ACTS.login = () => {
   L.loading = true; render();
   setTimeout(() => {
     L.loading = false;
+    // 0. Deleted accounts are turned away with the route back in.
+    if(L.deleted && (email.includes('andre') || email.includes('agent'))){
+      L.err = 'This account has been deleted. To use the app again, restore app access from My Portal → Tools on the CoreX website, or ask your administrator.';
+      render(); return;
+    }
     // 1. Try agent.
     if(email.includes('andre') || email.includes('agent')){
       if(L.pw && L.pw.length < 4){ L.err='Incorrect password.'; render(); return; }   // 401 → stop here
@@ -1720,9 +1973,28 @@ ACTS.login = () => {
       L.activate = true; render(); return;
     }
     // 3. Not found anywhere.
-    L.err = "We couldn't find that email. Ask your agency to add you, or scan your agent's QR code to get started.";
+    L.err = "We couldn't find that email. Ask your agency to add you, or create your account by scanning your agent's QR code.";
     render();
   }, 900);
+};
+
+/* ---- Fingerprint sign-in (1.0.10) ---------------------------------------- */
+ACTS.bioUnlock = () => { S.side='agent'; syncSide(); enterApp('agent'); snack('Unlocked with fingerprint.','green','fingerprint'); };
+ACTS.bioOffer = () => dialog({
+  title:'Use your fingerprint to sign in?', icon:'fingerprint', iconColour:'var(--accent)',
+  body:'Unlock CoreX with your fingerprint next time instead of typing your password.',
+  cancel:'Not now', cancelAct:'bioNotNow',
+  confirm:'Enable', confirmAct:'bioEnable'
+});
+ACTS.bioNotNow = () => { bioOffered = true; closeDialog(); };
+ACTS.bioEnable = () => {
+  bioOffered = true; closeDialog();
+  if(!settings.biometricAvailable){
+    snack("Biometric sign-in wasn't enabled. You can turn it on in Settings.",'warning');
+    return;
+  }
+  settings.biometric = true;
+  snack('Fingerprint sign-in is on.','green','fingerprint');
 };
 
 /* ============================================================================
@@ -1804,7 +2076,17 @@ ACTS.nextState = st => { S.nextApptState = st; render(); };
 /* ============================================================================
    10. SCREEN — Today
    ========================================================================== */
+/* Why an event can't be edited (1.0.10). Status no longer locks anything —
+   only the SOURCE does, and there are now two distinct reasons. Events the
+   agent created that never stamped a source are editable, which on 1.0.0 they
+   sometimes wrongly were not. */
+function eventLock(e){
+  if(e.privateOther) return 'This is someone else’s private event.';
+  if(e.source) return 'This event comes from another record and is kept in sync with it — change it at the source.';
+  return null;
+}
 function eventSheet(e){
+  const lock = eventLock(e);
   const row = (i,l) => '<div class="row" style="padding:9px 0;gap:11px">'+icon(i,18)
     + '<span class="t-sub" style="color:var(--text-primary);font-weight:600">'+esc(l)+'</span></div>';
   sheet({
@@ -1819,6 +2101,12 @@ function eventSheet(e){
       + (e.att ? row('users', e.att+' attendees') : '')
       + (e.desc ? '<div class="divider"></div><div class="t-sub">'+esc(e.desc)+'</div>' : '')
       + (e.pillar ? '<div style="margin-top:12px">'+pillarChip(e.pillar)+'</div>' : '')
+      + (lock
+        ? '<div class="row" style="gap:9px;align-items:flex-start;margin-top:14px;padding:11px 13px;'
+          + 'border-radius:var(--r-small);background:var(--fill-chip)">'
+          + '<span style="color:var(--text-tertiary);flex:none;display:flex">'+icon('lock',16)+'</span>'
+          + '<span class="t-sub" style="line-height:1.5">'+esc(lock)+'</span></div>'
+        : '')
       + '</div>',
     foot: () => '<div class="row" style="gap:10px">'
       + '<button class="btn2 sm" data-act="dismissEvent:'+e.id+'">'+icon('x',17)+'Dismiss</button>'
@@ -2084,7 +2372,7 @@ function taskCard(t){
       + '</div>'
       + '<div class="row" style="gap:6px;flex-wrap:wrap">'
         + pillarChip(t.pillar)
-        + '<span class="chip" style="font-size:10px">'+esc(t.type)+'</span>'
+        + '<span class="chip" style="font-size:10px">'+esc(labelCase(t.type))+'</span>'
         + '<span class="chip'+(t.overdue&&t.col!=='done'?'':'')+'" style="font-size:10px;'
           + (t.overdue&&t.col!=='done'?'background:rgba(239,68,68,.14);color:var(--danger)':'')+'">'
           + icon('clock',11)+esc(t.due)+'</span>'
@@ -2124,7 +2412,7 @@ ACTS.openTask = id => {
       '<div class="row" style="gap:6px;margin-bottom:14px;flex-wrap:wrap">'
       + pillarChip(t.pillar)
       + statusChip(t.prio+' priority', PRIO[t.prio], true)
-      + '<span class="chip">'+esc(t.type)+'</span>'
+      + '<span class="chip">'+esc(labelCase(t.type))+'</span>'
       + '<span class="chip">'+icon('clock',11)+esc(t.due)+'</span></div>'
     + (t.desc ? '<div class="t-sub" style="margin-bottom:14px">'+esc(t.desc)+'</div>' : '')
     + '<div class="eyebrow mute" style="margin-bottom:8px">MOVE "'+esc(t.title.slice(0,22))+(t.title.length>22?'…':'')+'"</div>'
@@ -2446,7 +2734,7 @@ function propCard(p){
       + '</span>'
       + '<span class="money" style="display:block;font-size:13px;margin-top:7px">'+money(p.price)+(p.listing==='For Rental'?' pm':'')+'</span>'
     + '</span>'
-    + '<span>'+statusChip(p.status, statusColour(p.status), true)+'</span>'
+    + '<span>'+statusChip(labelCase(p.status), statusColour(p.status), true)+'</span>'
     + '</button>';
 }
 ACTS.propScope = s => { plist.scope=s; render(); };
@@ -2495,7 +2783,11 @@ ACTS.openProp = id => {
     startWizard(p);
     snack('Draft → opens the editor, not the overview.','','pencil');
   } else {
+    /* Always land on Info, and let the compliance tab show its own spinner the
+       first time it is opened — that data arrives separately in the real app. */
+    propTab = 'info'; driveFolder = 'All'; complianceLoading = true;
     go('overview', {id:p.id});
+    setTimeout(() => { complianceLoading = false; if(S.screen==='overview') render(); }, 650);
   }
 };
 
@@ -2897,10 +3189,14 @@ function wStep4(){
     + '<button class="btn" data-act="wSave">'+icon('device-floppy',18)+'Save Property</button>';
 }
 /* The upload sheet — an 85% draggable sheet with tag chips, three sources and a queue. */
-let up = {tag:null, queue:[], uploading:false, done:0, failed:[], retrying:false};
+/* The queue is durable: it survives closing the sheet (and, in the real app, an
+   app restart). Photos are downscaled and orientation-corrected — and iPhone
+   HEIC converted to JPEG — before they enter it, which is the "Preparing" state.
+   Uploads then run up to 3 at a time, up to 3 attempts each with a short backoff. */
+let up = {tag:null, queue:[], preparing:false, uploading:false, done:0, failed:[], retried:false};
 ACTS.openUpload = tag => {
   const tags = photoTags();
-  up = {tag: tag || (tags[0]||null), queue:[], uploading:false, done:0, failed:[]};
+  up = {tag: tag || (tags[0]||null), queue:[], preparing:false, uploading:false, done:0, failed:[], retried:false};
   openUploadSheet();
 };
 function openUploadSheet(){
@@ -2910,6 +3206,9 @@ function openUploadSheet(){
       const tags = photoTags();
       const counts = {};
       W.photos.forEach(p => counts[p.tag] = (counts[p.tag]||0)+1);
+      const header = up.uploading
+        ? 'Uploaded '+up.done+' of '+up.queue.length+'…'
+        : up.queue.length+' selected';
       return '<div class="eyebrow mute" style="margin-bottom:9px">TAG THIS PHOTO</div>'
         + (tags.length
           ? '<div class="row" style="gap:7px;flex-wrap:wrap;margin-bottom:16px">'
@@ -2920,77 +3219,124 @@ function openUploadSheet(){
           : '<div class="t-sub" style="margin-bottom:16px">This property has no spaces yet — photos will upload to Unsorted.</div>')
         + '<div class="row" style="gap:8px;margin-bottom:18px">'
           + [['Multi Capture','camera'],['Native','photo'],['Gallery','photo-plus']].map(([l,i]) =>
-            '<button class="btn2 sm" data-act="upPick:'+l+'" style="flex:1;flex-direction:column;height:64px;gap:5px;padding:0">'
+            '<button class="btn2 sm" data-act="upPick:'+l+'"'+(up.preparing?' disabled':'')
+            + ' style="flex:1;flex-direction:column;height:64px;gap:5px;padding:0">'
             + icon(i,19)+'<span style="font-size:11px;font-weight:600">'+l+'</span></button>').join('')
         + '</div>'
+        /* Preparing: downscale + orientation-correct before anything queues. */
+        + (up.preparing
+          ? '<div class="row" style="gap:10px;justify-content:center;margin-bottom:18px">'
+            + '<span class="spinner sm"></span>'
+            + '<span class="t-sub">Preparing photos…</span></div>'
+          : '')
         + (up.queue.length
-          ? '<div class="eyebrow mute" style="margin-bottom:9px">'
-              + (up.uploading ? 'UPLOADING '+(up.done+1)+' OF '+up.queue.length+'…' : up.queue.length+' SELECTED')+'</div>'
-            + (up.uploading
-              ? '<div class="progress" style="margin-bottom:14px;height:5px"><i style="width:'+Math.round(up.done/up.queue.length*100)+'%"></i></div>'
-              : '')
+          /* NOT .eyebrow — that uppercases, and this copy is mixed case. */
+          ? '<div style="font-size:12.5px;font-weight:700;color:var(--text-secondary);margin-bottom:9px">'+esc(header)+'</div>'
             + '<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:14px">'
             + up.queue.map((p,i) => '<div style="position:relative">'
-                + '<div class="thumb g'+(p.g%8)+'" style="width:90px;height:90px;'
-                  + (up.failed.includes(i)?'outline:2px solid var(--danger);outline-offset:-2px':'')+'">'+icon('photo',20)+'</div>'
+                + '<div class="thumb g'+(p.g%8)+'" style="width:90px;height:90px;display:grid;place-items:center;'
+                  + (p.state==='failed'?'outline:2px solid var(--danger);outline-offset:-2px':'')+'">'
+                  + (p.state==='uploading' ? '<span class="spinner sm"></span>' : icon('photo',20))+'</div>'
                 + (up.uploading ? '' : '<button data-act="upRemove:'+i+'" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:99px;background:var(--danger);color:#fff;display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.3)">'+icon('x',12)+'</button>')
                 + '</div>').join('')
             + '</div>'
             + (up.failed.length
-              ? '<button class="card" data-act="upRetry" style="width:100%;text-align:left;border-left:2px solid var(--danger);margin-bottom:8px">'
-                + '<div class="row" style="gap:8px;color:var(--danger);margin-bottom:5px">'+icon('alert-circle',16)
-                + '<span style="font-size:13px;font-weight:700">Failed ('+up.failed.length+') — tap to retry</span></div>'
-                + '<div class="t-sub" style="font-size:12px">IMG_28'+(40+up.failed[0])+'.jpg · upload interrupted</div>'
-                + '<span class="chip accent" style="margin-top:9px">'+icon('refresh',12)+'Retry</span></button>'
+              ? '<div class="row" style="margin-bottom:8px;gap:8px">'
+                + '<span class="grow" style="font-size:12.5px;font-weight:700;color:var(--danger)">'
+                  + up.failed.length+' photo'+(up.failed.length>1?'s':'')+' didn\'t upload — tap to retry</span>'
+                + (up.failed.length > 1 && !up.uploading
+                    ? '<button class="chip accent" data-act="upRetryAll">'+icon('refresh',12)+'Retry all</button>' : '')
+                + '</div>'
+                + up.failed.map((qi,n) => '<div class="row" style="gap:10px;padding:7px 0;border-top:1px solid var(--border)">'
+                    + '<div class="thumb g'+(up.queue[qi].g%8)+'" style="width:34px;height:34px;display:grid;place-items:center">'+icon('photo',14)+'</div>'
+                    + '<span class="grow" style="min-width:0"><span class="t-sub trunc" style="display:block;color:var(--text-primary);font-weight:600">'+esc(up.queue[qi].name)+'</span>'
+                    + '<span class="t-sub" style="font-size:11px;color:var(--danger)">Upload failed after 3 attempts</span></span>'
+                    + '<button class="chip accent" data-act="upRetry:'+qi+'">Retry</button></div>').join('')
               : '')
-          : '<div class="t-sub" style="text-align:center;padding:20px 0">Pick a source above to add photos.</div>');
+          : (up.preparing ? '' : '<div class="t-sub" style="text-align:center;padding:20px 0">Pick a source above to add photos.</div>'));
     },
-    foot: () => '<button class="btn" data-act="upSend"'+((!up.queue.length||up.uploading)?' disabled':'')+'>'
+    foot: () => '<button class="btn" data-act="upSend"'+((!up.queue.length||up.uploading||up.preparing)?' disabled':'')+'>'
       + (up.uploading ? 'Uploading…' : 'Upload '+up.queue.length+' photo(s)')+'</button>'
   });
 }
 ACTS.upTag = t => { up.tag = t || null; openUploadSheet(); };
 ACTS.upPick = src => {
-  const n = src==='Multi Capture' ? 3 : src==='Native' ? 1 : 5;
-  for(let i=0;i<n;i++) up.queue.push({g: Math.floor(Math.random()*8), name:'IMG_28'+(40+up.queue.length)+'.jpg'});
-  openUploadSheet();
+  up.preparing = true; openUploadSheet();
+  setTimeout(() => {
+    up.preparing = false;
+    const n = src==='Multi Capture' ? 3 : src==='Native' ? 1 : 5;
+    for(let i=0;i<n;i++) up.queue.push({g: Math.floor(Math.random()*8), name:'IMG_28'+(40+up.queue.length)+'.jpg', state:'queued'});
+    if(src==='Gallery' && up.queue.length > 7) snack("Couldn't add 2 photos — device storage may be full",'warning');
+    openUploadSheet();
+  }, 1000);
 };
 ACTS.upRemove = i => { up.queue.splice(+i,1); openUploadSheet(); };
+
+/* Up to 3 in flight at once. One file fails its 3 attempts the first time so
+   the retry path is demonstrable; retrying it succeeds. */
 ACTS.upSend = () => {
   up.uploading = true; up.done = 0; up.failed = [];
-  openUploadSheet();
-  const step = () => {
-    up.done++;
-    if(up.done >= up.queue.length){
-      // One file "fails" the first time — the learner retries it and it succeeds.
-      if(!up.retried && up.queue.length > 2){
-        up.failed = [up.queue.length-1];
-        up.uploading = false;
-        openUploadSheet();
-        return;
-      }
-      finishUpload();
-      return;
+  let next = 0, inFlight = 0;
+  const pump = () => {
+    while(inFlight < 3 && next < up.queue.length){
+      const i = next++;
+      const p = up.queue[i];
+      p.state = 'uploading'; inFlight++;
+      openUploadSheet();
+      setTimeout(() => {
+        inFlight--;
+        const willFail = !up.retried && i === up.queue.length-1 && up.queue.length > 2;
+        if(willFail){ p.state = 'failed'; up.failed.push(i); }
+        else { p.state = 'done'; up.done++; }
+        if(next < up.queue.length) pump();
+        else if(inFlight === 0) done();
+        else openUploadSheet();
+      }, 420 + Math.random()*420);
     }
-    openUploadSheet();
-    setTimeout(step, 380);
   };
-  setTimeout(step, 420);
+  const done = () => {
+    up.uploading = false;
+    if(up.failed.length){
+      openUploadSheet();
+      snack(up.failed.length+' photo'+(up.failed.length>1?'s':'')+" didn't upload — tap Retry below",'warning');
+    } else finishUpload();
+  };
+  pump();
 };
-ACTS.upRetry = () => {
-  up.retried = true; up.failed = []; up.uploading = true; up.done = up.queue.length-1;
+ACTS.upRetry = qi => {
+  const i = +qi;
+  up.retried = true;
+  up.failed = up.failed.filter(x => x !== i);
+  up.queue[i].state = 'uploading';
   openUploadSheet();
-  setTimeout(finishUpload, 700);
+  setTimeout(() => {
+    up.queue[i].state = 'done'; up.done++;
+    if(!up.failed.length) finishUpload(); else openUploadSheet();
+  }, 650);
 };
+ACTS.upRetryAll = () => {
+  up.retried = true;
+  const pending = up.failed.slice();
+  up.failed = [];
+  pending.forEach(i => up.queue[i].state = 'uploading');
+  openUploadSheet();
+  setTimeout(() => {
+    pending.forEach(i => { up.queue[i].state = 'done'; up.done++; });
+    finishUpload();
+  }, 800);
+};
+/* A tag can disappear mid-batch if a space is deleted on the web. */
+ACTS.upStaleTags = () => snack('Some tags are no longer available — please re-select','warning');
+
 function finishUpload(){
   const n = up.queue.length;
   up.queue.forEach(p => W.photos.push({tag:up.tag, g:p.g, name:p.name}));
-  up = {tag:null, queue:[], uploading:false, done:0, failed:[]};
+  up = {tag:null, queue:[], preparing:false, uploading:false, done:0, failed:[], retried:false};
   closeSheet();
   render();
   // Reaching the server IS the trigger. The agent starts nothing and waits for
   // nothing — the analysis runs server-side and the results land on the web.
-  snack(n+' photo(s) uploaded','green','check');
+  snack(n+' photos uploaded','green','check');
 }
 ACTS.wSave = () => {
   const p = {
@@ -3007,6 +3353,8 @@ ACTS.wSave = () => {
   };
   const i = DB.properties.findIndex(x=>x.id===p.id);
   if(i>=0) DB.properties[i] = {...DB.properties[i], ...p}; else DB.properties.unshift(p);
+  if(!DB.drives[p.id]) DB.drives[p.id] = {state:'ready', files:[]};   // a new listing starts with an empty Drive
+  propTab = 'info'; driveFolder = 'All';
   go('overview', {id:p.id});
   snack('Property saved.','green','check');
 };
@@ -3016,9 +3364,25 @@ ACTS.wSave = () => {
 let descOpen = false;
 const curProp = () => DB.properties.find(p=>p.id==S.params.id) || DB.properties[0];
 
+/* ---------------------------------------------------------------------------
+   The shared "tabbed detail" pattern (1.0.10). A tab shows just its name, or
+   "Name · N" when it carries a count. Used by the property and contact screens.
+   ------------------------------------------------------------------------- */
+function detailTabs(tabs, active, actPrefix){
+  return '<div class="dtabs">' + tabs.map(t =>
+    '<button class="'+(t.k===active?'on':'')+'" data-act="'+actPrefix+':'+t.k+'">'
+    + esc(t.l) + (t.n===undefined||t.n===null ? '' : ' <span class="n">· '+t.n+'</span>')
+    + '</button>').join('') + '</div>';
+}
+
+let propTab = 'info', driveFolder = 'All', driveBusy = null, downloadsOff = false, complianceLoading = false;
+ACTS.propTab = t => { propTab = t; render(); const v = document.getElementById('view'); if(v) v.scrollTop = 0; };
+
 SCREENS.overview = {
   nav:false,
-  appbar: () => subAppBar('Overview',
+  /* 1.0.10 — the bar now carries the property's own title, not the word
+     "Overview". Only the loading and error states still say Overview. */
+  appbar: () => subAppBar(curProp().title || addr(curProp()),
     '<button class="iconbtn" data-act="editProp">'+icon('pencil',20)+'</button>'),
   render(){
     const p = curProp();
@@ -3044,17 +3408,42 @@ SCREENS.overview = {
                           : {l:'BLOCKED', c:'var(--p-property)', i:'alert-triangle'};
     const shortDesc = p.desc.length > 220 && !descOpen ? p.desc.slice(0,220)+'…' : p.desc;
 
-    return hero(p)
-      /* 2 — At a glance */
-      + '<div class="pad"><div class="card" style="margin-bottom:12px">'
+    /* ---- the five tab bodies. Copy is unchanged from the single scroll ---- */
+
+    /* INFO — spec strip, description, live preview, syndication, tour, dates */
+    const infoBody =
+        '<div class="card" style="margin-bottom:12px">'
         + '<div class="t-sub" style="line-height:1.7">'
         + [p.beds+' Beds', p.baths+' Baths', p.garages+' Garages',
            (p.floor?p.floor+' m² floor':null), (p.erf?p.erf+' m² erf':null),
            p.photos+' Photos', p.mandate+' mandate'].filter(Boolean).join(' · ')
         + '</div></div>'
+      + (p.desc ? sectionCard('Description',
+          '<div class="t-sub" style="line-height:1.65">'+esc(shortDesc)+'</div>'
+          + (p.desc.length>220 ? '<button class="linkbtn" style="margin-top:8px" data-act="toggleDesc">'
+              + (descOpen?'Show less':'Read more')+'</button>' : '')) : '')
+      + '<button class="btn2" data-act="preview" style="margin-bottom:12px">'+icon('external-link',17)+'Open Live Preview</button>'
+      + sectionCard('Where this listing is published', p.portals.length
+          ? p.portals.map(pt => '<div class="row" style="padding:9px 0;gap:10px;border-top:1px solid var(--border)">'
+              + ibox(pt.live?'world':'lock', pt.live?'var(--success)':'var(--neutral)', 32, 16)
+              + '<span class="grow"><span class="t-body" style="display:block">'+esc(pt.n)+'</span>'
+              + '<span class="t-sub" style="font-size:11.5px">'+(pt.ref?'Ref '+esc(pt.ref):'Not published')+'</span></span>'
+              + (pt.live ? statusChip('Live','var(--success)',true)
+                         : '<span class="chip" style="opacity:.6">Not published</span>')+'</div>').join('')
+          : '<div class="t-sub"><b style="color:var(--text-primary)">Not yet published to any portal</b><br>'
+            + "This listing isn't live anywhere yet — open Syndication on the desktop to publish.</div>")
+      + sectionCard('Virtual Tour', '<div class="t-sub">No virtual tour linked.</div>')
+      + sectionCard('Key dates',
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+          + [['Listed',p.listed],['Expires',p.expires],['Loaded',p.loaded],['Modified',p.modified]].map(([l,v]) =>
+            '<div><div class="eyebrow mute" style="margin-bottom:3px">'+l.toUpperCase()+'</div>'
+            + '<div class="t-body">'+esc(v||'—')+'</div></div>').join('')
+          + '</div>');
 
-      /* 3 — Compliance: the most important card in the app */
-      + '<div class="card" style="margin-bottom:12px" data-tour="compliance">'
+    /* COMPLIANCE — the same card, moved verbatim onto its own tab */
+    const complianceBody = complianceLoading
+      ? '<div style="display:grid;place-items:center;padding:44px 0"><span class="spinner"></span></div>'
+      : '<div class="card" style="margin-bottom:12px" data-tour="compliance">'
         + '<div class="row" style="margin-bottom:14px">'
           + '<span class="h-card grow">Compliance</span>'
           + statusChip(badge.l, badge.c)
@@ -3096,45 +3485,17 @@ SCREENS.overview = {
           : '<button class="btn" data-act="sendToMarket"'+(ready?'':' disabled')+' data-tour="sendMarket">'
             + icon('send',18)+'Send Authority to Market</button>'
             + (ready?'':'<div class="hint" style="text-align:center;margin-top:9px">Resolve the items above to enable sending to market.</div>'))
-      + '</div>'
+      + '</div>';
 
-      /* 4 — Rental inspections (rentals only) */
-      + (p.listing==='For Rental'
-        ? '<button class="rowbtn" style="margin-bottom:12px">'+ibox('clipboard-check','var(--info)',40,20)
-          + '<span class="grow"><span class="t-body" style="display:block">Rental Inspections</span>'
-          + '<span class="t-sub">In, out &amp; custom inspection galleries</span></span>'+icon('chevron-right',17)+'</button>'
-        : '')
-
-      /* 5 — Contacts */
-      + sectionCard('Contacts', p.sellers.length
+    /* CONTACTS — the linked contacts, the listing agents and the owner, merged */
+    const contactsBody =
+        sectionCard('Contacts', p.sellers.length
           ? p.sellers.map(s => '<div class="row" style="padding:8px 0;gap:10px">'
               + '<span class="avatar circle" style="width:32px;height:32px;font-size:11px">'+s.name.split(' ').map(w=>w[0]).slice(0,2).join('')+'</span>'
               + '<span class="grow"><span class="t-body" style="display:block">'+esc(s.name)+'</span>'
               + '<span class="t-sub">Seller</span></span>'
               + '<button class="iconbtn" data-act="unlink:'+esc(s.name)+'">'+icon('unlink',17)+'</button></div>').join('')
           : '<div class="t-sub">No contacts linked yet.</div>')
-
-      /* 6 — Description */
-      + (p.desc ? sectionCard('Description',
-          '<div class="t-sub" style="line-height:1.65">'+esc(shortDesc)+'</div>'
-          + (p.desc.length>220 ? '<button class="linkbtn" style="margin-top:8px" data-act="toggleDesc">'
-              + (descOpen?'Show less':'Read more')+'</button>' : '')) : '')
-
-      /* 7 — Live preview */
-      + '<button class="btn2" data-act="preview" style="margin-bottom:12px">'+icon('external-link',17)+'Open Live Preview</button>'
-
-      /* 8 — Syndication */
-      + sectionCard('Where this listing is published', p.portals.length
-          ? p.portals.map(pt => '<div class="row" style="padding:9px 0;gap:10px;border-top:1px solid var(--border)">'
-              + ibox(pt.live?'world':'lock', pt.live?'var(--success)':'var(--neutral)', 32, 16)
-              + '<span class="grow"><span class="t-body" style="display:block">'+esc(pt.n)+'</span>'
-              + '<span class="t-sub" style="font-size:11.5px">'+(pt.ref?'Ref '+esc(pt.ref):'Not published')+'</span></span>'
-              + (pt.live ? statusChip('Live','var(--success)',true)
-                         : '<span class="chip" style="opacity:.6">Not published</span>')+'</div>').join('')
-          : '<div class="t-sub"><b style="color:var(--text-primary)">Not yet published to any portal</b><br>'
-            + "This listing isn't live anywhere yet — open Syndication on the desktop to publish.</div>")
-
-      /* 9 — Listing agents */
       + sectionCard('Listing Agent(s)',
           '<div class="row" style="padding:6px 0;gap:10px">'
           + '<span class="avatar circle">AR</span>'
@@ -3146,26 +3507,39 @@ SCREENS.overview = {
               + '<span class="avatar circle">LK</span>'
               + '<span class="grow"><span class="t-body" style="display:block">Lindi Khumalo</span>'
               + '<span class="t-sub">Co-agent</span></span></div>' : ''))
+      + sectionCard('Owner', '<div class="t-sub">'+(p.sellers[0]?esc(p.sellers[0].name):'—')+'</div>');
 
-      /* 10, 11 — Owner + Virtual tour */
-      + sectionCard('Owner', '<div class="t-sub">'+(p.sellers[0]?esc(p.sellers[0].name):'—')+'</div>')
-      + sectionCard('Virtual Tour', '<div class="t-sub">No virtual tour linked.</div>')
+    /* INSPECTIONS — rentals only */
+    const inspectionsBody =
+        '<button class="rowbtn" style="margin-bottom:12px">'+ibox('clipboard-check','var(--info)',40,20)
+        + '<span class="grow"><span class="t-body" style="display:block">Rental Inspections</span>'
+        + '<span class="t-sub">In, out &amp; custom inspection galleries</span></span>'+icon('chevron-right',17)+'</button>';
 
-      /* 12 — Key dates (missing values render as "—", never null) */
-      + sectionCard('Key dates',
-          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
-          + [['Listed',p.listed],['Expires',p.expires],['Loaded',p.loaded],['Modified',p.modified]].map(([l,v]) =>
-            '<div><div class="eyebrow mute" style="margin-bottom:3px">'+l.toUpperCase()+'</div>'
-            + '<div class="t-body">'+esc(v||'—')+'</div></div>').join('')
-          + '</div>')
-      + '<div style="height:24px"></div></div>';
+    const tabs = [
+      {k:'info', l:'Info'},
+      {k:'compliance', l:'Compliance'},
+      {k:'contacts', l:'Contacts', n: p.sellers.length + (p.mine?1:2) + 1},
+      {k:'drive', l:'Drive', n: (DRIVES[p.id]||[]).length},
+    ];
+    if(p.listing==='For Rental') tabs.push({k:'inspections', l:'Inspections'});
+    const active = tabs.some(t=>t.k===propTab) ? propTab : 'info';
+
+    const body = active==='compliance' ? complianceBody
+               : active==='contacts'   ? contactsBody
+               : active==='drive'      ? driveView(p)
+               : active==='inspections'? inspectionsBody
+               : infoBody;
+
+    return hero(p)
+      + detailTabs(tabs, active, 'propTab')
+      + '<div class="pad" style="padding-top:12px">' + body + '<div style="height:24px"></div></div>';
   }
 };
 function hero(p){
   return '<div style="position:relative;height:220px;flex:none" class="g'+(p.g%8)+'">'
     + '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.35),rgba(0,0,0,.72))"></div>'
     + '<div style="position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.18)">'+icon('building-skyscraper',56)+'</div>'
-    + '<div style="position:absolute;top:12px;left:16px">'+statusChip(p.status, statusColour(p.status), true)+'</div>'
+    + '<div style="position:absolute;top:12px;left:16px">'+statusChip(labelCase(p.status), statusColour(p.status), true)+'</div>'
     + '<div style="position:absolute;top:12px;right:16px"><span class="chip" style="background:rgba(0,0,0,.45);color:#fff">'+p.days+' days on market</span></div>'
     + '<div style="position:absolute;bottom:14px;left:16px;right:16px">'
       + '<div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px;margin-bottom:2px" class="clamp2">'+esc(p.title||addr(p))+'</div>'
@@ -3177,6 +3551,118 @@ function sectionCard(title, inner){
   return '<div class="card" style="margin-bottom:12px">'
     + '<div class="h-row" style="margin-bottom:11px">'+esc(title)+'</div>'+inner+'</div>';
 }
+
+/* ============================================================================
+   16b. THE PROPERTY DRIVE (1.0.10) — read-only. Every file filed against this
+   listing on the web, with folder chips and per-row download. Uploading,
+   tagging and deleting are web-only; this tab only views and downloads.
+   The card has no title heading — the "Drive" tab label is its name.
+   ========================================================================== */
+const FILE_KIND = {
+  pdf:  {i:'file-type-pdf', c:'var(--danger)'},
+  image:{i:'photo',         c:'var(--p-contact)'},
+  doc:  {i:'file-text',     c:'var(--info)'},
+  sheet:{i:'table',         c:'var(--success)'},
+};
+const fileKind = k => FILE_KIND[k] || {i:'file-text', c:'var(--neutral)'};
+
+function driveView(p){
+  const d = DB.drives[p.id];
+
+  if(d.state === 'loading')
+    return '<div style="display:grid;place-items:center;padding:44px 0"><span class="spinner"></span></div>';
+
+  if(d.state === 'error')
+    return '<div style="text-align:center;padding:34px 20px">'
+      + '<div style="display:flex;justify-content:center;margin-bottom:14px">'+ibox('cloud-off','var(--neutral)',72,32)+'</div>'
+      + '<div class="h-card" style="margin-bottom:14px">Couldn\'t load files.</div>'
+      + '<button class="btn2 sm" data-act="driveRetry" style="max-width:170px;margin:0 auto">'+icon('refresh',17)+'Retry</button></div>';
+
+  if(!d.files.length)
+    return '<div class="card"><div style="text-align:center;padding:26px 0">'
+      + '<div style="display:flex;justify-content:center;margin-bottom:12px">'+ibox('folder','var(--neutral)',72,32)+'</div>'
+      + '<div class="t-sub">No files on this property yet.</div></div></div>';
+
+  /* Folder chips: All first with the total, then one per folder with its count.
+     A count of 0 is hidden. "Unfiled" only appears if the server sends one. */
+  const counts = {};
+  const order = [];
+  d.files.forEach(f => {
+    const k = f.folder || 'Unfiled';
+    if(counts[k]===undefined){ counts[k]=0; order.push(k); }
+    counts[k]++;
+  });
+  /* A folder that holds nothing shows the empty-folder state rather than
+     silently snapping back to All — those two read very differently. */
+  const sel = driveFolder;
+  const shown = sel === 'All' ? d.files : d.files.filter(f => (f.folder||'Unfiled') === sel);
+
+  const chips = '<div class="drive-chips">'
+    + '<button class="chip'+(sel==='All'?' sel':'')+'" data-act="driveFolder:All">All <span style="opacity:.7">'+d.files.length+'</span></button>'
+    + order.filter(k=>counts[k]>0).map(k =>
+        '<button class="chip'+(sel===k?' sel':'')+'" data-act="driveFolder:'+esc(k)+'">'
+        + esc(k)+' <span style="opacity:.7">'+counts[k]+'</span></button>').join('')
+    + '</div>';
+
+  const rows = shown.length
+    ? shown.map(f => {
+        const k = fileKind(f.kind);
+        const busy = driveBusy === f.id;
+        /* size · uploaded-by · relative-time, middle dots, blanks dropped */
+        const meta = [f.size, f.by, f.ago].filter(Boolean).join(' · ');
+        const tip = downloadsOff ? 'Downloads are switched off for your account' : null;
+        return '<div class="drive-row">'
+          + ibox(k.i, k.c, 40, 20)
+          + '<span class="grow" style="min-width:0">'
+            + '<span class="t-body trunc" style="display:block">'+esc(f.name)+'</span>'
+            + '<span class="t-sub trunc" style="display:block;font-size:11.5px;margin-top:3px">'+esc(meta)+'</span></span>'
+          + (busy
+              ? '<span class="drive-act"><span class="spinner sm"></span></span>'
+              : '<button class="drive-act" data-act="driveDownload:'+f.id+'"'+(downloadsOff?' disabled':'')
+                + ' title="'+esc(tip||'Download')+'" aria-label="'+esc(tip||'Download')+'">'+icon('download',18)+'</button>')
+          + '<button class="drive-act" data-act="driveShare:'+f.id+'"'+(downloadsOff?' disabled':'')
+            + ' title="'+esc(tip||'Share')+'" aria-label="'+esc(tip||'Share')+'">'+icon('share',18)+'</button>'
+          + '</div>';
+      }).join('')
+    : '<div style="text-align:center;padding:26px 0"><div class="t-sub">No files in this folder.</div></div>';
+
+  return '<div class="card" style="margin-bottom:12px">'+chips+rows+'</div>'
+    + '<div class="t-sub" style="font-size:11.5px;line-height:1.6;padding:0 2px">'
+    + 'Files are added, tagged and deleted on the CoreX website. This tab views and downloads them.</div>';
+}
+ACTS.driveFolder = k => { driveFolder = k; render(); };
+ACTS.driveRetry = () => {
+  const p = curProp();
+  DB.drives[p.id].state = 'loading'; render();
+  setTimeout(() => { DB.drives[p.id].state = 'ready'; render(); }, 800);
+};
+const driveFile = id => (DB.drives[curProp().id].files||[]).find(f => f.id === id);
+ACTS.driveDownload = id => {
+  driveBusy = id; render();
+  setTimeout(() => {
+    driveBusy = null;
+    const f = driveFile(id);
+    render();
+    dialog({
+      title:'Download complete', icon:'download', iconColour:'var(--success)',
+      body: esc(f.name) + '<br>Saved to Downloads.',
+      cancel:'Done', confirm:'Open', confirmAct:'driveOpen:'+id
+    });
+  }, 900);
+};
+ACTS.driveOpen = id => {
+  const f = driveFile(id);
+  closeDialog();
+  /* Nothing on the device handles these two in the demo. */
+  if(/\.(xlsx|docx)$/i.test(f.name)) snack('No app on this device can open '+f.name+'.','warning');
+  else snack('Opening '+f.name+'…','','file-text');
+};
+ACTS.driveShare = id => snack('Share sheet opens for '+driveFile(id).name+'…','','share');
+ACTS.driveToggleDownloads = () => {
+  downloadsOff = !downloadsOff; render();
+  snack(downloadsOff ? 'Downloads are now switched off for this account.' : 'Downloads re-enabled.');
+};
+ACTS.driveForceError = () => { DB.drives[curProp().id].state = 'error'; propTab='drive'; render(); };
 ACTS.toggleDesc = () => { descOpen = !descOpen; render(); };
 ACTS.editProp = () => { const p = curProp(); startWizard(p); };
 ACTS.preview = () => snack('Opens the public listing page in a browser.','','external-link');
@@ -3230,7 +3716,7 @@ SCREENS.contacts = {
             + '<span class="grow"><span class="h-row" style="display:block">'+esc(fullName(c))+'</span>'
             + '<span class="t-sub">'+esc(c.phone || 'No phone')+'</span></span>'
             + '<span class="row" style="gap:6px">'
-              + (c.type ? '<span class="chip accent">'+esc(c.type)+'</span>' : '')
+              + (c.type ? '<span class="chip accent">'+esc(labelCase(c.type))+'</span>' : '')
               + (c.wa > 0 ? '<span class="chip" style="background:rgba(34,197,94,.14);color:var(--success)">'
                   + icon('brand-whatsapp',12)+c.wa+'</span>' : '')
             + '</span></button>').join('')+'</div>'
@@ -3317,6 +3803,9 @@ ACTS.openDupe = id => { closeDialog(); go('contact', {id:+id}); };
 
 /* ---- Contact detail ----------------------------------------------------- */
 const curContact = () => DB.contacts.find(c=>c.id==S.params.id) || DB.contacts[0];
+let contactTab = 'details';
+ACTS.contactTab = t => { contactTab = t; render(); const v = document.getElementById('view'); if(v) v.scrollTop = 0; };
+
 SCREENS.contact = {
   nav:false,
   appbar: () => subAppBar(fullName(curContact()),
@@ -3328,48 +3817,73 @@ SCREENS.contact = {
     const row = (i,l,v) => '<div class="row" style="padding:8px 0;gap:10px">'
       + '<span style="color:var(--text-tertiary)">'+icon(i,17)+'</span>'
       + '<span class="t-sub grow" style="color:var(--text-primary);font-weight:600">'+esc(v||'—')+'</span></div>';
-    return '<div class="pad">'
-      + '<div class="card" style="margin-bottom:12px">'
-        + '<div class="row" style="gap:12px;margin-bottom:12px">'
-          + '<span class="avatar circle s44">'+initials(c)+'</span>'
-          + '<span class="grow"><span class="h-card" style="display:block">'+esc(fullName(c))+'</span>'
-          + (c.type?'<span class="chip accent" style="margin-top:5px">'+esc(c.type)+'</span>':'')+'</span>'
-        + '</div>'
-        + row('phone','Phone',c.phone) + row('mail','Email',c.email) + row('id','ID Number',c.idnum)
-        + (c.wa > 0
-          ? '<div class="row" style="gap:8px;margin-top:8px">'
-            + '<span class="chip" style="background:rgba(34,197,94,.14);color:var(--success)">'+icon('brand-whatsapp',12)+'WhatsApp · '+c.wa+'</span>'
-            + '<span class="t-sub" style="font-size:11.5px">last '+esc(c.waLast)+'</span></div>'
-          : '')
-      + '</div>'
-      + '<button class="btn green" data-act="whatsapp:'+c.id+'" data-tour="waBtn" style="margin-bottom:10px">'
+
+    /* A contact with nothing captured used to render a blank card, which read
+       as a loading failure. 1.0.10 says so out loud instead. */
+    const nothingCaptured = !c.phone && !c.email && !c.idnum && !c.wa;
+
+    const detailsBody =
+        '<button class="btn green" data-act="whatsapp:'+c.id+'" data-tour="waBtn" style="margin-bottom:10px">'
         + icon('brand-whatsapp',19)+'WhatsApp</button>'
       + '<div class="row" style="gap:10px;margin-bottom:12px">'
         + '<button class="btn2 sm" data-act="addMatch:'+c.id+'">'+icon('plus',16)+'Match</button>'
         + '<button class="btn2 sm" data-act="addListing:'+c.id+'">'+icon('plus',16)+'Listing</button>'
       + '</div>'
+      + '<div class="card" style="margin-bottom:12px">'
+        + (nothingCaptured
+            ? '<div class="t-sub" style="line-height:1.6">No phone, email or ID captured yet. Tap Edit to add them.</div>'
+            : row('phone','Phone',c.phone) + row('mail','Email',c.email) + row('id','ID Number',c.idnum)
+              + (c.wa > 0
+                ? '<div class="row" style="gap:8px;margin-top:8px">'
+                  + '<span class="chip" style="background:rgba(34,197,94,.14);color:var(--success)">'+icon('brand-whatsapp',12)+'WhatsApp · '+c.wa+'</span>'
+                  + '<span class="t-sub" style="font-size:11.5px">last '+esc(c.waLast)+'</span></div>'
+                : ''))
+      + '</div>'
       + '<button class="rowbtn" data-act="go:compliance" style="margin-bottom:12px">'
         + ibox('shield-check','var(--info)',40,20)
         + '<span class="grow"><span class="t-body" style="display:block">Compliance</span>'
-        + '<span class="t-sub">Consent · Documents · FICA</span></span>'+icon('chevron-right',17)+'</button>'
-      + '<div class="sec-head"><span class="h-sec">Matches</span></div>'
-      + (ms.length
-        ? '<div class="stack">'+ms.map(m =>
-            '<button class="rowbtn" data-act="openMatch:'+m.id+'" style="align-items:flex-start">'
-            + '<span class="grow"><span class="row" style="gap:7px;margin-bottom:5px">'
-              + statusChip(m.status, statusColour(m.status), true)+'</span>'
-            + '<span class="t-sub" style="font-size:12px">'+esc(m.listing)+' · '+esc(m.suburbs.join(', '))
-              + ' · '+money(m.min)+' – '+money(m.max)+'</span></span>'
-            + icon('chevron-right',17)+'</button>').join('')+'</div>'
-        : empty('heart-handshake','No matches yet','Tap + Match to capture buyer or tenant criteria.'))
-      + '<div class="sec-head"><span class="h-sec">Linked Properties</span></div>'
-      + (props.length
-        ? '<div class="stack">'+props.map(propCard).join('')+'</div>'
-        : empty('building-skyscraper','No linked listings','Tap + Listing to create a property tied to this contact.'))
-      + '<div style="height:24px"></div></div>';
+        + '<span class="t-sub">Consent · Documents · FICA</span></span>'+icon('chevron-right',17)+'</button>';
+
+    const matchesBody = ms.length
+      ? '<div class="stack">'+ms.map(m =>
+          '<button class="rowbtn" data-act="openMatch:'+m.id+'" style="align-items:flex-start">'
+          + '<span class="grow"><span class="row" style="gap:7px;margin-bottom:5px">'
+            + statusChip(labelCase(m.status), statusColour(m.status), true)+'</span>'
+          + '<span class="t-sub" style="font-size:12px">'+esc(m.listing)+' · '+esc(m.suburbs.join(', '))
+            + ' · '+money(m.min)+' – '+money(m.max)+'</span></span>'
+          + icon('chevron-right',17)+'</button>').join('')+'</div>'
+      : empty('heart-handshake','No matches yet','Tap + Match to capture buyer or tenant criteria.');
+
+    /* The tab is called Properties; the empty state still says listings. */
+    const propsBody = props.length
+      ? '<div class="stack">'+props.map(propCard).join('')+'</div>'
+      : empty('building-skyscraper','No linked listings','Tap + Listing to create a property tied to this contact.');
+
+    const tabs = [
+      {k:'details', l:'Details'},
+      {k:'matches', l:'Matches', n:ms.length},
+      {k:'properties', l:'Properties', n:props.length},
+    ];
+    const active = tabs.some(t=>t.k===contactTab) ? contactTab : 'details';
+    const body = active==='matches' ? matchesBody : active==='properties' ? propsBody : detailsBody;
+
+    /* The hero deliberately does NOT repeat the name — the app bar has it,
+       with the edit pencil. It carries the type pill and a one-line reach
+       summary joining phone and email with a middle dot. */
+    const reach = [c.phone, c.email].filter(Boolean).join(' · ');
+    const heroBlock = '<div style="display:flex;align-items:center;gap:14px;padding:16px;flex:none">'
+      + '<span class="avatar circle s44" style="width:64px;height:64px;font-size:22px">'+initials(c)+'</span>'
+      + '<span class="grow" style="min-width:0">'
+        + (c.type?'<span class="chip accent">'+esc(labelCase(c.type))+'</span>':'')
+        + '<span class="t-sub trunc" style="display:block;margin-top:8px">'+esc(reach || 'No contact details captured')+'</span>'
+      + '</span></div>';
+
+    return heroBlock
+      + detailTabs(tabs, active, 'contactTab')
+      + '<div class="pad" style="padding-top:12px">' + body + '<div style="height:24px"></div></div>';
   }
 };
-ACTS.openContact = id => go('contact', {id:+id});
+ACTS.openContact = id => { contactTab = 'details'; go('contact', {id:+id}); };
 /* Every WhatsApp tap is logged server-side and increments the counter. */
 ACTS.whatsapp = id => {
   const c = DB.contacts.find(x=>x.id==id);
@@ -3553,7 +4067,7 @@ SCREENS.matches = {
               + ibox('heart-handshake','var(--accent)',36,18)
               + '<span class="grow" style="text-align:left"><span class="h-row" style="display:block">'+esc(m.contact)+'</span>'
               + '<span class="t-sub">'+esc(m.name)+'</span></span>'
-              + statusChip(m.status, statusColour(m.status), true)+'</span>'
+              + statusChip(labelCase(m.status), statusColour(m.status), true)+'</span>'
             + '<span class="t-sub" style="font-size:12px">'+esc(m.listing)+' · '+esc(m.suburbs.join(', '))
               + ' · '+money(m.min)+' – '+money(m.max)+'</span>'
             + '<span class="row" style="gap:6px">'
@@ -3587,7 +4101,7 @@ SCREENS.match = {
           + '<span class="avatar circle s44">'+m.contact.split(' ').map(w=>w[0]).join('')+'</span>'
           + '<span class="grow"><span class="h-card" style="display:block">'+esc(m.contact)+'</span>'
           + '<span class="t-sub">'+esc(m.name)+'</span></span>'
-          + statusChip(m.status, statusColour(m.status), true)+'</div>'
+          + statusChip(labelCase(m.status), statusColour(m.status), true)+'</div>'
         + '<div class="t-sub" style="line-height:1.7">'+esc(m.listing)+' · '+esc(m.type)+'<br>'
           + esc(m.suburbs.join(', '))+'<br>'
           + '<span class="money">'+money(m.min)+' – '+money(m.max)+'</span><br>'
@@ -3872,10 +4386,14 @@ SCREENS.me = {
       + '<button class="rowbtn" data-act="go:settings" style="margin-top:10px">'+ibox('settings','var(--accent)',36,18)
         + '<span class="t-body grow" style="text-align:left">Settings</span>'+icon('chevron-right',17)+'</button>'
       + '<button class="btn2 red" data-act="signout" style="margin-top:16px">'+icon('logout',18)+'Sign out</button>'
+      /* 1.0.10 — deliberately quieter than Sign out, and sitting directly under it. */
+      + '<button data-act="deleteAccount" style="display:flex;align-items:center;justify-content:center;gap:7px;'
+        + 'margin:14px auto 0;padding:8px 10px;color:var(--danger);font-size:13px;font-weight:700;background:none">'
+        + icon('trash',16)+'Delete my account</button>'
       + '<div style="height:24px"></div></div>';
   }
 };
-let settings = {quiet:false, reminder:'15 min', biometric:true};
+let settings = {quiet:false, reminder:'15 min', biometric:true, biometricAvailable:true};
 SCREENS.settings = {
   nav:false,
   appbar: () => subAppBar('Settings'),
@@ -3891,14 +4409,111 @@ SCREENS.settings = {
           + '<span class="grow"><span class="t-body" style="display:block">Event reminder</span>'
           + '<span class="t-sub">How long before an event you get pinged</span></span>'
           + '<span class="chip accent">'+settings.reminder+'</span></button>')
-      + sec('SECURITY', switchRow('Biometric sign-in','Use Face ID or a fingerprint', settings.biometric, 'toggleBio'))
+      + sec('SECURITY', settings.biometricAvailable
+          ? switchRow('Fingerprint sign-in','Unlock CoreX with your fingerprint instead of your password', settings.biometric, 'toggleBio')
+          : switchRow('Fingerprint not available','This device has no fingerprint sensor enrolled', false, 'bioUnavailable'))
+      /* 1.0.10 — an account must be deletable from inside the app that made it.
+         The agent gets a plain Account section; the client gets a louder danger
+         zone, because for them the deletion really is permanent. */
+      + (S.side === 'agent'
+          ? sec('ACCOUNT',
+              '<button class="row" data-act="deleteAccount" style="width:100%;padding:10px 0;text-align:left">'
+              + '<span style="color:var(--danger);display:flex">'+icon('trash',19)+'</span>'
+              + '<span class="t-body grow" style="color:var(--danger);margin-left:11px">Delete my account</span>'
+              + '<span style="color:var(--danger);display:flex">'+icon('chevron-right',17)+'</span></button>')
+          : '<div class="divider" style="margin:26px 0 0"></div>'
+            + '<div class="eyebrow" style="margin:18px 0 9px;color:var(--danger)">DANGER ZONE</div>'
+            + '<div class="card">'
+              + '<button class="row" data-act="deleteAccount" style="width:100%;padding:10px 0;text-align:left">'
+              + '<span style="color:var(--danger);display:flex">'+icon('trash',19)+'</span>'
+              + '<span class="t-body grow" style="color:var(--danger);margin-left:11px">Delete account</span>'
+              + '<span style="color:var(--danger);display:flex">'+icon('chevron-right',17)+'</span></button>'
+              + '<div class="t-sub" style="margin-top:6px;line-height:1.55;font-size:12px">Permanently deletes your CoreX account and signs you out of every device. This cannot be undone.</div>'
+            + '</div>')
       + sec('ABOUT', '<div class="row" style="padding:6px 0"><span class="t-sub grow">Version</span>'
-          + '<span class="t-body">1.0.0</span></div>')
+          + '<span class="t-body">'+APP.label+'</span></div>')
       + '<div style="height:24px"></div></div>';
   }
 };
+/* ============================================================================
+   21b. DELETE ACCOUNT (1.0.10) — a two-step destructive flow, required by both
+   app stores. Step A is a centred confirm dialog; step B is a password screen
+   on the auth scaffold. The agent flow removes APP SIGN-IN ACCESS only — their
+   CoreX business record (listings, contacts, deals) is untouched, and access is
+   restored on the web. The client flow really is permanent.
+   ========================================================================== */
+let del = {pw:'', show:false, err:'', validator:false, busy:false};
+const DEL_ERR = {
+  net:'Could not reach the server. Check your connection.',
+  expired:'Your session has expired. Sign in again to delete your account.',
+  rate:'Too many attempts. Please try again in a minute.',
+  agent:'Incorrect password.',
+  client:'Password is incorrect.'
+};
+
+ACTS.deleteAccount = () => dialog(S.side === 'client'
+  ? {title:'Delete your account?', icon:'trash',
+     body:'Your account will be permanently deleted and you will be signed out of every device. This cannot be undone.',
+     cancel:'Cancel', confirm:'Delete', confirmAct:'deleteConfirm', destructive:true}
+  : {title:'Delete your account?', icon:'trash',
+     body:'Your CoreX app account will be deleted and you will be signed out of this device.',
+     cancel:'Cancel', confirm:'Delete', confirmAct:'deleteConfirm', destructive:true});
+
+ACTS.deleteConfirm = () => {
+  del = {pw:'', show:false, err:'', validator:false, busy:false};
+  closeDialog();
+  go('deleteAccount');
+};
+
+SCREENS.deleteAccount = {
+  chromeless:true, nav:false,
+  render(){
+    const isClient = S.side === 'client';
+    const sub = isClient
+      ? 'Confirm your password to permanently delete your account. Your account will be deleted immediately and you will be signed out of every device. This cannot be undone.'
+      : 'Enter your password to delete your CoreX app account. You will be signed out on this and every other device immediately.';
+    return '<div class="pad" style="flex:1;display:flex;flex-direction:column;max-width:380px;margin:0 auto;width:100%;padding-top:8px">'
+      + '<button class="iconbtn" data-act="back" style="margin-bottom:16px">'+icon('arrow-left',21)+'</button>'
+      + '<div style="font-size:30px;font-weight:800;letter-spacing:-.6px;margin-bottom:10px">Delete account</div>'
+      + '<div class="t-sub" style="margin-bottom:26px;line-height:1.6">'+sub+'</div>'
+      + (del.err
+          ? '<div class="row" style="gap:9px;align-items:flex-start;margin-bottom:16px;color:var(--danger)">'
+            + icon('alert-triangle',18)
+            + '<span style="font-size:13px;font-weight:600;line-height:1.5">'+esc(del.err)+'</span></div>'
+          : '')
+      + field('Password',
+          '<span class="inp-wrap"><span class="pre">'+icon('lock',19)+'</span>'
+          + '<input class="inp'+(del.validator?' err':'')+'" id="delPw" type="'+(del.show?'text':'password')+'" placeholder="Password" value="'+esc(del.pw)+'">'
+          + '<button class="suf" data-act="delPwToggle">'+icon(del.show?'eye-off':'eye',19)+'</button></span>',
+          {err: del.validator ? 'Enter your password' : ''})
+      + '<button class="btn danger" data-act="delSubmit"'+(del.busy?' disabled':'')+' style="margin-top:4px">'
+        + (del.busy ? 'Deleting…' : (isClient ? 'Delete account' : 'Delete my account')) + '</button>'
+      + '<button class="btn2" data-act="back" style="margin-top:10px">Cancel</button>'
+      + '<div style="height:24px"></div></div>';
+  }
+};
+function readDel(){ const e = document.getElementById('delPw'); if(e) del.pw = e.value; }
+ACTS.delPwToggle = () => { readDel(); del.show = !del.show; render(); };
+ACTS.delErr = k => { readDel(); del.err = DEL_ERR[k]; del.validator=false; render(); };
+ACTS.delSubmit = () => {
+  readDel();
+  if(!del.pw){ del.validator = true; del.err=''; render(); return; }
+  del.busy = true; del.err=''; del.validator=false; render();
+  setTimeout(() => {
+    del.busy = false;
+    loginState = freshLogin();
+    loginState.deleted = true;
+    settings.biometric = false;      // the enrolled session goes with the account
+    bioOffered = true;
+    S.side = 'agent'; S.stack = [];
+    go('login');
+    snack('Your account has been deleted.','green','circle-check');
+  }, 800);
+};
+
 ACTS.toggleQuiet = () => { settings.quiet = !settings.quiet; render(); };
 ACTS.toggleBio = () => { settings.biometric = !settings.biometric; render(); };
+ACTS.bioUnavailable = () => snack('This device has no fingerprint sensor enrolled.', 'warning');
 ACTS.reminderPick = () => sheet({title:'Event reminder', body:()=>
   '<div class="stack" style="padding-bottom:10px">'
   + ['5 min','15 min','30 min','1 hour','1 day'].map(r =>
@@ -3955,13 +4570,44 @@ SCREENS.qr = {
   }
 };
 ACTS.qrShare = () => snack('Share sheet opens — WhatsApp, email, AirDrop…','','share');
-ACTS.qrSave = () => snack('QR saved to your photos.','green','download');
+/* 1.0.10 — Save used to be silent, so people tapped it three times. It now
+   confirms, and Android saves to Downloads rather than the gallery. */
+let qrPlatform = 'android', qrReady = true;
+ACTS.qrSave = () => {
+  if (!qrReady) return snack('The QR image hasn\'t finished loading yet.','warning');
+  qrPlatform === 'ios'
+    ? snack('Saved to Photos','green','download')
+    : snack('corex-qr.png saved to Downloads','green','download');
+};
+ACTS.qrPlatform = p => { qrPlatform = p; qrReady = true; render(); };
+ACTS.qrNotReady = () => { qrReady = false; render(); };
+ACTS.qrFail = () => snack('Could not save image: no storage permission','warning');
 /* ============================================================================
    22. SCREEN — Ellie (push-to-talk). Voice-to-ACTION, not a chatbot.
    ========================================================================== */
-let ellie = {state:'idle', transcript:null, lastEventId:null};
+/* mic: 'prompt' (never asked / denied once) | 'blocked' (permanently denied) | 'granted' */
+let ellie = {state:'idle', transcript:null, lastEventId:null, mic:'prompt'};
 const ELLIE_STATUS = {idle:'Hold the mic and tell Ellie what to do', recording:'Listening…', sending:'Thinking…'};
 const ELLIE_CAPTION = {idle:'Hold to talk', recording:'Release to send', sending:'Sending to Ellie…'};
+
+/* The permission gate (1.0.10). Ellie gained no new powers — she still only
+   books a calendar event — but she now has to ask for the microphone first,
+   and the FIRST press only asks. You press again once access is granted. */
+ACTS.micAsk = () => {
+  if(ellie.mic === 'blocked'){
+    snack('Microphone access is off for CoreX. Turn it on in Settings.','amber','microphone-off');
+    return;
+  }
+  ellie.mic = 'granted';
+  render();
+  snack('Microphone on — hold the mic and speak.','green','microphone');
+};
+ACTS.micState = s => {
+  ellie.mic = s; render();
+  if(s === 'prompt')  snack('Ellie needs the microphone to hear you.','amber','microphone-off');
+  if(s === 'blocked') snack('Microphone access is off for CoreX. Turn it on in Settings.','amber','microphone-off');
+};
+ACTS.micFail = () => snack("Couldn't start recording — check nothing else is using the mic.",'amber','microphone-off');
 
 SCREENS.ellie = {
   appbar: () => '<header class="appbar">'
@@ -3969,21 +4615,31 @@ SCREENS.ellie = {
     + '<span class="grow"></span></header>',
   render(){
     const rec = ellie.state==='recording';
+    const granted = ellie.mic === 'granted';
+    const status = granted ? ELLIE_STATUS[ellie.state] : 'Ellie needs your microphone to hear you';
+    const hint = granted
+      ? 'Try: "Book a viewing with John at 12 Beach Road tomorrow at 11am"'
+      : (ellie.mic === 'blocked'
+          ? 'Turn on Microphone for CoreX in Settings, then come back.'
+          : 'Tap the mic to allow access.');
+    const caption = granted ? ELLIE_CAPTION[ellie.state]
+      : (ellie.mic === 'blocked' ? 'Open Settings' : 'Tap to enable');
     return '<div class="pad" style="flex:1;display:flex;flex-direction:column">'
       + '<div class="row" style="gap:9px;margin-bottom:6px">'
         + '<span class="h-screen">Ellie</span>'+aiBadge()+'</div>'
-      + '<div style="font-size:15px;color:var(--text-secondary);margin-bottom:6px">'+ELLIE_STATUS[ellie.state]+'</div>'
+      + '<div style="font-size:15px;color:var(--text-secondary);margin-bottom:6px">'+esc(status)+'</div>'
       + '<div style="font-size:12px;font-style:italic;color:var(--text-tertiary);line-height:1.5">'
-        + 'Try: "Book a viewing with John at 12 Beach Road tomorrow at 11am"</div>'
+        + esc(hint)+'</div>'
       + '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:280px">'
-        + '<button id="mic" style="width:140px;height:140px;border-radius:99px;display:grid;place-items:center;color:#fff;'
+        + '<button id="mic"'+(granted?'':' data-act="micAsk"')+' style="width:140px;height:140px;border-radius:99px;display:grid;place-items:center;color:#fff;'
           + 'background:'+(rec ? 'linear-gradient(160deg,#E53935,#B71C1C)' : 'linear-gradient(160deg,var(--accent-lite),var(--accent-dark))')+';'
           + 'box-shadow:0 20px 50px -14px '+(rec?'rgba(229,57,53,.5)':'var(--accent-glow)')+';'
+          + (granted?'':'opacity:.75;')
           + (rec?'animation:pulse .9s ease-in-out infinite;':'')+'touch-action:none;user-select:none" data-tour="mic">'
-          + icon(ellie.state==='sending'?'robot':'microphone', 52, 1.8)
+          + icon(!granted ? 'microphone-off' : (ellie.state==='sending'?'robot':'microphone'), 52, 1.8)
         + '</button>'
         + '<style>@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 20px 50px -14px rgba(229,57,53,.5)}50%{transform:scale(1.1);box-shadow:0 20px 70px -10px rgba(229,57,53,.75)}}</style>'
-        + '<div style="font-size:13px;font-weight:600;color:var(--text-secondary)">'+ELLIE_CAPTION[ellie.state]+'</div>'
+        + '<div style="font-size:13px;font-weight:600;color:var(--text-secondary)">'+esc(caption)+'</div>'
       + '</div>'
       + (ellie.transcript
         ? '<div class="card accent" style="margin-bottom:8px">'
@@ -3995,6 +4651,7 @@ SCREENS.ellie = {
   after(){
     const mic = document.getElementById('mic');
     if(!mic) return;
+    if(ellie.mic !== 'granted') return;   // the tap handler asks; it never records
     let t0 = 0;
     const start = e => {
       e.preventDefault();
@@ -4339,7 +4996,35 @@ const TOUR = [
       run:()=>{ S.screen='login'; render(true); },
       html: '<p>For the rest of the tour you do not need to type anything. The two buttons at the bottom of the login screen drop you straight into either side.</p>'
         + T.try('Tap <strong>Sign in as Agent</strong>, then hit Next up here to keep going.')
-        + '<p>The <strong>Scan agent QR</strong> button is the other way in — a prospect scans their agent\'s QR code and signs up as that agent\'s client. We come back to that at the end; it is the growth engine of the whole product.</p>' },
+        + '<p>The <strong>Create your account</strong> button is the other way in — a prospect scans their agent\'s QR code and signs up as that agent\'s client. It used to read "Scan agent QR"; 1.0.10 reworded it so App Review (and clients) can see there is a way to make an account from this screen. We come back to it at the end; it is the growth engine of the whole product.</p>' },
+
+    { t:'Fingerprint sign-in',
+      run:()=>{ S.screen='login'; S.stack=[]; loginState=freshLogin(); settings.biometric=false; settings.biometricAvailable=true; bioOffered=false; render(true); setTimeout(()=>ACTS.bioOffer(), 350); },
+      html: '<p>New in 1.0.10. After your <strong>first successful password sign-in</strong>, the app offers once to turn on fingerprint unlock — and only once.</p>'
+        + T.callout('Use your fingerprint to sign in?', 'Unlock CoreX with your fingerprint next time instead of typing your password.<br><br>[ Not now ]&nbsp;&nbsp;[ Enable ]')
+        + '<p>Say Enable and a secondary <strong>Unlock with fingerprint</strong> button appears on the login screen from then on. If enrolment fails, you get a snackbar — <em>\"Biometric sign-in wasn\'t enabled. You can turn it on in Settings.\"</em> — and nothing breaks.</p>'
+        + '<p>In <strong>Settings → Security</strong> the row is now called <strong>Fingerprint sign-in</strong>, or <strong>Fingerprint not available</strong> on a device with no sensor. It used to say "Biometric sign-in".</p>'
+        + T.callout('What people get wrong', 'Fingerprint unlock re-uses a session that already lives on the device. If that session is gone — new phone, cleared data, a long absence — the login screen says: <em>\"Sign in with your password once to switch fingerprint sign-in back on — this device doesn\'t have your session any more.\"</em> That is not a bug. Sign in with the password once and it re-arms.', 'warn')
+        + T.try('Press <strong>Enable</strong>, then look at the login screen for the new unlock button.') },
+  ]},
+
+{ title:'Keeping the app up to date',
+  steps:[
+    { t:'The blocking gate',
+      run:()=>{ S.stack=[]; ACTS.forceUpdateOn(); },
+      html: '<p>On launch and on <em>every</em> resume, the app asks the server whether the installed build is still supported. If it is below the minimum, this screen replaces the entire app. No back button, no dismiss — on Android the system back button is swallowed.</p>'
+        + '<p>It appears <strong>before the login screen</strong>, so a stale build cannot even reach your credentials.</p>'
+        + T.callout('It fails open', 'The gate is driven by a server <code>min_build</code>. If the check errors, times out, or no update URL is configured for the platform, you are let straight through. A broken config must never lock an agency out of their own app. Once it does latch on, it stays on for the session — it never flickers off mid-use.')
+        + '<p>The line at the bottom — <strong>Installed: ' + '1.0.10 (18)' + '</strong> — is the version name and the build number. Support asks for that line, because <code>min_build</code> compares against the number in brackets, not the dotted version.</p>'
+        + '<p>An operator can replace the body text with a custom message during an incident. The default reads: <em>\"This version of CoreX is no longer supported. Update to the latest version to carry on.\"</em></p>'
+        + T.try('<strong>Update now</strong> is live — it opens the real CoreX OS listing on Google Play in a new tab. Press <strong>Next</strong> up here to leave the gate.') },
+
+    { t:'The optional nudge',
+      run:()=>{ S.forceUpdate=false; enterApp('agent'); updateSnoozedFor=0; setTimeout(()=>{ if(S.screen!=='login') dialog({title:'Update available', icon:'system-update', iconColour:'var(--accent)', body:'CoreX '+APP.latestVersion+' is ready to install. Update to get the latest fixes and features.<div class=\"t-sub\" style=\"margin-top:8px\">You&rsquo;re on '+APP.label+'</div>', cancel:'Later', cancelAct:'updateLater', confirm:'Update now', confirmAct:'updateNow'}); }, 400); },
+      html: '<p>A separate dial — <code>latest_build</code> — drives a much softer prompt. It is a <strong>dismissible dialog</strong>, it only ever appears once you are already inside the app, and it shows <strong>once per release</strong>.</p>'
+        + '<p>Tapping <strong>Later</strong> — or tapping outside the dialog — snoozes it against that build number. It will not ask again until a genuinely newer build ships.</p>'
+        + T.callout('The two are mutually exclusive', 'Forced is terminal and lives <em>before</em> authentication. Optional is dismissible and lives <em>inside</em> the app. You will never see both, and you will never see the optional one on the login screen.')
+        + '<p><code>min_build</code> and <code>latest_build</code> are independent. It is normal for the latest build to sit well above the minimum — that is the gap between "we would like you to update" and "you must".</p>' },
   ]},
 
 { title:'Home',
@@ -4349,6 +5034,13 @@ const TOUR = [
       html: '<p>This is the cockpit. Agency name, a greeting that knows the time of day, and then three things that answer <em>"what do I do now?"</em></p>'
         + '<p>Look at what is <strong>not</strong> here: no floating <strong>+</strong> button. That is deliberate. Home is for orienting, not creating.</p>'
         + T.callout('Depth without elevation', 'Material elevation is zero everywhere in this app. Every bit of depth you can see is faked with a vertical gradient, a 1px top highlight line, and coloured shadows. That is why it looks expensive.') },
+
+    { t:'Reading a status chip',
+      run:()=>{ enterApp('agent'); go('properties'); },
+      html: '<p>Statuses and types arrive from the API machine-shaped — <code>active</code>, <code>under_offer</code>, <code>sole_mandate</code>. Since 1.0.10 the app runs them through a display helper before showing them.</p>'
+        + '<p>The rule: swap underscores and hyphens for spaces, collapse the whitespace, raise the first letter of each word — and <strong>never lower-case anything</strong>. So <code>active</code> becomes <strong>Active</strong>, and <code>under_offer</code> becomes <strong>Under Offer</strong>.</p>'
+        + T.callout('Because it never lower-cases, acronyms survive', 'FICA, OTP, P24 and VAT come through exactly as they are. You will never see "Fica" or "p24" anywhere in this app.')
+        + T.callout('It applies to machine values only', 'Names, notes and descriptions are rendered exactly as typed. If a seller wrote their surname in lower case, it stays that way — the app does not correct people\'s own words.', 'warn') },
 
     { t:'The Meet Ellie card',
       hl:'[data-tour="ellieCard"]',
@@ -4523,6 +5215,39 @@ const TOUR = [
         + T.try('Tap <strong>Upload</strong>. Pick a tag, choose <strong>Gallery</strong> as the source (it adds 5 photos), and hit <strong>Upload 5 photo(s)</strong>.<br><br>One file will <strong>fail</strong> — that is on purpose. Tap the red banner to <strong>retry</strong> it, and watch it succeed. Uploads fail in the real world, usually in a car with one bar of signal, and you should know what that looks like before it happens to you.') },
   ]},
 
+{ title:'The tabbed property screen',
+  steps:[
+    { t:'One long scroll became five tabs',
+      run:()=>{ enterApp('agent'); propTab='info'; driveFolder='All'; complianceLoading=false; go('overview',{id:1}); },
+      html: '<p>This is the biggest change since 1.0.0. The Property Overview used to be one very long scroll. It is now a <strong>collapsing hero</strong>, a <strong>pinned tab bar</strong>, and one independently-scrolling view per tab.</p>'
+        + '<ul><li><strong>Info</strong> — at a glance, description, live preview, where this listing is published, virtual tour, key dates.</li>'
+        + '<li><strong>Compliance</strong> — the four gates. This is where "why won\'t my listing go live?" is answered.</li>'
+        + '<li><strong>Contacts · N</strong> — linked contacts, the listing agents and the owner, merged into one place. The count is all three added together.</li>'
+        + '<li><strong>Drive · N</strong> — the listing\'s documents. New in 1.0.10, and the next chapter.</li>'
+        + '<li><strong>Inspections</strong> — rentals only. On a sale it is simply absent.</li></ul>'
+        + T.callout('The label convention', 'A tab shows just its name, or <strong>Name · N</strong> when it carries a count. If you see no number, there is nothing to count — not zero items hidden behind a filter.')
+        + '<p>Nothing about the content changed. Every card, every string, every gate is exactly where it was — just filed behind a tab instead of buried three screens down a scroll.</p>'
+        + T.callout('Also changed', 'The app bar now carries the property\'s own title — "Stunning 4 Bed House in Uvongo" — instead of the word "Overview". Only the loading and error states still say Overview.')
+        + T.try('Tap through all five tabs. Open a rental (Properties → the Marine Drive rental) and watch <strong>Inspections</strong> appear.') },
+
+    { t:'The Property Drive',
+      run:()=>{ enterApp('agent'); propTab='drive'; driveFolder='All'; go('overview',{id:1}); },
+      html: '<p>Every file filed against this listing on the web appears here, with folder chips across the top and a download button on each row.</p>'
+        + T.callout('This tab views and downloads. Nothing else.', 'Uploading, tagging and deleting are <strong>web-only</strong>. This is the most common point of confusion — agents look for an upload button here and there is not one, by design. Add the file on the website; read it on the phone.', 'warn')
+        + '<p>The card has no title heading, because the "Drive" tab label already names it. Each row is a file-kind icon, the filename, and a metadata line joining <strong>size · uploaded-by · relative-time</strong> with middle dots — <em>1.2 MB · Andre Roets · 3d ago</em>. Anything blank is dropped rather than left as a gap.</p>'
+        + '<p>The <strong>All</strong> chip carries the total. Folders with a count of zero are hidden. An <strong>Unfiled</strong> bucket only appears if the server actually sends one.</p>'
+        + T.try('Tap a folder chip to filter, then download a file and read the <strong>Download complete</strong> dialog. Try opening <code>Comparables.xlsx</code> — nothing on the device handles it, so you get a snackbar instead.') },
+
+    { t:'The Drive\'s four states',
+      run:()=>{ enterApp('agent'); propTab='drive'; driveFolder='All'; go('overview',{id:3}); },
+      html: '<p>Worth recognising all four, because two of them look similar and mean very different things.</p>'
+        + '<ul><li>A spinner while it loads.</li>'
+        + '<li>A cloud-off icon, <em>"Couldn\'t load files."</em> and a <strong>Retry</strong> button if the fetch fails.</li>'
+        + '<li><em>"No files on this property yet."</em> — the listing genuinely has nothing on file. That is what you are looking at now.</li>'
+        + '<li><em>"No files in this folder."</em> — your folder filter has no matches. The listing does have files; you are just not looking at them.</li></ul>'
+        + '<p>If your account has downloads switched off, both row buttons grey out with the tooltip <em>"Downloads are switched off for your account"</em>. That is an agency setting, not a fault.</p>' },
+  ]},
+
 { title:'AI features',
   steps:[
     { t:'AI photo analysis is automatic',
@@ -4555,9 +5280,22 @@ const TOUR = [
         + '<p>This is why the purple badge exists at all: so you always know what a machine touched.</p>'
         + T.callout('Purple is not a brand colour', 'The AI badge stays purple no matter which agency you are. Change the agency theme in the top bar and watch — the buttons, icons and chips all re-brand, but the <strong>AI badge does not</strong>, and neither does the money gold. Those two are <em>system signals</em>, not brand decoration. If purple could become your agency\'s colour, "this was AI-generated" would stop meaning anything.', 'purple') },
 
+    { t:'First, the microphone',
+      hl:'[data-tour="mic"]',
+      run:()=>{ enterApp('agent'); ellie={state:'idle',transcript:null,lastEventId:null,mic:'prompt'}; tab('ellie'); },
+      html: '<p>New in 1.0.10, and worth doing slowly — permission prompts are exactly where non-technical users get stuck.</p>'
+        + '<p>Until the microphone is granted, the button shows a <strong>crossed-out mic</strong> and the copy changes:</p>'
+        + '<ul><li>Status line: <em>"Ellie needs your microphone to hear you"</em></li>'
+        + '<li>Hint, if not asked yet or denied once: <em>"Tap the mic to allow access."</em></li>'
+        + '<li>Hint, if permanently denied: <em>"Turn on Microphone for CoreX in Settings, then come back."</em></li>'
+        + '<li>Button caption: <strong>Tap to enable</strong>, or <strong>Open Settings</strong> when it is permanently off.</li></ul>'
+        + T.callout('The first press asks; it does not record', 'You have to press again once access is granted. That trips up almost everyone the first time — people hold the mic, nothing happens, and they assume Ellie is broken.', 'warn')
+        + '<p>Granting shows <em>"Microphone on — hold the mic and speak."</em> Denying shows <em>"Ellie needs the microphone to hear you."</em> Permanently denying shows <em>"Microphone access is off for CoreX. Turn it on in Settings."</em> with a Settings button.</p>'
+        + T.try('Tap the mic once to grant access. Then move on and hold it.') },
+
     { t:'Ellie — hold to talk',
       hl:'[data-tour="mic"]',
-      run:()=>{ enterApp('agent'); ellie={state:'idle',transcript:null,lastEventId:null}; tab('ellie'); },
+      run:()=>{ enterApp('agent'); ellie={state:'idle',transcript:null,lastEventId:null,mic:'granted'}; tab('ellie'); },
       html: '<p>A 140px mic button. Accent gradient at rest; a <strong>red gradient with a pulsing glow</strong> while recording.</p>'
         + T.try('<strong>Press and hold</strong> the mic for a second or two, then let go. Watch it go red and pulse, then "Thinking…", then a result sheet slides up.<br><br>Tap <strong>"Open event"</strong> and you will land on the Calendar — <strong>with the event actually there</strong>. It was real all along.') },
 
@@ -4622,6 +5360,16 @@ const TOUR = [
       run:()=>{ enterApp('agent'); go('contact',{id:1}); },
       html: T.callout('Stop looking for these — they are not there', 'There is <strong>no CSV / bulk import</strong>, <strong>no free-text tags</strong>, and <strong>no "source" field</strong> on contacts in the mobile app. Agents hunt for them for twenty minutes and then log a support ticket.', 'warn')
         + '<p>What you get instead is the <strong>Contact Type</strong> dropdown (Buyer, Seller, Tenant, Landlord, Investor, Referral — the agency defines the list) and, separately, a <strong>Role per linked property</strong>. The same person can be the seller of one house and a buyer of another, and that is exactly why the role lives on the <em>link</em>, not on the contact.</p>' },
+
+    { t:'The contact page is now tabbed',
+      run:()=>{ enterApp('agent'); contactTab='details'; go('contact',{id:1}); },
+      html: '<p>Same treatment as the property screen: a collapsing hero, then a pinned tab bar.</p>'
+        + '<p>The hero <strong>does not repeat the name</strong> — the app bar already has it, with the edit pencil. Instead you get a larger initials avatar, the contact-type pill in Label Case, and a one-line reach summary joining phone and email with a middle dot.</p>'
+        + '<ul><li><strong>Details</strong> — the WhatsApp button and the +Match / +Listing row, then the phone/email/ID rows, the green WhatsApp counter, and the Compliance tile.</li>'
+        + '<li><strong>Matches · N</strong> — their saved buyer or tenant criteria.</li>'
+        + '<li><strong>Properties · N</strong> — note the label. It used to read "Linked Properties"; the empty-state heading is still <em>"No linked listings"</em>.</li></ul>'
+        + T.callout('New empty state', 'A contact with no phone, no email, no ID and no WhatsApp history now says: <em>"No phone, email or ID captured yet. Tap Edit to add them."</em> Previously that card was simply blank, which read like a loading failure. Open <strong>Michelle du Toit</strong> in Contacts to see it.')
+        + '<p>Call, WhatsApp and Email also fail gracefully now: on a device with no phone app, the number or address is copied to the clipboard with a snackbar instead of doing nothing at all.</p>' },
 
     { t:'WhatsApp, and why it counts',
       hl:'[data-tour="waBtn"]',
@@ -4693,6 +5441,25 @@ const TOUR = [
         + '<p>And on the Profile tab: <strong>Privacy &amp; consent</strong>, which they control themselves.</p>'
         + T.callout('POPIA, briefly', 'POPIA is South Africa\'s privacy law — the local equivalent of GDPR. It is why consent and FICA exist in this app at all. Every toggle here is logged with a timestamp and a method (electronic, verbal, written, signed). It is a <strong>legal requirement</strong>, not bureaucracy for its own sake, and if a client withdraws consent, the agency must be able to prove when and how.')
         + '<p>The client can also review their agent — those gold stars go straight to the agency.</p>' },
+  ]},
+
+{ title:'Deleting your account',
+  steps:[
+    { t:'The agent flow',
+      run:()=>{ S.forceUpdate=false; enterApp('agent'); loginState.deleted=false; go('me'); },
+      html: '<p>New in 1.0.10, and required by both app stores: an account must be deletable from inside the app that created it.</p>'
+        + '<p>There are two ways in, deliberately quiet ones. On <strong>Profile</strong>, a red text button with a trash icon sitting directly beneath Sign out — less prominent than Sign out, on purpose. In <strong>Settings</strong>, a new <strong>Account</strong> section with a red row.</p>'
+        + '<p>It is a two-step flow: a confirm dialog — one of the app\'s very few centred dialogs, alongside "Missing Required Fields" — then a password screen on the auth scaffold.</p>'
+        + T.callout('The distinction that matters', 'This deletes the agent\'s <strong>app sign-in access</strong>. It does <em>not</em> delete their CoreX business record — the listings, the contacts, the deals and the commission history all stay exactly where they are. Deleting a login does not unpick a pipeline.')
+        + '<p>Restoring access is <strong>web-only</strong>. That is why a deleted user who tries to sign in again sees: <em>\"This account has been deleted. To use the app again, restore app access from My Portal → Tools on the CoreX website, or ask your administrator.\"</em></p>'
+        + '<p>Four error states render inline in the red auth-error style: no connection, session expired, rate-limited, and wrong password.</p>'
+        + T.try('Tap <strong>Delete my account</strong> and walk it. Press <strong>Delete my account</strong> with the field empty first — the validator says <em>Enter your password</em>.') },
+
+    { t:'The client flow',
+      run:()=>{ enterApp('client'); S.side='client'; syncSide(); go('settings'); },
+      html: '<p>Same shape, harder wording — because for a client the deletion really is permanent.</p>'
+        + '<p>The entry point is a <strong>DANGER ZONE</strong> section in Client Settings, below a divider, with helper text: <em>\"Permanently deletes your CoreX account and signs you out of every device. This cannot be undone.\"</em></p>'
+        + '<p>The confirm dialog and the password screen both repeat the warning rather than softening it. The only copy difference in the error states: a wrong password here reads <strong>\"Password is incorrect.\"</strong> rather than the agent side\'s <strong>\"Incorrect password.\"</strong></p>' },
   ]},
 
 { title:'White-label & wrap-up',
