@@ -147,6 +147,16 @@ svg{display:block;}
 }
 .rail{width:230px;flex:none;position:sticky;top:74px;max-height:calc(100vh - 96px);overflow-y:auto;padding-right:4px;}
 .rail-search{width:100%;height:34px;border-radius:var(--r-button);border:1px solid var(--border);background:var(--fill-1);padding:0 11px;font-size:12.5px;margin-bottom:10px;}
+/* the tour search and the Play Store link, side by side at the top of the rail */
+.rail-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.rail-top .rail-search{flex:1 1 auto;min-width:0;margin-bottom:0;}
+.store-tile{
+  width:38px;height:34px;flex:none;border-radius:var(--r-small);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--fill-1);border:1px solid var(--border);
+  transition:background .16s,border-color .16s,transform .14s;
+}
+.store-tile:hover{background:var(--accent-soft);border-color:var(--accent-border);transform:translateY(-1px);}
 .rail-group{font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-tertiary);margin:15px 0 5px 8px;}
 .rail-item{display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:7px 9px;border-radius:var(--r-small);font-size:12px;font-weight:600;color:var(--text-secondary);line-height:1.35;transition:background .16s,color .16s;}
 .rail-item:hover{background:var(--fill-1);color:var(--text-primary);}
@@ -632,8 +642,7 @@ textarea.input{min-height:auto;resize:vertical;line-height:1.5;}
     <a class="tb-btn store" id="storeBtn"
        href="https://play.google.com/store/apps/details?id=za.co.corex_mobile&amp;hl=en_ZA"
        target="_blank" rel="noopener noreferrer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3.7v16.6a.7.7 0 0 0 1.05.6l14.6-8.3a.7.7 0 0 0 0-1.2L5.05 3.1A.7.7 0 0 0 4 3.7zM4.6 3.3l11.3 11.3M4.6 20.7l11.3-11.3"/></svg>
-      Get the app
+      <!-- filled in by paintTopbar() so the mark has one source -->
     </a>
     <button class="tb-btn" id="deviceBtn" title="Phone / tablet preview"></button>
     <button class="tb-btn" id="themeBtn"></button>
@@ -767,6 +776,19 @@ var P = {
   'external':'M12 6H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-5M14 4h6v6M11 13l9-9',
   'help':'M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M12 17h.01M10 10a2 2 0 1 1 2.7 1.9c-.5.2-.7.7-.7 1.3v.3'
 };
+/* The Google Play mark, drawn as four colour segments meeting on the fold line.
+   Inline SVG — no asset is fetched, so the page stays self-contained. Note this
+   is a facsimile: Google's brand guidelines want their supplied badge artwork,
+   which can be dropped in as a data URI if strict compliance is needed. */
+function playLogo(sz){
+  sz = sz || 18;
+  return '<svg viewBox="0 0 24 24" style="width:' + sz + 'px;height:' + sz + 'px;flex:none" aria-hidden="true">'
+    + '<path fill="#00A0FF" d="M3 2 L3 22 L12.5 12 Z"/>'
+    + '<path fill="#00E676" d="M3 2 L16 9.22 L12.5 12 Z"/>'
+    + '<path fill="#FFCE00" d="M12.5 12 L16 9.22 L21 12 L16 14.78 Z"/>'
+    + '<path fill="#FF3A44" d="M3 22 L16 14.78 L12.5 12 Z"/>'
+    + '</svg>';
+}
 function icon(n, sz, cls){
   var d = P[n] || P['help'];
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
@@ -896,10 +918,12 @@ var APP = {
      page still loads nothing from the network. */
   playStore: 'https://play.google.com/store/apps/details?id=za.co.corex_mobile&hl=en_ZA'
 };
-/* an <a> styled as one of our buttons, opening the store in a new tab */
-function storeLink(cls, label, iconName){
+/* an <a> styled as one of our buttons, opening the store in a new tab.
+   useLogo: the colour Play mark (tour chrome). Otherwise the app's own
+   monochrome Tabler glyph, so buttons inside the phone stay faithful. */
+function storeLink(cls, label, useLogo){
   return '<a class="' + cls + '" href="' + esc(APP.playStore) + '" target="_blank" rel="noopener noreferrer">'
-    + icon(iconName || 'brand-google-play') + '<span>' + esc(label) + '</span></a>';
+    + (useLogo ? playLogo(18) : icon('brand-google-play')) + '<span>' + esc(label) + '</span></a>';
 }
 
 var TODAY = new Date();
@@ -4460,7 +4484,7 @@ var CHAPTERS = [
       + '<p>There are two experiences behind one login: the <strong>agent app</strong> and the <strong>client portal</strong>. The switch in the top bar flips between them.</p>'
       + '<h4>The real thing</h4>'
       + '<p>When you are done here, install it and sign in with your own credentials — everything you practise on this page works the same way there.</p>'
-      + '<p>' + storeLink('btn2 sm', 'Get CoreX OS on Google Play') + '</p>' },
+      + '<p>' + storeLink('btn2 sm', 'Get CoreX OS on Google Play', true) + '</p>' },
   { t:'What’s new in 1.0.10',
     go:toScreen('login'),
     body:'<p>You’re looking at version <strong>1.0.10 (18)</strong>. If you learned the app on 1.0.0, five things moved:</p>'
@@ -4516,7 +4540,7 @@ var CHAPTERS = [
       + '<p>An operator can replace the body text with a custom message during an incident. The default reads: <em>“This version of CoreX is no longer supported. Update to the latest version to carry on.”</em></p>'
       + '<h4>Where “Update now” goes</h4>'
       + '<p>Both update screens hand off to the store listing. In this guide those buttons are live — they open the real CoreX OS page on Google Play in a new tab:</p>'
-      + '<p>' + storeLink('btn2 sm', 'Get CoreX OS on Google Play') + '</p>'
+      + '<p>' + storeLink('btn2 sm', 'Get CoreX OS on Google Play', true) + '</p>'
       + '<p class="t12t" style="font-size:12px;word-break:break-all">' + esc(APP.playStore) + '</p>',
     ctl:[{ l:'Show the gate', a:'trigger-force-update' }, { l:'Back to the app', a:'dismiss-force-update' }] },
   { t:'The optional nudge',
@@ -4990,7 +5014,13 @@ function paintRail(){
   var rail = $('#rail');
   if (!rail) return;
   var q = T.search.toLowerCase();
-  var html = '<input class="rail-search" placeholder="Search the tour…" id="railSearch" value="' + esc(T.search) + '">';
+  var html = '<div class="rail-top">'
+    + '<input class="rail-search" placeholder="Search the tour…" id="railSearch" value="' + esc(T.search) + '">'
+    + '<a class="store-tile" id="railStoreBtn" href="' + esc(APP.playStore) + '"'
+    + ' target="_blank" rel="noopener noreferrer"'
+    + ' title="Get CoreX OS on Google Play" aria-label="Get CoreX OS on Google Play">'
+    + playLogo(19) + '</a>'
+    + '</div>';
   var lastGroup = '', any = false;
   CHAPTERS.forEach(function(c, i){
     if (T.express && !c.essential) return;
@@ -5278,6 +5308,8 @@ function paintTopbar(){
   var lb = $('#legendBtn'); if (lb) lb.classList.toggle('on', T.panel === 'legend');
   var cb = $('#cheatBtn'); if (cb) cb.classList.toggle('on', T.panel === 'gestures');
   var vc = $('#verChip'); if (vc) vc.textContent = APP.footerLabel;
+  var sb = $('#storeBtn');
+  if (sb && !sb.childElementCount) sb.innerHTML = playLogo(16) + '<span>Get the app</span>';
 }
 document.addEventListener('click', function(ev){
   var t = ev.target;
