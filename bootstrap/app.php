@@ -11,12 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // There is no public "login" route on this site — the only sign-in is
-        // the webinar admin console. Without this, a logged-out request to an
-        // admin URL dies looking for a route named `login` instead of showing
-        // the sign-in page, which reads as a broken site rather than a locked
-        // door.
-        $middleware->redirectGuestsTo(fn () => route('admin.login'));
+        // Where a logged-out visitor to an admin URL is sent. Stated explicitly
+        // rather than left to the default so that renaming the route can never
+        // turn a locked door into a 500.
+        $middleware->redirectGuestsTo(fn () => route('login'));
 
         $middleware->redirectUsersTo(fn () => route('admin.webinars.index'));
     })

@@ -17,7 +17,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.login.store') }}" class="card mt-6 space-y-4 p-6">
+        <form method="POST" action="{{ route('login.store') }}" class="card mt-6 space-y-4 p-6">
             @csrf
 
             <div>

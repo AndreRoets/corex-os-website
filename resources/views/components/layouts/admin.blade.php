@@ -50,7 +50,7 @@
 
                 <div class="flex items-center gap-4">
                     <span class="hidden text-xs text-[color:var(--color-faint)] sm:inline">{{ auth()->user()->email }}</span>
-                    <form method="POST" action="{{ route('admin.logout') }}">
+                    <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-xs font-medium text-[color:var(--color-muted)] transition duration-300 hover:text-ink">
                             Sign out

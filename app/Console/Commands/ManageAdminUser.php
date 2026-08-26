@@ -81,7 +81,7 @@ class ManageAdminUser extends Command
             $this->components->warn('The password was passed on the command line and is now in your shell history.');
         }
 
-        $this->line('  Sign in at: '.route('admin.login'));
+        $this->line('  Sign in at: '.route('login'));
 
         return self::SUCCESS;
     }

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\AdminUserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -103,7 +104,7 @@ class WebinarAdminTest extends TestCase
     {
         Http::fake();
 
-        $this->call($method, $uri)->assertRedirect(route('admin.login'));
+        $this->call($method, $uri)->assertRedirect(route('login'));
 
         // And nothing was asked of CoreX on the way to being turned away.
         Http::assertNothingSent();
@@ -118,14 +119,14 @@ class WebinarAdminTest extends TestCase
             'password' => 'a-long-enough-passphrase',
         ]);
 
-        $this->post(route('admin.login.store'), [
+        $this->post(route('login.store'), [
             'email' => 'johan@corexweb.co.za',
             'password' => 'a-long-enough-passphrase',
         ])->assertRedirect(route('admin.webinars.index'));
 
         $this->assertAuthenticatedAs($user);
 
-        $this->post(route('admin.logout'))->assertRedirect(route('admin.login'));
+        $this->post(route('logout'))->assertRedirect(route('login'));
         $this->assertGuest();
     }
 
@@ -133,14 +134,14 @@ class WebinarAdminTest extends TestCase
     {
         User::factory()->create(['email' => 'johan@corexweb.co.za', 'password' => 'a-long-enough-passphrase']);
 
-        $this->post(route('admin.login.store'), [
+        $this->post(route('login.store'), [
             'email' => 'johan@corexweb.co.za',
             'password' => 'wrong',
         ])->assertSessionHasErrors(['email' => 'Those details do not match an account.']);
 
         // The same message for an address that does not exist — telling them
         // apart would confirm which addresses are real.
-        $this->post(route('admin.login.store'), [
+        $this->post(route('login.store'), [
             'email' => 'nobody@example.com',
             'password' => 'wrong',
         ])->assertSessionHasErrors(['email' => 'Those details do not match an account.']);
@@ -153,13 +154,13 @@ class WebinarAdminTest extends TestCase
         User::factory()->create(['email' => 'johan@corexweb.co.za', 'password' => 'a-long-enough-passphrase']);
 
         for ($attempt = 0; $attempt < 5; $attempt++) {
-            $this->post(route('admin.login.store'), [
+            $this->post(route('login.store'), [
                 'email' => 'johan@corexweb.co.za',
                 'password' => 'wrong',
             ]);
         }
 
-        $response = $this->post(route('admin.login.store'), [
+        $response = $this->post(route('login.store'), [
             'email' => 'johan@corexweb.co.za',
             'password' => 'a-long-enough-passphrase',
         ]);
@@ -175,7 +176,7 @@ class WebinarAdminTest extends TestCase
 
     public function test_the_login_page_renders_and_offers_no_way_to_self_register(): void
     {
-        $this->get(route('admin.login'))
+        $this->get(route('login'))
             ->assertOk()
             ->assertSee('Sign in')
             ->assertSee('there is no reset link by design')
@@ -199,6 +200,31 @@ class WebinarAdminTest extends TestCase
 
         // A blank form asks CoreX for nothing.
         Http::assertNothingSent();
+    }
+
+    public function test_the_old_admin_login_url_still_reaches_the_sign_in_page(): void
+    {
+        $this->get('/admin/login')->assertRedirect('/login');
+    }
+
+    /**
+     * The seeded account is the one the team is handed, so it is worth proving
+     * it can actually sign in rather than assuming the hash took.
+     */
+    public function test_the_seeded_admin_account_can_sign_in(): void
+    {
+        $this->seed(AdminUserSeeder::class);
+
+        $this->post(route('login.store'), [
+            'email' => 'andre@corexos.co.za',
+            'password' => 'Mineme098@',
+        ])->assertRedirect(route('admin.webinars.index'));
+
+        $this->assertAuthenticated();
+
+        // Re-running the seeder must not fail on the unique index.
+        $this->seed(AdminUserSeeder::class);
+        $this->assertSame(1, User::where('email', 'andre@corexos.co.za')->count());
     }
 
     public function test_there_is_no_self_registration_or_password_reset_route(): void

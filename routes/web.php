@@ -52,16 +52,23 @@ Route::prefix('webinars')->name('webinars.')->where(['slug' => '[A-Za-z0-9._-]+'
 | no self-registration and no emailed password reset — accounts are created
 | with `php artisan corex:admin`.
 */
+// The sign-in lives at the root — /login — because that is the address people
+// are given and the one they will type. It is named `login`, which is also the
+// name Laravel's own auth plumbing looks for when it turns a guest away.
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [SessionController::class, 'create'])->name('login');
+    Route::post('/login', [SessionController::class, 'store'])->name('login.store');
+});
+
+Route::post('/logout', [SessionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
+
+// The console used to sign in at /admin/login. Anyone holding that bookmark is
+// sent on rather than shown a 404.
+Route::redirect('/admin/login', '/login');
+
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::middleware('guest')->group(function () {
-        Route::get('/login', [SessionController::class, 'create'])->name('login');
-        Route::post('/login', [SessionController::class, 'store'])->name('login.store');
-    });
-
-    Route::post('/logout', [SessionController::class, 'destroy'])
-        ->middleware('auth')
-        ->name('logout');
-
     Route::middleware('auth')->group(function () {
         Route::prefix('webinars')->name('webinars.')->where(['slug' => '[A-Za-z0-9._-]+'])->group(function () {
             Route::get('/', [AdminWebinarController::class, 'index'])->name('index');

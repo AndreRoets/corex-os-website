@@ -102,7 +102,7 @@ class SessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login')->with('status', 'You have been signed out.');
+        return redirect()->route('login')->with('status', 'You have been signed out.');
     }
 
     private function throttleKey(Request $request, string $email): string
