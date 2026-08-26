@@ -162,6 +162,8 @@ class WebinarClient
                 ->withOptions(['stream' => true])
                 ->get($this->url($path), ['format' => $format]);
         } catch (ConnectionException $e) {
+            $this->logUnreachable('GET', $path, $e);
+
             throw new CoreXUnavailable("Could not reach CoreX for GET {$path}.", previous: $e);
         }
 
@@ -200,6 +202,8 @@ class WebinarClient
                 default => $request->post($this->url($path), $data),
             };
         } catch (ConnectionException $e) {
+            $this->logUnreachable($method, $path, $e);
+
             throw new CoreXUnavailable("Could not reach CoreX for {$method} {$path}.", previous: $e);
         }
 
@@ -253,6 +257,25 @@ class WebinarClient
         $json = $response->json();
 
         return is_array($json) ? $json : [];
+    }
+
+    /**
+     * We never got an answer at all — DNS, TLS, refused, or timed out.
+     *
+     * Logged separately from throwFor() because there is no status code to log,
+     * and because without this the admin sees "CoreX could not be reached" while
+     * the log file says nothing whatsoever — which is the one case where you most
+     * need to know whether it was us, them, or the network in between.
+     */
+    protected function logUnreachable(string $method, string $path, Throwable $e): void
+    {
+        Log::error('CoreX API unreachable', [
+            'method' => $method,
+            'path' => $path,
+            'base_url' => config('corex.base_url'),
+            'reason' => $e->getMessage(),
+            'hint' => 'No HTTP response at all — DNS, TLS, a refused connection or a timeout. Check COREX_API_BASE and that the CoreX host is up.',
+        ]);
     }
 
     protected function throwFor(Response $response, string $method, string $path): never
