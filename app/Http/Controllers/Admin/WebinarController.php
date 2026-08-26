@@ -34,7 +34,9 @@ class WebinarController extends Controller
         'description',
         'starts_at',
         'duration_minutes',
-        'join_url',
+        // join_url is deliberately absent. It is set on the registrants screen,
+        // where pasting it also emails it to everyone already signed up. Leaving
+        // it here would let this form overwrite a link that had already gone out.
         'access_ends_days_after',
         'reminder_hours_before',
     ];
@@ -115,7 +117,7 @@ class WebinarController extends Controller
             // Anything CoreX did not send back cannot be shown in the form, and
             // therefore must not be saved from it. See payload().
             'unknownFields' => array_values(array_filter(
-                ['join_url', 'access_ends_days_after', 'reminder_hours_before'],
+                ['access_ends_days_after', 'reminder_hours_before'],
                 fn (string $field) => ! array_key_exists($field, $webinar),
             )),
         ]);

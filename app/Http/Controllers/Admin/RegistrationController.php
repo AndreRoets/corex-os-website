@@ -63,6 +63,58 @@ class RegistrationController extends Controller
     }
 
     /**
+     * Set the joining link and send it to everyone already registered.
+     *
+     * This is the one destructive-ish thing on the screen: it puts an email in
+     * the inbox of every person on the list, and there is no unsending it. So
+     * the button confirms with the count first, and CoreX — not this site —
+     * does the sending.
+     */
+    public function sendJoinLink(Request $request, string $slug): RedirectResponse
+    {
+        $validated = $request->validate([
+            'join_url' => ['required', 'url', 'max:500'],
+        ], [
+            'join_url.required' => 'Paste the joining link first.',
+            'join_url.url' => 'That does not look like a web address. It should start with https://',
+        ]);
+
+        try {
+            $result = $this->corex->sendJoinLink($slug, $validated['join_url']);
+        } catch (CoreXUnavailable $e) {
+            return back()->with('admin_error', $e->isAuthFailure
+                ? 'CoreX rejected our credentials — check COREX_WEBINAR_ADMIN_TOKEN on the server.'
+                : 'CoreX could not be reached, so nothing was sent. The joining link has not been saved either — try again in a moment.');
+        }
+
+        if ($result->invalid()) {
+            return back()->withInput()->withErrors($result->errors());
+        }
+
+        if ($result->notFound()) {
+            return redirect()
+                ->route('admin.webinars.index')
+                ->with('admin_error', 'That webinar could not be found.');
+        }
+
+        if (! $result->ok()) {
+            return back()->withInput()->with('admin_error', $result->message() ?? 'The joining link could not be sent.');
+        }
+
+        $notified = (int) $result->get('notified', 0);
+
+        Log::info('Joining link sent to registrants', [
+            'slug' => $slug,
+            'notified' => $notified,
+            'user_id' => auth()->id(),
+        ]);
+
+        return back()->with('admin_status', $notified === 0
+            ? 'Joining link saved. Nobody has registered yet, so no email went out — everyone who signs up from now on gets it automatically.'
+            : "Joining link saved and emailed to {$notified} ".Str::plural('registrant', $notified).'. Anyone who registers from now on gets it automatically.');
+    }
+
+    /**
      * Stream a CSV straight through to the browser.
      *
      * The bytes are not parsed, re-encoded or reordered. The Zoom file in

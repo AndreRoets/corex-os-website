@@ -117,15 +117,13 @@
                 </div>
             </div>
 
-            <div>
-                <label for="join_url" class="block text-sm font-medium text-ink">Joining link</label>
-                <p class="mt-1 text-xs text-[color:var(--color-muted)]">Zoom, Teams or Meet. Only people who register ever see this.</p>
-                <input id="join_url" name="join_url" type="url"
-                       value="{{ $value('join_url', '') }}"
-                       class="{{ $fieldBase }} mt-2 @error('join_url') border-[#e11d48] @else border-[color:var(--color-border)] @enderror"
-                       placeholder="https://zoom.us/j/123456789">
-                @error('join_url') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
-            </div>
+            {{-- The joining link is not set here any more. It lives on the
+                 registrants screen, behind "Send the joining link", because
+                 pasting it there does the thing you actually want at that
+                 moment: save it AND email it to everyone already signed up.
+                 Setting it quietly on this form would leave the people who
+                 registered before you had the link with a confirmation email
+                 that has no link in it, and nothing to tell you so. --}}
 
             <div class="grid gap-6 sm:grid-cols-2">
                 <div>

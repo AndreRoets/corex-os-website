@@ -132,6 +132,24 @@ class WebinarClient
         return $this->send(self::SCOPE_ADMIN, 'DELETE', "/api/v1/webinars/{$slug}");
     }
 
+    /**
+     * Set the joining link and email it to everyone already registered.
+     *
+     * One call, because they are one intention. Saving the link without sending
+     * it leaves everyone who signed up before you had it holding a confirmation
+     * email with no way in, and nothing anywhere says so.
+     *
+     * CoreX sends the email — this site never does. It owns the registrant list,
+     * the templates and the sending reputation, and a second sender would mean
+     * two different-looking emails about one webinar.
+     */
+    public function sendJoinLink(string $slug, string $joinUrl): CoreXResult
+    {
+        return $this->send(self::SCOPE_ADMIN, 'POST', "/api/v1/webinars/{$slug}/join-link", [
+            'join_url' => $joinUrl,
+        ]);
+    }
+
     public function registrations(string $slug, int $page = 1, int $perPage = 100): CoreXResult
     {
         return $this->send(self::SCOPE_ADMIN, 'GET', "/api/v1/webinars/{$slug}/registrations", [

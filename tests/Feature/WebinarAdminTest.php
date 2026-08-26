@@ -7,6 +7,7 @@ use Database\Seeders\AdminUserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -192,7 +193,10 @@ class WebinarAdminTest extends TestCase
             ->assertOk()
             ->assertSee('Link name')
             ->assertSee('Leave blank to build it from the title.')
-            ->assertSee('Only people who register ever see this.')
+            // The joining link is NOT set here — it lives on the registrants
+            // screen, where saving it also emails it to everyone signed up.
+            ->assertDontSee('Joining link')
+            ->assertDontSee('name="join_url"', false)
             // The defaults the help text promises.
             ->assertSee('value="60"', false)
             ->assertSee('value="3"', false)
@@ -454,6 +458,91 @@ class WebinarAdminTest extends TestCase
         $this->assertStringNotContainsString('thabo@ridge.co.za', $body);
         $this->assertStringNotContainsString('/admin/', $body);
         $this->assertStringNotContainsString('registrations.csv', $body);
+    }
+
+    // ── The joining link ────────────────────────────────────────────
+
+    public function test_the_webinar_list_offers_a_visible_way_into_the_registrants(): void
+    {
+        Http::fake(['*' => Http::response(['ok' => true, 'webinars' => [$this->webinarRow()]])]);
+
+        $this->actingAs($this->admin())
+            ->get(route('admin.webinars.index'))
+            ->assertOk()
+            // A labelled control, not a bare number nobody realises is a link.
+            ->assertSee('View registrants')
+            ->assertSee(route('admin.webinars.registrations', self::SLUG));
+    }
+
+    public function test_pasting_the_joining_link_saves_it_and_emails_the_registrants(): void
+    {
+        Http::fake(['*/join-link' => Http::response([
+            'ok' => true, 'join_url' => 'https://zoom.us/j/123456789', 'notified' => 47,
+        ])]);
+
+        $this->actingAs($this->admin())
+            ->post(route('admin.webinars.join-link', self::SLUG), [
+                'join_url' => 'https://zoom.us/j/123456789',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('admin_status', fn (string $m) => str_contains($m, '47'));
+
+        Http::assertSent(function (Request $request) {
+            $this->assertStringEndsWith('/api/v1/webinars/'.self::SLUG.'/join-link', $request->url());
+            $this->assertSame('https://zoom.us/j/123456789', $request->data()['join_url']);
+            // Admin scope: this reaches every registrant's inbox.
+            $this->assertSame('Bearer '.self::ADMIN_TOKEN, $request->header('Authorization')[0]);
+
+            return true;
+        });
+    }
+
+    /**
+     * The website must never send this itself. CoreX owns the registrant list,
+     * the templates and the sending reputation; a second sender would mean two
+     * different-looking emails about one webinar.
+     */
+    public function test_the_website_sends_no_email_when_the_joining_link_goes_out(): void
+    {
+        Mail::fake();
+        Http::fake(['*/join-link' => Http::response(['ok' => true, 'notified' => 3])]);
+
+        $this->actingAs($this->admin())
+            ->post(route('admin.webinars.join-link', self::SLUG), ['join_url' => 'https://zoom.us/j/1']);
+
+        Mail::assertNothingSent();
+        Mail::assertNothingQueued();
+    }
+
+    public function test_a_bad_joining_link_is_refused_before_anything_is_sent(): void
+    {
+        Http::fake();
+
+        $this->actingAs($this->admin())
+            ->post(route('admin.webinars.join-link', self::SLUG), ['join_url' => 'not-a-url'])
+            ->assertSessionHasErrors('join_url');
+
+        // Nothing reached CoreX, so nobody was emailed.
+        Http::assertNothingSent();
+    }
+
+    public function test_a_failure_to_reach_corex_says_nothing_was_sent(): void
+    {
+        Http::fake(['*/join-link' => Http::response(['message' => 'boom'], 500)]);
+
+        $this->actingAs($this->admin())
+            ->post(route('admin.webinars.join-link', self::SLUG), ['join_url' => 'https://zoom.us/j/1'])
+            ->assertSessionHas('admin_error', fn (string $m) => str_contains($m, 'nothing was sent'));
+    }
+
+    public function test_sending_the_joining_link_requires_a_session(): void
+    {
+        Http::fake();
+
+        $this->post(route('admin.webinars.join-link', self::SLUG), ['join_url' => 'https://zoom.us/j/1'])
+            ->assertRedirect(route('login'));
+
+        Http::assertNothingSent();
     }
 
     // ── The downloads ───────────────────────────────────────────────

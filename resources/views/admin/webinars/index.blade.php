@@ -49,7 +49,7 @@
                         <th scope="col" class="px-5 py-3 font-medium">Webinar</th>
                         <th scope="col" class="px-5 py-3 font-medium">When</th>
                         <th scope="col" class="px-5 py-3 font-medium">Status</th>
-                        <th scope="col" class="px-5 py-3 font-medium text-right">Registered</th>
+                        <th scope="col" class="px-5 py-3 font-medium">Registrants</th>
                         <th scope="col" class="px-5 py-3 font-medium">Registration link</th>
                         <th scope="col" class="px-5 py-3 font-medium text-right">
                             <span class="sr-only">Actions</span>
@@ -96,11 +96,15 @@
                                 </span>
                             </td>
 
-                            <td class="px-5 py-4 text-right">
+                            {{-- A labelled button, not a bare number. The count on
+                                 its own read as a statistic, so nobody realised
+                                 the registrant list was a click away. --}}
+                            <td class="px-5 py-4">
                                 <a href="{{ route('admin.webinars.registrations', $slug) }}"
-                                   class="font-medium text-[color:var(--color-brand-400)] transition duration-300 hover:text-ink">
-                                    {{ $count }}
-                                    <span class="sr-only">registrants — view list</span>
+                                   class="inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 py-1.5 text-sm text-ink transition duration-300 hover:border-[color:var(--color-brand)] hover:-translate-y-0.5">
+                                    <x-icon name="users" class="w-4 h-4 text-[color:var(--color-brand)]" />
+                                    View registrants
+                                    <span class="rounded-full bg-[color:var(--color-brand)]/15 px-2 py-0.5 text-xs font-medium text-[color:var(--color-brand-400)]">{{ $count }}</span>
                                 </a>
                             </td>
 

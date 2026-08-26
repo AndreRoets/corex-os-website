@@ -83,6 +83,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('/{slug}/registrations', [RegistrationController::class, 'index'])->name('registrations');
 
+            // Paste the joining link and email it to everyone already signed up.
+            // POST because it sends mail that cannot be unsent.
+            Route::post('/{slug}/join-link', [RegistrationController::class, 'sendJoinLink'])->name('join-link');
+
             // The reason this screen exists. `zoom` imports straight into a
             // Zoom webinar's registrant list; `full` is the sales follow-up.
             Route::get('/{slug}/registrations/{format}.csv', [RegistrationController::class, 'download'])

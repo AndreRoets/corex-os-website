@@ -50,6 +50,67 @@
         phone numbers and demo-access status, for following up.
     </div>
 
+    {{-- Paste the link, everyone gets it. One action, because they are one
+         intention: a link saved but not sent leaves everyone who signed up
+         early holding a confirmation email with no way in. --}}
+    @php
+        $joinUrl = $webinar['join_url'] ?? null;
+        $recipients = (int) ($meta['total'] ?? 0);
+    @endphp
+
+    <div class="card mb-6 p-5 sm:p-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <h2 class="text-sm font-semibold text-ink">Joining link</h2>
+                <p class="mt-1 text-xs text-[color:var(--color-muted)]">
+                    Paste your Zoom, Teams or Meet link. It is saved and emailed to everyone who has already
+                    registered, and anyone who signs up afterwards gets it automatically.
+                </p>
+            </div>
+
+            @if ($joinUrl)
+                <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-[color:var(--color-brand)]/40 px-2.5 py-1 text-xs text-[color:var(--color-brand-400)]">
+                    <x-icon name="check" class="w-3.5 h-3.5" /> Link is set
+                </span>
+            @else
+                <span class="inline-flex whitespace-nowrap rounded-full border border-[color:var(--color-border)] px-2.5 py-1 text-xs text-[color:var(--color-muted)]">
+                    Not set yet
+                </span>
+            @endif
+        </div>
+
+        <form method="POST" action="{{ route('admin.webinars.join-link', $slug) }}"
+              class="mt-4 flex flex-wrap items-start gap-3"
+              onsubmit="return confirm({{ $recipients > 0
+                  ? Js::from("This emails the joining link to all {$recipients} people who have registered. It cannot be unsent. Send it now?")
+                  : Js::from('Nobody has registered yet, so this just saves the link. Continue?') }})">
+            @csrf
+
+            <div class="min-w-[18rem] flex-1">
+                <label for="join_url" class="sr-only">Joining link</label>
+                <input id="join_url" name="join_url" type="url" required
+                       value="{{ old('join_url', $joinUrl) }}"
+                       placeholder="https://zoom.us/j/123456789"
+                       class="w-full rounded-md border bg-[color:var(--color-bg-soft)] px-3.5 py-2.5 text-sm text-ink placeholder:text-[color:var(--color-faint)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-brand)]/40 focus:border-[color:var(--color-brand)] @error('join_url') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                @error('join_url') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+            </div>
+
+            <x-btn type="submit" size="md">
+                <x-icon name="mail" class="w-4 h-4" />
+                {{ $joinUrl ? 'Resend joining link' : 'Send joining link' }}
+                @if ($recipients > 0)
+                    <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{{ $recipients }}</span>
+                @endif
+            </x-btn>
+        </form>
+
+        @if ($joinUrl)
+            <p class="mt-3 text-xs text-[color:var(--color-faint)]">
+                Sending again emails everyone on this list a second time — use it if the link has changed.
+            </p>
+        @endif
+    </div>
+
     {{-- Search. Scoped to this page and labelled as such — filtering here while
          implying it had searched all 300 sign-ups would be a quiet lie on the
          one screen where "they're not on the list" is a decision people act on. --}}
