@@ -9,6 +9,7 @@ use App\Services\CoreX\WebinarClient;
 use App\Support\Sast;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
@@ -40,6 +41,12 @@ class WebinarController extends Controller
         'date',
         'start_time',
         'end_time',
+        // Optional cut-off, earlier than the webinar itself — "register by
+        // Friday". Blank means registration simply runs until the webinar
+        // starts, which is what CoreX does on its own. Joined and converted in
+        // payload(); neither field is sent under these names.
+        'closes_date',
+        'closes_time',
         // join_url is deliberately absent. It is set on the registrants screen,
         // where pasting it also emails it to everyone already signed up. Leaving
         // it here would let this form overwrite a link that had already gone out.
@@ -209,6 +216,28 @@ class WebinarController extends Controller
             // form arguing with you about something you got right.
             'end_time.after' => 'The finishing time has to be later than the starting time. Midday is 12:00 noon — 12:00 midnight is the very start of the day.',
         ]);
+
+        // The cut-off is optional, but if a date is given the time must come
+        // with it, and it has to be before the webinar starts — a deadline
+        // after the start could never take effect, because CoreX closes
+        // registration at the start regardless.
+        if ($request->filled('closes_date')) {
+            $request->validate([
+                'closes_time' => ['required', 'date_format:H:i'],
+            ], [
+                'closes_time.required' => 'Set the time registration should close on that date.',
+                'closes_time.date_format' => 'Set the time registration should close on that date.',
+            ]);
+
+            $closesAt = Sast::fromDateAndTime($request->input('closes_date'), $request->input('closes_time'));
+            $startsAt = Sast::fromDateAndTime($request->input('date'), $request->input('start_time'));
+
+            if (Sast::minutesBetween($closesAt, $startsAt) === null) {
+                throw ValidationException::withMessages([
+                    'closes_date' => 'Registration has to close before the webinar starts. Leave both boxes blank to keep it open right up to the start.',
+                ]);
+            }
+        }
     }
 
     private function payload(Request $request): array
@@ -228,7 +257,17 @@ class WebinarController extends Controller
         $input['starts_at'] = $startsAt;
         $input['duration_minutes'] = Sast::minutesBetween($startsAt, $endsAt);
 
-        unset($input['date'], $input['start_time'], $input['end_time']);
+        // The cut-off. Sent as an empty string when cleared, so CoreX can tell
+        // "no deadline" apart from "field absent, leave it alone" — a null here
+        // would be dropped below and the old deadline would silently survive.
+        $input['registration_closes_at'] = $request->filled('closes_date')
+            ? Sast::fromDateAndTime($input['closes_date'] ?? null, $input['closes_time'] ?? null)
+            : '';
+
+        unset(
+            $input['date'], $input['start_time'], $input['end_time'],
+            $input['closes_date'], $input['closes_time'],
+        );
 
         foreach (['access_ends_days_after', 'reminder_hours_before'] as $number) {
             $input[$number] = is_numeric($input[$number] ?? null) ? (int) $input[$number] : null;

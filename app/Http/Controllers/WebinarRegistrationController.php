@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWebinarRegistrationRequest;
 use App\Services\CoreX\CoreXUnavailable;
 use App\Services\CoreX\WebinarClient;
+use App\Support\Sast;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -41,12 +42,12 @@ class WebinarRegistrationController extends Controller
         // way on purpose, so nobody can map the sales calendar by guessing
         // slugs. To a visitor they are one state: you cannot sign up here.
         if ($result->notFound()) {
-            return view('webinars.closed');
+            return view('webinars.closed', ['webinar' => []]);
         }
 
         $webinar = (array) $result->get('webinar');
 
-        if (($webinar['registration_open'] ?? false) !== true) {
+        if ($this->hasClosed($webinar)) {
             return view('webinars.closed', ['webinar' => $webinar]);
         }
 
@@ -64,6 +65,22 @@ class WebinarRegistrationController extends Controller
         $fields = $request->validated();
 
         try {
+            // Re-read before writing. The form may have sat open in a tab past
+            // the cut-off, and until CoreX enforces registration_closes_at this
+            // is the only thing standing between a late submit and a demo
+            // credential nobody meant to issue.
+            $current = $this->corex->show($slug);
+
+            if ($current->notFound()) {
+                return view('webinars.closed', ['webinar' => []]);
+            }
+
+            $webinar = (array) $current->get('webinar');
+
+            if ($this->hasClosed($webinar)) {
+                return view('webinars.closed', ['webinar' => $webinar]);
+            }
+
             $result = $this->corex->register($slug, $fields);
         } catch (CoreXUnavailable) {
             // Named route rather than back(): a redirect that depends on the
@@ -78,7 +95,7 @@ class WebinarRegistrationController extends Controller
         // Closed, archived or unknown — it may have closed between loading the
         // form and submitting it, so this is reachable in normal use.
         if ($result->notFound()) {
-            return view('webinars.closed');
+            return view('webinars.closed', ['webinar' => []]);
         }
 
         if ($result->invalid()) {
@@ -137,6 +154,29 @@ class WebinarRegistrationController extends Controller
         ]);
 
         return view('webinars.unavailable');
+    }
+
+    /**
+     * Is this webinar shut to new sign-ups?
+     *
+     * Two conditions, and the second is the one CoreX cannot fully own yet. A
+     * team can set a cut-off earlier than the start — "register by Friday" —
+     * and until CoreX enforces `registration_closes_at` itself, this is the
+     * check that closes the door. That is sound because the public never
+     * reaches CoreX directly: every registration comes through this controller,
+     * so this IS the front door, not a courtesy check in front of one.
+     *
+     * @param  array<string, mixed>  $webinar
+     */
+    private function hasClosed(array $webinar): bool
+    {
+        if (($webinar['registration_open'] ?? false) !== true) {
+            return true;
+        }
+
+        $closesAt = Sast::parse($webinar['registration_closes_at'] ?? null);
+
+        return $closesAt !== null && $closesAt->isPast();
     }
 
     /**

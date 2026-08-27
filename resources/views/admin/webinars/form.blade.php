@@ -18,6 +18,11 @@
 
     $startChoices = Sast::timeChoices($startTime);
     $endChoices = Sast::timeChoices($endTime);
+
+    // The optional registration cut-off. Defaults to 17:00 so that choosing a
+    // date alone gives a sensible end-of-working-day deadline.
+    $closesTime = old('closes_time', Sast::timeForInput($webinar['registration_closes_at'] ?? null) ?? '17:00');
+    $closesChoices = Sast::timeChoices($closesTime);
 @endphp
 
 <x-layouts.admin :title="$isEdit ? 'Edit webinar' : 'New webinar'">
@@ -203,6 +208,45 @@
                  Setting it quietly on this form would leave the people who
                  registered before you had the link with a confirmation email
                  that has no link in it, and nothing to tell you so. --}}
+
+            {{-- Optional deadline, earlier than the webinar. Blank keeps
+                 registration open right up to the start, which is what CoreX
+                 does on its own. --}}
+            <div>
+                <label for="closes_date" class="block text-sm font-medium text-ink">
+                    Registration closes <span class="font-normal text-[color:var(--color-faint)]">(optional)</span>
+                </label>
+                <p class="mt-1 text-xs text-[color:var(--color-muted)]">
+                    Set a cut-off if people must sign up by a certain point &mdash; useful when the list has
+                    to be final before the day. Leave blank and registration stays open until the webinar
+                    starts. After the cut-off, the page invites them to email
+                    <span class="font-mono">{{ config('corex.contact_email') }}</span> instead.
+                </p>
+
+                <div class="mt-2 grid gap-4 sm:grid-cols-[1.4fr_1fr_1fr]">
+                    <div>
+                        <input id="closes_date" name="closes_date" type="date"
+                               value="{{ old('closes_date', Sast::dateForInput($webinar['registration_closes_at'] ?? null)) }}"
+                               class="{{ $fieldBase }} @error('closes_date') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                        <span class="mt-1 block text-xs text-[color:var(--color-faint)]">Date</span>
+                        @error('closes_date') <p class="mt-1 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label for="closes_time" class="sr-only">Time registration closes</label>
+                        <select id="closes_time" name="closes_time"
+                                class="{{ $fieldBase }} @error('closes_time') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                            @foreach ($closesChoices as $choiceValue => $choiceLabel)
+                                <option value="{{ $choiceValue }}" @selected($choiceValue === $closesTime)>{{ $choiceLabel }}</option>
+                            @endforeach
+                        </select>
+                        <span class="mt-1 block text-xs text-[color:var(--color-faint)]">Time</span>
+                        @error('closes_time') <p class="mt-1 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div></div>
+                </div>
+            </div>
 
             <div class="grid gap-6 sm:grid-cols-2">
                 <div>

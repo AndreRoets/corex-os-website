@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Support\Sast;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -107,7 +109,7 @@ class WebinarRegistrationTest extends TestCase
 
         $this->get(route('webinars.show', self::SLUG))
             ->assertOk()
-            ->assertSee('closed for registration')
+            ->assertSee('Registration has closed')
             ->assertDontSee('Save your seat');
     }
 
@@ -117,14 +119,99 @@ class WebinarRegistrationTest extends TestCase
 
         $this->get(route('webinars.show', 'no-such-webinar'))
             ->assertOk()
-            ->assertSee('closed for registration');
+            ->assertSee('Registration has closed');
+    }
+
+    // ── The registration cut-off ────────────────────────────────────
+
+    public function test_a_deadline_is_shown_on_the_registration_page(): void
+    {
+        // Built in SAST, not UTC — 17:00 UTC would render as 19:00 here and the
+        // assertion would be testing the timezone rather than the deadline.
+        Http::fake(['*' => Http::response($this->webinarPayload([
+            'registration_closes_at' => CarbonImmutable::now(Sast::ZONE)
+                ->addDays(3)->setTime(17, 0)->toIso8601String(),
+        ]))]);
+
+        $this->get(route('webinars.show', self::SLUG))
+            ->assertOk()
+            ->assertSee('Registration closes')
+            ->assertSee('17:00')
+            ->assertSee('Save your seat');
+    }
+
+    /**
+     * The cut-off is the website's to enforce for now: CoreX still derives
+     * registration_open from the START time, so a webinar past its deadline but
+     * before its start still comes back open.
+     */
+    public function test_a_passed_deadline_closes_the_page_even_though_corex_says_open(): void
+    {
+        Http::fake(['*' => Http::response($this->webinarPayload([
+            'registration_open' => true,
+            'registration_closes_at' => now()->subHour()->toIso8601String(),
+        ]))]);
+
+        $this->get(route('webinars.show', self::SLUG))
+            ->assertOk()
+            ->assertSee('Registration has closed')
+            ->assertSee(config('corex.contact_email'))
+            ->assertDontSee('Save your seat');
+    }
+
+    /**
+     * The form may have sat open in a tab past the deadline. Nothing must reach
+     * CoreX — a late registration would mint a demo credential nobody meant to
+     * issue.
+     */
+    public function test_a_submission_after_the_deadline_never_reaches_corex(): void
+    {
+        Http::fake(['*' => Http::response($this->webinarPayload([
+            'registration_closes_at' => now()->subMinute()->toIso8601String(),
+        ]))]);
+
+        $this->post(route('webinars.register', self::SLUG), [
+            'first_name' => 'Jan',
+            'last_name' => 'Smith',
+            'email' => 'jan@acme.co.za',
+            'company_name' => 'Acme',
+        ])->assertOk()->assertSee('Registration has closed');
+
+        Http::assertNotSent(fn (Request $request) => $request->method() === 'POST');
+    }
+
+    public function test_a_deadline_still_in_the_future_lets_registration_through(): void
+    {
+        Http::fake([
+            '*/register' => Http::response(['ok' => true, 'registered' => true, 'throttled' => false]),
+            '*' => Http::response($this->webinarPayload([
+                'registration_closes_at' => now()->addDay()->toIso8601String(),
+            ])),
+        ]);
+
+        $this->post(route('webinars.register', self::SLUG), [
+            'first_name' => 'Jan',
+            'last_name' => 'Smith',
+            'email' => 'jan@acme.co.za',
+            'company_name' => 'Acme',
+        ])->assertRedirect(route('webinars.thanks', self::SLUG));
+    }
+
+    public function test_the_closed_page_offers_the_website_address(): void
+    {
+        Http::fake(['*' => Http::response(['ok' => false, 'message' => 'Not open.'], 404)]);
+
+        $this->get(route('webinars.show', self::SLUG))
+            ->assertOk()
+            ->assertSee('Still interested?')
+            ->assertSee(config('corex.contact_email'));
     }
 
     public function test_a_successful_registration_lands_on_the_thank_you_page(): void
     {
         Http::fake(['*/register' => Http::response([
             'ok' => true, 'registered' => true, 'throttled' => false,
-        ])]);
+        ]), '*' => Http::response($this->webinarPayload())]);
 
         $this->post(route('webinars.register', self::SLUG), [
             'first_name' => 'Jan',
@@ -156,7 +243,7 @@ class WebinarRegistrationTest extends TestCase
     {
         Http::fake(['*/register' => Http::response([
             'ok' => true, 'registered' => true, 'throttled' => true,
-        ])]);
+        ]), '*' => Http::response($this->webinarPayload())]);
 
         $response = $this->followingRedirects()->post(route('webinars.register', self::SLUG), [
             'first_name' => 'Jan',
@@ -183,7 +270,7 @@ class WebinarRegistrationTest extends TestCase
                 'email' => ['Please enter a valid email address.'],
                 'company_name' => ['Please enter your company name.'],
             ],
-        ], 422)]);
+        ], 422), '*' => Http::response($this->webinarPayload())]);
 
         $this->post(route('webinars.register', self::SLUG), [
             'first_name' => 'Jan',
@@ -209,7 +296,7 @@ class WebinarRegistrationTest extends TestCase
         Http::fake(['*/register' => Http::response([
             'ok' => false,
             'errors' => ['name' => ['Please enter your name.']],
-        ], 422)]);
+        ], 422), '*' => Http::response($this->webinarPayload())]);
 
         $this->post(route('webinars.register', self::SLUG), [
             'first_name' => 'J',
@@ -221,7 +308,7 @@ class WebinarRegistrationTest extends TestCase
 
     public function test_the_name_is_sent_split_and_joined_during_the_changeover(): void
     {
-        Http::fake(['*/register' => Http::response(['ok' => true, 'registered' => true, 'throttled' => false])]);
+        Http::fake(['*/register' => Http::response(['ok' => true, 'registered' => true, 'throttled' => false]), '*' => Http::response($this->webinarPayload())]);
 
         $this->post(route('webinars.register', self::SLUG), [
             'first_name' => 'Jan',
@@ -232,6 +319,12 @@ class WebinarRegistrationTest extends TestCase
         ]);
 
         Http::assertSent(function (Request $request) {
+            // The controller re-reads the webinar before writing, so skip that
+            // GET and assert against the registration itself.
+            if ($request->method() !== 'POST') {
+                return true;
+            }
+
             $body = $request->data();
 
             // Collected as two inputs from day one — splitting a full name later
@@ -252,7 +345,7 @@ class WebinarRegistrationTest extends TestCase
     {
         config(['corex.send_legacy_name' => false]);
 
-        Http::fake(['*/register' => Http::response(['ok' => true, 'registered' => true, 'throttled' => false])]);
+        Http::fake(['*/register' => Http::response(['ok' => true, 'registered' => true, 'throttled' => false]), '*' => Http::response($this->webinarPayload())]);
 
         $this->post(route('webinars.register', self::SLUG), [
             'first_name' => 'Jan',
@@ -262,6 +355,10 @@ class WebinarRegistrationTest extends TestCase
         ]);
 
         Http::assertSent(function (Request $request) {
+            if ($request->method() !== 'POST') {
+                return true;
+            }
+
             $this->assertArrayNotHasKey('name', $request->data());
 
             return true;
@@ -270,14 +367,14 @@ class WebinarRegistrationTest extends TestCase
 
     public function test_a_registration_that_closed_in_the_meantime_shows_the_closed_state(): void
     {
-        Http::fake(['*/register' => Http::response(['ok' => false, 'message' => 'Not open.'], 404)]);
+        Http::fake(['*/register' => Http::response(['ok' => false, 'message' => 'Not open.'], 404), '*' => Http::response($this->webinarPayload())]);
 
         $this->post(route('webinars.register', self::SLUG), [
             'first_name' => 'Jan',
             'last_name' => 'Smith',
             'email' => 'jan@acme.co.za',
             'company_name' => 'Acme',
-        ])->assertOk()->assertSee('closed for registration');
+        ])->assertOk()->assertSee('Registration has closed');
     }
 
     /**
@@ -319,7 +416,7 @@ class WebinarRegistrationTest extends TestCase
     public function test_the_website_sends_no_email_of_its_own(): void
     {
         Mail::fake();
-        Http::fake(['*/register' => Http::response(['ok' => true, 'registered' => true, 'throttled' => false])]);
+        Http::fake(['*/register' => Http::response(['ok' => true, 'registered' => true, 'throttled' => false]), '*' => Http::response($this->webinarPayload())]);
 
         $this->post(route('webinars.register', self::SLUG), [
             'first_name' => 'Jan',

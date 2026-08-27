@@ -51,4 +51,13 @@ return [
     */
     'timezone' => 'Africa/Johannesburg',
 
+    /*
+    | Where someone who arrives too late is told to write.
+    |
+    | A closed registration page is a warm lead standing at a locked door. The
+    | address is on that page so the answer to "can I still come?" is one click,
+    | not a search for a contact form.
+    */
+    'contact_email' => env('COREX_CONTACT_EMAIL', 'info@corexweb.co.za'),
+
 ];

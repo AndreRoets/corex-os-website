@@ -85,6 +85,18 @@
                             We&rsquo;ll email your joining link and your demo login.
                         </p>
 
+                        {{-- A deadline only helps if it is on the page people
+                             are deciding on, not buried in the invitation. --}}
+                        @if ($closesAt = Sast::parse($webinar['registration_closes_at'] ?? null))
+                            <p class="mt-3 flex items-start gap-2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-bg-soft)] px-3.5 py-2.5 text-xs text-[color:var(--color-muted)]">
+                                <x-icon name="calendar" class="mt-0.5 w-3.5 h-3.5 shrink-0 text-[color:var(--color-brand)]" />
+                                <span>
+                                    Registration closes
+                                    <span class="font-medium text-ink">{{ $closesAt->format('l j F \a\t H:i') }} SAST</span>.
+                                </span>
+                            </p>
+                        @endif
+
                         @if (session('webinar_error'))
                             <div class="mt-5 rounded-md border border-[#e11d48]/40 bg-[#e11d48]/10 px-4 py-3 text-sm text-[#fb7185]" role="alert">
                                 {{ session('webinar_error') }}
