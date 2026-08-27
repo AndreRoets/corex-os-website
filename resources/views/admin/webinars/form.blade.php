@@ -94,45 +94,61 @@
                 @error('description') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Start and end, not start and duration. A webinar is described
-                 out loud as "two till three"; making someone do the arithmetic
-                 into minutes is a step they can get wrong for no reason. CoreX
-                 stores a start plus a duration, so the controller converts. --}}
-            <div class="grid gap-6 sm:grid-cols-2"
-                 x-data="{
-                     start: @js(old('starts_at', Sast::forInput($webinar['starts_at'] ?? null))),
-                     end: @js(old('ends_at', Sast::endForInput($webinar['starts_at'] ?? null, $webinar['duration_minutes'] ?? 60))),
+            {{-- One date, then a start and a finish time. A webinar happens on a
+                 single day, so asking for the date twice only creates ways to
+                 get it wrong — an end on the wrong day, or "12:00 AM" (midnight)
+                 read as earlier than a 10:00 AM start. CoreX stores a start plus
+                 a duration; the controller joins these three and converts. --}}
+            <div x-data="{
+                     start: @js(old('start_time', Sast::timeForInput($webinar['starts_at'] ?? null))),
+                     end: @js(old('end_time', Sast::endTimeForInput($webinar['starts_at'] ?? null, $webinar['duration_minutes'] ?? 60))),
                      syncEnd() {
                          if (! this.start) return;
-                         // Only ever fill a blank or now-impossible end time —
-                         // never overwrite one that has been set deliberately.
-                         if (this.end &amp;&amp; this.end > this.start) return;
-                         const d = new Date(this.start);
-                         if (isNaN(d)) return;
-                         d.setMinutes(d.getMinutes() + 60);
+                         // Only ever fill a blank or now-impossible finish time —
+                         // never overwrite one that was set deliberately.
+                         if (this.end && this.end > this.start) return;
+                         const [h, m] = this.start.split(':').map(Number);
+                         if (isNaN(h) || isNaN(m)) return;
+                         const mins = (h * 60 + m + 60) % (24 * 60);
                          const p = (n) => String(n).padStart(2, '0');
-                         this.end = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+                         this.end = `${p(Math.floor(mins / 60))}:${p(mins % 60)}`;
                      },
                  }">
-                <div>
-                    <label for="starts_at" class="block text-sm font-medium text-ink">Starts</label>
-                    <p class="mt-1 text-xs text-[color:var(--color-muted)]">South African time. Registration closes automatically when the webinar starts.</p>
-                    {{-- This input has no timezone of its own. What is typed here
-                         is read as SAST and sent to CoreX with an explicit
-                         +02:00 — see App\Support\Sast. --}}
-                    <input id="starts_at" name="starts_at" type="datetime-local" required
-                           x-model="start" @change="syncEnd()"
-                           class="{{ $fieldBase }} mt-2 @error('starts_at') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
-                    @error('starts_at') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
-                </div>
+                <label for="date" class="block text-sm font-medium text-ink">Date and time</label>
+                <p class="mt-1 text-xs text-[color:var(--color-muted)]">
+                    South African time. Registration closes automatically when the webinar starts, and the
+                    finishing time is what shows in the calendar invite.
+                </p>
 
-                <div>
-                    <label for="ends_at" class="block text-sm font-medium text-ink">Ends</label>
-                    <p class="mt-1 text-xs text-[color:var(--color-muted)]">South African time. Used for the calendar invite, so it shows in their diary with the right finish time.</p>
-                    <input id="ends_at" name="ends_at" type="datetime-local" required
-                           x-model="end"
-                           class="{{ $fieldBase }} mt-2 @error('ends_at') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
-                    @error('ends_at') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                <div class="mt-2 grid gap-4 sm:grid-cols-[1.4fr_1fr_1fr]">
+                    <div>
+                        {{-- These inputs carry no timezone. What is typed is read
+                             as SAST and sent to CoreX with an explicit +02:00 —
+                             see App\Support\Sast. --}}
+                        <input id="date" name="date" type="date" required
+                               value="{{ old('date', Sast::dateForInput($webinar['starts_at'] ?? null)) }}"
+                               class="{{ $fieldBase }} @error('date') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                        <span class="mt-1 block text-xs text-[color:var(--color-faint)]">Date</span>
+                        @error('date') <p class="mt-1 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label for="start_time" class="sr-only">Starting time</label>
+                        <input id="start_time" name="start_time" type="time" required
+                               x-model="start" @change="syncEnd()"
+                               class="{{ $fieldBase }} @error('start_time') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                        <span class="mt-1 block text-xs text-[color:var(--color-faint)]">Starts</span>
+                        @error('start_time') <p class="mt-1 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label for="end_time" class="sr-only">Finishing time</label>
+                        <input id="end_time" name="end_time" type="time" required
+                               x-model="end"
+                               class="{{ $fieldBase }} @error('end_time') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                        <span class="mt-1 block text-xs text-[color:var(--color-faint)]">Ends</span>
+                        @error('end_time') <p class="mt-1 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                    </div>
                 </div>
             </div>
 

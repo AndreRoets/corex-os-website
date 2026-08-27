@@ -89,9 +89,25 @@ final class Sast
     }
 
     /**
-     * A start plus a duration, rendered back as the end time for a form input.
+     * The date half, for an <input type="date">.
      */
-    public static function endForInput(?string $startIso, int|string|null $durationMinutes): ?string
+    public static function dateForInput(?string $iso): ?string
+    {
+        return self::parse($iso)?->format('Y-m-d');
+    }
+
+    /**
+     * The time half, for an <input type="time">.
+     */
+    public static function timeForInput(?string $iso): ?string
+    {
+        return self::parse($iso)?->format('H:i');
+    }
+
+    /**
+     * A start plus a duration, rendered back as the finishing time.
+     */
+    public static function endTimeForInput(?string $startIso, int|string|null $durationMinutes): ?string
     {
         $start = self::parse($startIso);
 
@@ -99,7 +115,23 @@ final class Sast
             return null;
         }
 
-        return $start->addMinutes((int) $durationMinutes)->format('Y-m-d\TH:i');
+        return $start->addMinutes((int) $durationMinutes)->format('H:i');
+    }
+
+    /**
+     * Join a date and a time from the form into one SAST timestamp for CoreX.
+     *
+     * Split across two inputs because a webinar happens on ONE day, and asking
+     * for the date twice is how you end up with a webinar that ends before it
+     * starts — or a month earlier.
+     */
+    public static function fromDateAndTime(?string $date, ?string $time): ?string
+    {
+        if (blank($date) || blank($time)) {
+            return null;
+        }
+
+        return self::fromInput(trim($date).'T'.trim($time));
     }
 
     /**

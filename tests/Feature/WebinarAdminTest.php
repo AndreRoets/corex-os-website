@@ -300,8 +300,9 @@ class WebinarAdminTest extends TestCase
             'title' => 'CoreX OS — a walkthrough',
             'slug' => '',
             'description' => 'Everything a principal needs to see.',
-            'starts_at' => '2026-09-10T14:00',
-            'ends_at' => '2026-09-10T15:30',
+            'date' => '2026-09-10',
+            'start_time' => '14:00',
+            'end_time' => '15:30',
             'access_ends_days_after' => '3',
             'reminder_hours_before' => '24',
         ])->assertRedirect(route('admin.webinars.index'));
@@ -330,25 +331,35 @@ class WebinarAdminTest extends TestCase
 
         $this->actingAs($this->admin())->post(route('admin.webinars.store'), [
             'title' => 'Backwards',
-            'starts_at' => '2026-09-10T14:00',
-            'ends_at' => '2026-09-10T13:00',
+            'date' => '2026-09-10',
+            'start_time' => '14:00',
+            'end_time' => '13:00',
             'access_ends_days_after' => '3',
             'reminder_hours_before' => '24',
-        ])->assertSessionHasErrors(['ends_at' => 'The end time has to be after the start time.']);
+        ])->assertSessionHasErrors(['end_time' => 'The finishing time has to be later in the day than the starting time.']);
 
         Http::assertNothingSent();
     }
 
-    public function test_the_form_asks_for_a_start_and_an_end(): void
+    /**
+     * One date, two times. Two full date-times let someone set an end on a
+     * different day from the start — and "12:00 AM" is midnight, so against a
+     * 10:00 AM start it reads as earlier the same day.
+     */
+    public function test_the_form_asks_for_one_date_and_two_times(): void
     {
         Http::fake();
 
         $this->actingAs($this->admin())
             ->get(route('admin.webinars.create'))
             ->assertOk()
-            ->assertSee('name="starts_at"', false)
-            ->assertSee('name="ends_at"', false)
-            // Nobody should have to convert "two till three" into minutes.
+            ->assertSee('type="date"', false)
+            ->assertSee('name="date"', false)
+            ->assertSee('name="start_time"', false)
+            ->assertSee('name="end_time"', false)
+            // No second date to disagree with the first.
+            ->assertDontSee('name="ends_at"', false)
+            // And nobody converting "two till three" into minutes.
             ->assertDontSee('How long (minutes)')
             ->assertDontSee('name="duration_minutes"', false);
     }
@@ -364,8 +375,9 @@ class WebinarAdminTest extends TestCase
             ->post(route('admin.webinars.store'), [
                 'title' => 'Taken',
                 'slug' => 'corex-walkthrough-sept',
-                'starts_at' => '2026-09-10T14:00',
-                'ends_at' => '2026-09-10T15:00',
+                'date' => '2026-09-10',
+                'start_time' => '14:00',
+                'end_time' => '15:00',
             ])
             ->assertSessionHasErrors(['slug' => 'That link name is already taken.']);
     }
@@ -385,8 +397,11 @@ class WebinarAdminTest extends TestCase
             ->assertOk()
             ->assertSee('People have already registered.')
             ->assertSee('keep the end date they')
-            // The datetime-local value is the SAST wall-clock time, not UTC.
-            ->assertSee('2026-09-10T14:00', false);
+            // The prefilled values are the SAST wall-clock time, not UTC, and
+            // the finish time is derived from the stored duration.
+            ->assertSee('value="2026-09-10"', false)
+            ->assertSee('14:00')
+            ->assertSee('15:00');
     }
 
     /**
@@ -399,8 +414,9 @@ class WebinarAdminTest extends TestCase
 
         $this->actingAs($this->admin())->put(route('admin.webinars.update', self::SLUG), [
             'title' => 'CoreX OS — a walkthrough',
-            'starts_at' => '2026-09-10T14:00',
-            'ends_at' => '2026-09-10T15:00',
+            'date' => '2026-09-10',
+            'start_time' => '14:00',
+            'end_time' => '15:00',
             'reminder_hours_before' => '',
             '_unknown' => ['reminder_hours_before'],
         ]);

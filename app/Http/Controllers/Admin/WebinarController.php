@@ -32,12 +32,14 @@ class WebinarController extends Controller
         'title',
         'slug',
         'description',
-        'starts_at',
-        // The form asks for an END TIME, because that is how a webinar is
-        // described out loud — "two till three", not "two, for sixty minutes".
-        // CoreX stores a start plus a duration, so payload() converts. `ends_at`
-        // is ours alone and is never sent.
-        'ends_at',
+        // ONE date, then a start and a finish time — the way a webinar is
+        // actually described: "the 29th, ten till twelve". Two full date-times
+        // let you set an end on a different day from the start, which is never
+        // what anyone means here. CoreX stores a start plus a duration, so
+        // payload() joins these three and converts. None of them are sent.
+        'date',
+        'start_time',
+        'end_time',
         // join_url is deliberately absent. It is set on the registrants screen,
         // where pasting it also emails it to everyone already signed up. Leaving
         // it here would let this form overwrite a link that had already gone out.
@@ -191,12 +193,19 @@ class WebinarController extends Controller
     private function validateTimes(Request $request): void
     {
         $request->validate([
-            'starts_at' => ['required', 'date'],
-            'ends_at' => ['required', 'date', 'after:starts_at'],
+            'date' => ['required', 'date_format:Y-m-d'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
         ], [
-            'starts_at.required' => 'Set the date and time the webinar starts.',
-            'ends_at.required' => 'Set the time the webinar ends.',
-            'ends_at.after' => 'The end time has to be after the start time.',
+            'date.required' => 'Set the date the webinar runs on.',
+            'date.date_format' => 'Set the date the webinar runs on.',
+            'start_time.required' => 'Set the time the webinar starts.',
+            'start_time.date_format' => 'Set the time the webinar starts.',
+            'end_time.required' => 'Set the time the webinar ends.',
+            'end_time.date_format' => 'Set the time the webinar ends.',
+            // The trap this replaced: 12:00 AM is midnight, so an end of
+            // "12:00 AM" against a 10:00 AM start reads as earlier the same day.
+            'end_time.after' => 'The finishing time has to be later in the day than the starting time.',
         ]);
     }
 
@@ -207,15 +216,17 @@ class WebinarController extends Controller
         // A datetime-local input has no offset at all. Sending it raw would let
         // CoreX guess, and sending it as UTC would move every webinar two
         // hours. It is South African time and it goes out saying so.
-        $input['starts_at'] = Sast::fromInput($input['starts_at'] ?? null);
+        // One date plus two times becomes the single SAST start CoreX stores,
+        // and the gap between them becomes its duration. The three form fields
+        // are ours alone and are dropped — CoreX has no date/start_time/end_time
+        // and a stray key invites it to grow one by accident.
+        $startsAt = Sast::fromDateAndTime($input['date'] ?? null, $input['start_time'] ?? null);
+        $endsAt = Sast::fromDateAndTime($input['date'] ?? null, $input['end_time'] ?? null);
 
-        // Turn "ends at" back into the duration CoreX stores, then drop it —
-        // CoreX has no ends_at field and would ignore it anyway.
-        $input['duration_minutes'] = Sast::minutesBetween(
-            $input['starts_at'],
-            Sast::fromInput($input['ends_at'] ?? null),
-        );
-        unset($input['ends_at']);
+        $input['starts_at'] = $startsAt;
+        $input['duration_minutes'] = Sast::minutesBetween($startsAt, $endsAt);
+
+        unset($input['date'], $input['start_time'], $input['end_time']);
 
         foreach (['access_ends_days_after', 'reminder_hours_before'] as $number) {
             $input[$number] = is_numeric($input[$number] ?? null) ? (int) $input[$number] : null;
