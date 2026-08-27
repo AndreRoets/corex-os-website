@@ -198,7 +198,6 @@ class WebinarAdminTest extends TestCase
             ->assertDontSee('Joining link')
             ->assertDontSee('name="join_url"', false)
             // The defaults the help text promises.
-            ->assertSee('value="60"', false)
             ->assertSee('value="3"', false)
             ->assertSee('value="24"', false);
 
@@ -302,19 +301,56 @@ class WebinarAdminTest extends TestCase
             'slug' => '',
             'description' => 'Everything a principal needs to see.',
             'starts_at' => '2026-09-10T14:00',
-            'duration_minutes' => '60',
-            'join_url' => 'https://zoom.us/j/123456789',
+            'ends_at' => '2026-09-10T15:30',
             'access_ends_days_after' => '3',
             'reminder_hours_before' => '24',
         ])->assertRedirect(route('admin.webinars.index'));
 
         Http::assertSent(function (Request $request) {
             $this->assertSame('2026-09-10T14:00:00+02:00', $request->data()['starts_at']);
-            $this->assertSame(60, $request->data()['duration_minutes']);
+            // The form asks for an end time; CoreX stores a duration.
+            $this->assertSame(90, $request->data()['duration_minutes']);
+            // ends_at is ours alone and must never be sent — CoreX has no such
+            // field and a stray key invites it to grow one by accident.
+            $this->assertArrayNotHasKey('ends_at', $request->data());
             $this->assertSame(3, $request->data()['access_ends_days_after']);
 
             return true;
         });
+    }
+
+    /**
+     * CoreX only ever receives a duration, so it cannot catch this. Unchecked,
+     * the entered time would be silently discarded and CoreX would fall back to
+     * its own default length with nothing on screen to say so.
+     */
+    public function test_an_end_time_before_the_start_is_refused(): void
+    {
+        Http::fake();
+
+        $this->actingAs($this->admin())->post(route('admin.webinars.store'), [
+            'title' => 'Backwards',
+            'starts_at' => '2026-09-10T14:00',
+            'ends_at' => '2026-09-10T13:00',
+            'access_ends_days_after' => '3',
+            'reminder_hours_before' => '24',
+        ])->assertSessionHasErrors(['ends_at' => 'The end time has to be after the start time.']);
+
+        Http::assertNothingSent();
+    }
+
+    public function test_the_form_asks_for_a_start_and_an_end(): void
+    {
+        Http::fake();
+
+        $this->actingAs($this->admin())
+            ->get(route('admin.webinars.create'))
+            ->assertOk()
+            ->assertSee('name="starts_at"', false)
+            ->assertSee('name="ends_at"', false)
+            // Nobody should have to convert "two till three" into minutes.
+            ->assertDontSee('How long (minutes)')
+            ->assertDontSee('name="duration_minutes"', false);
     }
 
     public function test_corex_validation_errors_render_against_their_own_fields(): void
@@ -329,6 +365,7 @@ class WebinarAdminTest extends TestCase
                 'title' => 'Taken',
                 'slug' => 'corex-walkthrough-sept',
                 'starts_at' => '2026-09-10T14:00',
+                'ends_at' => '2026-09-10T15:00',
             ])
             ->assertSessionHasErrors(['slug' => 'That link name is already taken.']);
     }
@@ -353,8 +390,8 @@ class WebinarAdminTest extends TestCase
     }
 
     /**
-     * If CoreX cannot tell us the current joining link, the field is blank —
-     * and saving a blank field must not wipe the link that is actually set.
+     * If CoreX cannot tell us a field's current value, the input is blank — and
+     * saving a blank input must not overwrite the value that is actually set.
      */
     public function test_a_field_corex_did_not_return_is_left_out_of_the_save(): void
     {
@@ -363,8 +400,9 @@ class WebinarAdminTest extends TestCase
         $this->actingAs($this->admin())->put(route('admin.webinars.update', self::SLUG), [
             'title' => 'CoreX OS — a walkthrough',
             'starts_at' => '2026-09-10T14:00',
-            'join_url' => '',
-            '_unknown' => ['join_url'],
+            'ends_at' => '2026-09-10T15:00',
+            'reminder_hours_before' => '',
+            '_unknown' => ['reminder_hours_before'],
         ]);
 
         Http::assertSent(function (Request $request) {
@@ -373,9 +411,9 @@ class WebinarAdminTest extends TestCase
             }
 
             $this->assertArrayNotHasKey(
-                'join_url',
+                'reminder_hours_before',
                 $request->data(),
-                'A joining link we could not read must not be overwritten with a blank.',
+                'A value we could not read must not be overwritten with a blank.',
             );
 
             return true;

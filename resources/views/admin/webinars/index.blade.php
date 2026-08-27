@@ -75,7 +75,11 @@
                                 @if ($startsAt)
                                     {{ $startsAt->format('j M Y') }}
                                     <span class="block text-xs text-[color:var(--color-faint)]">
-                                        {{ $startsAt->format('H:i') }} SAST @if (! empty($webinar['duration_minutes'])) · {{ $webinar['duration_minutes'] }} min @endif
+                                        @if (! empty($webinar['duration_minutes']))
+                                            {{ $startsAt->format('H:i') }}&ndash;{{ $startsAt->addMinutes((int) $webinar['duration_minutes'])->format('H:i') }} SAST
+                                        @else
+                                            {{ $startsAt->format('H:i') }} SAST
+                                        @endif
                                     </span>
                                 @else
                                     &mdash;

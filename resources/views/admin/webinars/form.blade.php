@@ -94,26 +94,45 @@
                 @error('description') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
             </div>
 
-            <div class="grid gap-6 sm:grid-cols-2">
+            {{-- Start and end, not start and duration. A webinar is described
+                 out loud as "two till three"; making someone do the arithmetic
+                 into minutes is a step they can get wrong for no reason. CoreX
+                 stores a start plus a duration, so the controller converts. --}}
+            <div class="grid gap-6 sm:grid-cols-2"
+                 x-data="{
+                     start: @js(old('starts_at', Sast::forInput($webinar['starts_at'] ?? null))),
+                     end: @js(old('ends_at', Sast::endForInput($webinar['starts_at'] ?? null, $webinar['duration_minutes'] ?? 60))),
+                     syncEnd() {
+                         if (! this.start) return;
+                         // Only ever fill a blank or now-impossible end time —
+                         // never overwrite one that has been set deliberately.
+                         if (this.end &amp;&amp; this.end > this.start) return;
+                         const d = new Date(this.start);
+                         if (isNaN(d)) return;
+                         d.setMinutes(d.getMinutes() + 60);
+                         const p = (n) => String(n).padStart(2, '0');
+                         this.end = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+                     },
+                 }">
                 <div>
-                    <label for="starts_at" class="block text-sm font-medium text-ink">Date and time</label>
+                    <label for="starts_at" class="block text-sm font-medium text-ink">Starts</label>
                     <p class="mt-1 text-xs text-[color:var(--color-muted)]">South African time. Registration closes automatically when the webinar starts.</p>
                     {{-- This input has no timezone of its own. What is typed here
                          is read as SAST and sent to CoreX with an explicit
                          +02:00 — see App\Support\Sast. --}}
                     <input id="starts_at" name="starts_at" type="datetime-local" required
-                           value="{{ old('starts_at', Sast::forInput($webinar['starts_at'] ?? null)) }}"
+                           x-model="start" @change="syncEnd()"
                            class="{{ $fieldBase }} mt-2 @error('starts_at') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
                     @error('starts_at') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label for="duration_minutes" class="block text-sm font-medium text-ink">How long (minutes)</label>
-                    <p class="mt-1 text-xs text-[color:var(--color-muted)]">Used for the calendar invite.</p>
-                    <input id="duration_minutes" name="duration_minutes" type="number" min="1" step="1"
-                           value="{{ $value('duration_minutes', 60) }}"
-                           class="{{ $fieldBase }} mt-2 @error('duration_minutes') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
-                    @error('duration_minutes') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                    <label for="ends_at" class="block text-sm font-medium text-ink">Ends</label>
+                    <p class="mt-1 text-xs text-[color:var(--color-muted)]">South African time. Used for the calendar invite, so it shows in their diary with the right finish time.</p>
+                    <input id="ends_at" name="ends_at" type="datetime-local" required
+                           x-model="end"
+                           class="{{ $fieldBase }} mt-2 @error('ends_at') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                    @error('ends_at') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
                 </div>
             </div>
 

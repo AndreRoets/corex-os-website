@@ -35,7 +35,11 @@
                                 {{ $startsAt->format('l, j F Y') }}
                             </span>
                             <span class="text-[color:var(--color-muted)]">
-                                {{ $startsAt->format('H:i') }} SAST @if ($duration) · {{ $duration }} minutes @endif
+                                @if ($duration)
+                                    {{ $startsAt->format('H:i') }}&ndash;{{ $startsAt->addMinutes((int) $duration)->format('H:i') }} SAST
+                                @else
+                                    {{ $startsAt->format('H:i') }} SAST
+                                @endif
                             </span>
                         </div>
                     @endif

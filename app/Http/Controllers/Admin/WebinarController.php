@@ -33,7 +33,11 @@ class WebinarController extends Controller
         'slug',
         'description',
         'starts_at',
-        'duration_minutes',
+        // The form asks for an END TIME, because that is how a webinar is
+        // described out loud — "two till three", not "two, for sixty minutes".
+        // CoreX stores a start plus a duration, so payload() converts. `ends_at`
+        // is ours alone and is never sent.
+        'ends_at',
         // join_url is deliberately absent. It is set on the registrants screen,
         // where pasting it also emails it to everyone already signed up. Leaving
         // it here would let this form overwrite a link that had already gone out.
@@ -76,6 +80,8 @@ class WebinarController extends Controller
 
     public function store(Request $request): RedirectResponse|View
     {
+        $this->validateTimes($request);
+
         try {
             $result = $this->corex->createWebinar($this->payload($request));
         } catch (CoreXUnavailable $e) {
@@ -125,6 +131,8 @@ class WebinarController extends Controller
 
     public function update(Request $request, string $slug): RedirectResponse
     {
+        $this->validateTimes($request);
+
         try {
             $result = $this->corex->updateWebinar($slug, $this->payload($request));
         } catch (CoreXUnavailable $e) {
@@ -172,6 +180,26 @@ class WebinarController extends Controller
     /**
      * Turn the form into the JSON CoreX expects.
      */
+    /**
+     * The start/end pair, checked here because CoreX cannot check it.
+     *
+     * CoreX only ever receives a duration. An end time before the start would
+     * come out as no duration at all, CoreX would fall back to its own default,
+     * and the webinar would silently be an hour long with nothing on screen to
+     * say the entered time had been discarded.
+     */
+    private function validateTimes(Request $request): void
+    {
+        $request->validate([
+            'starts_at' => ['required', 'date'],
+            'ends_at' => ['required', 'date', 'after:starts_at'],
+        ], [
+            'starts_at.required' => 'Set the date and time the webinar starts.',
+            'ends_at.required' => 'Set the time the webinar ends.',
+            'ends_at.after' => 'The end time has to be after the start time.',
+        ]);
+    }
+
     private function payload(Request $request): array
     {
         $input = $request->only(self::FORM_FIELDS);
@@ -181,7 +209,15 @@ class WebinarController extends Controller
         // hours. It is South African time and it goes out saying so.
         $input['starts_at'] = Sast::fromInput($input['starts_at'] ?? null);
 
-        foreach (['duration_minutes', 'access_ends_days_after', 'reminder_hours_before'] as $number) {
+        // Turn "ends at" back into the duration CoreX stores, then drop it —
+        // CoreX has no ends_at field and would ignore it anyway.
+        $input['duration_minutes'] = Sast::minutesBetween(
+            $input['starts_at'],
+            Sast::fromInput($input['ends_at'] ?? null),
+        );
+        unset($input['ends_at']);
+
+        foreach (['access_ends_days_after', 'reminder_hours_before'] as $number) {
             $input[$number] = is_numeric($input[$number] ?? null) ? (int) $input[$number] : null;
         }
 

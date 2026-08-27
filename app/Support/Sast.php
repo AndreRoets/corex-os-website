@@ -69,6 +69,40 @@ final class Sast
     }
 
     /**
+     * How many whole minutes from one moment to another, or null if either is
+     * unreadable or the end is not after the start.
+     *
+     * CoreX stores a start plus a duration; people think in "two till three".
+     * This is the one conversion between those, so the form can ask the question
+     * the way it is actually asked out loud.
+     */
+    public static function minutesBetween(?string $startIso, ?string $endIso): ?int
+    {
+        $start = self::parse($startIso);
+        $end = self::parse($endIso);
+
+        if (! $start || ! $end || $end->lessThanOrEqualTo($start)) {
+            return null;
+        }
+
+        return (int) $start->diffInMinutes($end);
+    }
+
+    /**
+     * A start plus a duration, rendered back as the end time for a form input.
+     */
+    public static function endForInput(?string $startIso, int|string|null $durationMinutes): ?string
+    {
+        $start = self::parse($startIso);
+
+        if (! $start || ! is_numeric($durationMinutes)) {
+            return null;
+        }
+
+        return $start->addMinutes((int) $durationMinutes)->format('Y-m-d\TH:i');
+    }
+
+    /**
      * The inverse: a naive "2026-09-10T14:00" from the browser becomes
      * "2026-09-10T14:00:00+02:00" for CoreX. Explicitly SAST, never UTC and
      * never a bare local string.
