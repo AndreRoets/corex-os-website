@@ -203,9 +203,11 @@ class WebinarController extends Controller
             'start_time.date_format' => 'Set the time the webinar starts.',
             'end_time.required' => 'Set the time the webinar ends.',
             'end_time.date_format' => 'Set the time the webinar ends.',
-            // The trap this replaced: 12:00 AM is midnight, so an end of
-            // "12:00 AM" against a 10:00 AM start reads as earlier the same day.
-            'end_time.after' => 'The finishing time has to be later in the day than the starting time.',
+            // Name the trap rather than repeating the rule. "12:00 AM" is
+            // midnight, the start of the day, so choosing it for a midday finish
+            // gets refused as earlier than a 10:00 start — which reads as the
+            // form arguing with you about something you got right.
+            'end_time.after' => 'The finishing time has to be later than the starting time. Midday is 12:00 noon — 12:00 midnight is the very start of the day.',
         ]);
     }
 

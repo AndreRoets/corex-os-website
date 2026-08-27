@@ -336,7 +336,7 @@ class WebinarAdminTest extends TestCase
             'end_time' => '13:00',
             'access_ends_days_after' => '3',
             'reminder_hours_before' => '24',
-        ])->assertSessionHasErrors(['end_time' => 'The finishing time has to be later in the day than the starting time.']);
+        ])->assertSessionHasErrors(['end_time' => 'The finishing time has to be later than the starting time. Midday is 12:00 noon — 12:00 midnight is the very start of the day.']);
 
         Http::assertNothingSent();
     }
@@ -357,6 +357,11 @@ class WebinarAdminTest extends TestCase
             ->assertSee('name="date"', false)
             ->assertSee('name="start_time"', false)
             ->assertSee('name="end_time"', false)
+            // Spelled out, because an AM/PM control is where "12:00 AM" gets
+            // chosen for midday and then refused for being earlier than 10:00.
+            ->assertSee('12:00 noon')
+            ->assertSee('12:00 midnight')
+            ->assertDontSee('type="time"', false)
             // No second date to disagree with the first.
             ->assertDontSee('name="ends_at"', false)
             // And nobody converting "two till three" into minutes.

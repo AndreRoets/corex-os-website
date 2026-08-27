@@ -119,6 +119,62 @@ final class Sast
     }
 
     /**
+     * Times for a dropdown, every quarter hour, labelled so they cannot be
+     * misread.
+     *
+     * A native <input type="time"> renders in the browser's locale, which for
+     * most people here means an AM/PM control — and in that control midday is
+     * "12:00 PM" while "12:00 AM" is midnight, the START of the day. Choosing
+     * 12:00 AM for a noon finish is the obvious reading and the wrong one, and
+     * the form then refuses a time the person believes is later. Spelling out
+     * "noon" and "midnight" removes the guess entirely.
+     *
+     * Values are 24-hour "HH:MM", which is what the controller validates.
+     *
+     * @param  string|null  $include  a stored time to keep even if it is not on
+     *                                the quarter-hour grid
+     * @return array<string, string>
+     */
+    public static function timeChoices(?string $include = null): array
+    {
+        $choices = [];
+
+        for ($minutes = 0; $minutes < 24 * 60; $minutes += 15) {
+            $value = sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60);
+            $choices[$value] = self::timeLabel($value);
+        }
+
+        // An existing webinar set to, say, 10:20 must not silently become 10:15
+        // just because this list counts in quarters.
+        if ($include !== null && $include !== '' && ! isset($choices[$include])) {
+            $choices[$include] = self::timeLabel($include);
+            ksort($choices);
+        }
+
+        return $choices;
+    }
+
+    /**
+     * "12:00 noon", "12:00 midnight", "1:30 pm".
+     */
+    public static function timeLabel(string $time): string
+    {
+        [$hour, $minute] = array_pad(array_map('intval', explode(':', $time, 2)), 2, 0);
+
+        $clock = sprintf('%d:%02d', $hour % 12 === 0 ? 12 : $hour % 12, $minute);
+
+        if ($hour === 0 && $minute === 0) {
+            return $clock.' midnight';
+        }
+
+        if ($hour === 12 && $minute === 0) {
+            return $clock.' noon';
+        }
+
+        return $clock.' '.($hour < 12 ? 'am' : 'pm');
+    }
+
+    /**
      * Join a date and a time from the form into one SAST timestamp for CoreX.
      *
      * Split across two inputs because a webinar happens on ONE day, and asking

@@ -10,6 +10,14 @@
     $value = function (string $field, $default = null) use ($webinar) {
         return old($field, $webinar[$field] ?? $default);
     };
+
+    // The times already on the record, so an existing webinar set to something
+    // off the quarter-hour grid keeps exactly the time it was given.
+    $startTime = old('start_time', Sast::timeForInput($webinar['starts_at'] ?? null));
+    $endTime = old('end_time', Sast::endTimeForInput($webinar['starts_at'] ?? null, $webinar['duration_minutes'] ?? 60));
+
+    $startChoices = Sast::timeChoices($startTime);
+    $endChoices = Sast::timeChoices($endTime);
 @endphp
 
 <x-layouts.admin :title="$isEdit ? 'Edit webinar' : 'New webinar'">
@@ -100,18 +108,34 @@
                  read as earlier than a 10:00 AM start. CoreX stores a start plus
                  a duration; the controller joins these three and converts. --}}
             <div x-data="{
-                     start: @js(old('start_time', Sast::timeForInput($webinar['starts_at'] ?? null))),
-                     end: @js(old('end_time', Sast::endTimeForInput($webinar['starts_at'] ?? null, $webinar['duration_minutes'] ?? 60))),
+                     start: @js($startTime),
+                     end: @js($endTime),
+                     toMinutes(t) {
+                         const [h, m] = (t || '').split(':').map(Number);
+                         return isNaN(h) || isNaN(m) ? null : h * 60 + m;
+                     },
+                     lengthMinutes() {
+                         const a = this.toMinutes(this.start), b = this.toMinutes(this.end);
+                         return a === null || b === null ? 0 : b - a;
+                     },
+                     lengthLabel() {
+                         const n = this.lengthMinutes();
+                         const h = Math.floor(n / 60), m = n % 60;
+                         const parts = [];
+                         if (h) parts.push(`${h} hour${h === 1 ? '' : 's'}`);
+                         if (m) parts.push(`${m} minutes`);
+                         return parts.join(' ') || '0 minutes';
+                     },
                      syncEnd() {
                          if (! this.start) return;
                          // Only ever fill a blank or now-impossible finish time —
                          // never overwrite one that was set deliberately.
-                         if (this.end && this.end > this.start) return;
-                         const [h, m] = this.start.split(':').map(Number);
-                         if (isNaN(h) || isNaN(m)) return;
-                         const mins = (h * 60 + m + 60) % (24 * 60);
+                         if (this.end && this.lengthMinutes() > 0) return;
+                         const mins = this.toMinutes(this.start);
+                         if (mins === null) return;
+                         const end = Math.min(mins + 60, 23 * 60 + 45);
                          const p = (n) => String(n).padStart(2, '0');
-                         this.end = `${p(Math.floor(mins / 60))}:${p(mins % 60)}`;
+                         this.end = `${p(Math.floor(end / 60))}:${p(end % 60)}`;
                      },
                  }">
                 <label for="date" class="block text-sm font-medium text-ink">Date and time</label>
@@ -134,22 +158,42 @@
 
                     <div>
                         <label for="start_time" class="sr-only">Starting time</label>
-                        <input id="start_time" name="start_time" type="time" required
-                               x-model="start" @change="syncEnd()"
-                               class="{{ $fieldBase }} @error('start_time') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                        <select id="start_time" name="start_time" required
+                                x-model="start" @change="syncEnd()"
+                                class="{{ $fieldBase }} @error('start_time') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                            @foreach ($startChoices as $choiceValue => $choiceLabel)
+                                <option value="{{ $choiceValue }}">{{ $choiceLabel }}</option>
+                            @endforeach
+                        </select>
                         <span class="mt-1 block text-xs text-[color:var(--color-faint)]">Starts</span>
                         @error('start_time') <p class="mt-1 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label for="end_time" class="sr-only">Finishing time</label>
-                        <input id="end_time" name="end_time" type="time" required
-                               x-model="end"
-                               class="{{ $fieldBase }} @error('end_time') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                        <select id="end_time" name="end_time" required
+                                x-model="end"
+                                class="{{ $fieldBase }} @error('end_time') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                            @foreach ($endChoices as $choiceValue => $choiceLabel)
+                                <option value="{{ $choiceValue }}">{{ $choiceLabel }}</option>
+                            @endforeach
+                        </select>
                         <span class="mt-1 block text-xs text-[color:var(--color-faint)]">Ends</span>
                         @error('end_time') <p class="mt-1 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
                     </div>
                 </div>
+
+                {{-- Says back what was chosen, before saving. The old form could
+                     only tell you the times were wrong after you submitted. --}}
+                <p class="mt-2 text-xs" x-show="start && end" x-cloak
+                   :class="lengthMinutes() > 0 ? 'text-[color:var(--color-muted)]' : 'text-[#fb7185]'">
+                    <template x-if="lengthMinutes() > 0">
+                        <span x-text="`Runs for ${lengthLabel()}.`"></span>
+                    </template>
+                    <template x-if="lengthMinutes() <= 0">
+                        <span>That finishing time is not after the starting time. Midday is <strong>12:00 noon</strong> &mdash; 12:00 midnight is the very start of the day.</span>
+                    </template>
+                </p>
             </div>
 
             {{-- The joining link is not set here any more. It lives on the
