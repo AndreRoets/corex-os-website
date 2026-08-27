@@ -10,7 +10,7 @@
         ['Is CoreX a CRM or a listing portal?', 'Neither on its own. CoreX is the operating system for the whole agency — listings, contacts, deals, documents, signing, compliance and AI in one graph. It replaces the CRM, the portal workflow and the document tools, rather than sitting alongside them.'],
         ['Can any agency use CoreX?', 'CoreX was built for all real estate agencies and architected to be licensed to any of them. It is multi-tenant by design — your agency&rsquo;s data, branding and branches stay your own.'],
         ['Does it work with Property24?', 'Yes. CoreX parses Property24 listing emails to extract detail and suburb automatically, and syndicates your listings back to the portal — while the deal itself lives in CoreX. Each branch can even syndicate under its own portal credentials.'],
-        ['Are the documents legally sound?', 'Documents are authored in HTML/Blade and rendered to PDF through real Chrome (Puppeteer) for legal-grade fidelity, with electronic signing (canvas capture, sequential signing, identity gates) or wet-ink scan &amp; flatten for paper.'],
+        ['Are my documents legally sound?', 'Documents are authored in HTML/Blade and rendered to PDF through real Chrome (Puppeteer) for legal-grade fidelity, with electronic signing (canvas capture, sequential signing, identity gates) or wet-ink scan &amp; flatten for paper.'],
         ['How does it handle South African compliance?', 'FICA, POPIA and PPRA/FFC tracking are built into the workflow. The system follows the Property Practitioners Act 22 of 2019 and treats the PPRA — not the dissolved EAAB — as the regulator.'],
     ];
 @endphp

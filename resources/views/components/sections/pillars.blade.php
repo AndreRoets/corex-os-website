@@ -1,14 +1,14 @@
 @php
     $pillars = [
-        ['building', 'Property', 'The physical asset', 'Residential, commercial or land — every listing, lease and valuation hangs off it.'],
+        ['building', 'Property', 'The physical asset', 'Residential, commercial or land — every listing, mandate and valuation hangs off it.'],
         ['users', 'Contact', 'Any person', 'Buyer, seller, landlord, tenant or attorney — one profile, every relationship.'],
-        ['handshake', 'Deal', 'Any transaction', 'Sale, rental, renewal or referral — the thread that moves money and status.'],
+        ['handshake', 'Deal', 'Any transaction', 'Sale, renewal or referral — the thread that moves money and status.'],
         ['agent', 'Agent', 'The practitioner', 'Agent or principal — FFC, commission splits and performance in one place.'],
     ];
 
     $combos = [
         ['A listing', ['Property', 'Agent']],
-        ['A lease', ['Property', 'Contact', 'Deal', 'Agent']],
+        ['A signed mandate', ['Property', 'Contact', 'Deal', 'Agent']],
         ['A commission payout', ['Deal', 'Agent']],
         ['A FICA check', ['Contact', 'Deal']],
     ];
@@ -55,7 +55,7 @@
                         Every record is a combination
                     </h3>
                     <p class="mt-2 text-sm leading-relaxed text-[color:var(--color-muted)]">
-                        A listing links Property + Agent. A lease links all four. The links are the value —
+                        A listing links Property + Agent. A signed mandate links all four. The links are the value —
                         and the moat no bolt-on integration can copy.
                     </p>
                 </div>

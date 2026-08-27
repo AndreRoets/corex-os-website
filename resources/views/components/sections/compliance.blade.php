@@ -33,12 +33,5 @@
                 @endforeach
             </div>
         </div>
-
-        <div class="reveal mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-bg-soft)] px-6 py-4">
-            <span class="font-mono text-xs uppercase tracking-[0.16em] text-[color:var(--color-faint)]">Correct by default</span>
-            <span class="flex items-center gap-2 text-sm text-[color:var(--color-muted)]"><x-icon name="check" class="w-4 h-4 text-[color:var(--color-brand)]" /> Regulator: PPRA <span class="text-[color:var(--color-faint)]">(never EAAB)</span></span>
-            <span class="flex items-center gap-2 text-sm text-[color:var(--color-muted)]"><x-icon name="check" class="w-4 h-4 text-[color:var(--color-brand)]" /> Amounts in ZAR — R&nbsp;1,250,000</span>
-            <span class="flex items-center gap-2 text-sm text-[color:var(--color-muted)]"><x-icon name="check" class="w-4 h-4 text-[color:var(--color-brand)]" /> Commission 5–7.5% + VAT&nbsp;15%</span>
-        </div>
     </div>
 </section>
