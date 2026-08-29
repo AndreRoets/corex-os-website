@@ -209,7 +209,9 @@ svg{display:block}
   transition:all .18s ease;
 }
 .tb-icon:hover{color:var(--text-primary);border-color:var(--hairline)}
-/* Google Play link — sits next to the feature search */
+/* Store links — sit next to the feature search. The pair keeps its own tight
+   gap so the two read as one control, not two toolbar buttons. */
+.store-links{display:flex;align-items:center;gap:7px;flex:none}
 .store-btn{
   display:inline-flex;align-items:center;gap:7px;flex:none;
   height:36px;padding:0 12px;border-radius:11px;text-decoration:none;
@@ -362,8 +364,9 @@ svg{display:block}
   /* Short labels so the switcher and the swatches share one line on a handset. */
   .lbl-long{display:none}
   .lbl-short{display:inline}
-  /* The store link loses its label here, so square it off around the mark. */
+  /* The store links lose their labels here, so square them off around the mark. */
   .store-btn{width:36px;padding:0;justify-content:center;gap:0}
+  .store-links{gap:6px}
 
   .layout{padding:16px 12px 40px;gap:18px}
   .phone-caption{font-size:11.5px;padding:0 8px}
@@ -890,20 +893,33 @@ textarea.inp{min-height:auto;resize:none;line-height:1.5}
     <div class="search-results" id="searchResults" role="listbox" hidden></div>
   </div>
 
-  <!-- Get the real app. A link, not a fetched asset — the page still loads
-       nothing from the network. The mark is drawn inline as four segments. -->
-  <a class="store-btn" id="storeBtn"
-     href="https://play.google.com/store/apps/details?id=za.co.corex_mobile&amp;hl=en_ZA"
-     target="_blank" rel="noopener noreferrer"
-     title="Get CoreX OS on Google Play" aria-label="Get CoreX OS on Google Play">
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-      <path fill="#00A0FF" d="M3 2 L3 22 L12.5 12 Z"/>
-      <path fill="#00E676" d="M3 2 L16 9.22 L12.5 12 Z"/>
-      <path fill="#FFCE00" d="M12.5 12 L16 9.22 L21 12 L16 14.78 Z"/>
-      <path fill="#FF3A44" d="M3 22 L16 14.78 L12.5 12 Z"/>
-    </svg>
-    <span class="lbl-long">Get the app</span>
-  </a>
+  <!-- Get the real app, on either store. Links, not fetched assets — the page
+       still loads nothing from the network. Both marks are drawn inline. -->
+  <div class="store-links">
+    <a class="store-btn" id="storeBtn"
+       href="https://play.google.com/store/apps/details?id=za.co.corex_mobile&amp;hl=en_ZA"
+       target="_blank" rel="noopener noreferrer"
+       title="Get CoreX OS on Google Play" aria-label="Get CoreX OS on Google Play">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path fill="#00A0FF" d="M3 2 L3 22 L12.5 12 Z"/>
+        <path fill="#00E676" d="M3 2 L16 9.22 L12.5 12 Z"/>
+        <path fill="#FFCE00" d="M12.5 12 L16 9.22 L21 12 L16 14.78 Z"/>
+        <path fill="#FF3A44" d="M3 22 L16 14.78 L12.5 12 Z"/>
+      </svg>
+      <span class="lbl-long">Android</span>
+    </a>
+    <!-- The Apple mark takes currentColor, so it inverts with the button on hover. -->
+    <a class="store-btn" id="storeBtnIos"
+       href="https://apps.apple.com/za/app/corex-os/id6792303320"
+       target="_blank" rel="noopener noreferrer"
+       title="Get CoreX OS on the App Store" aria-label="Get CoreX OS on the App Store">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+        <path d="M17.05 12.53c-.02-2.4 1.96-3.55 2.05-3.61-1.12-1.63-2.86-1.86-3.48-1.88-1.48-.15-2.89.87-3.64.87-.75 0-1.91-.85-3.14-.83-1.61.02-3.1.94-3.93 2.38-1.68 2.91-.43 7.22 1.2 9.58.8 1.16 1.75 2.46 3 2.41 1.21-.05 1.66-.78 3.12-.78 1.46 0 1.87.78 3.14.76 1.3-.02 2.12-1.18 2.91-2.34.92-1.34 1.3-2.64 1.32-2.71-.03-.01-2.53-.97-2.55-3.85z"/>
+        <path d="M14.9 5.4c.66-.81 1.11-1.93.99-3.05-.95.04-2.11.64-2.8 1.44-.61.71-1.15 1.85-1.01 2.94 1.06.08 2.15-.54 2.82-1.33z"/>
+      </svg>
+      <span class="lbl-long">iPhone</span>
+    </a>
+  </div>
 
   <div class="tb-spacer"></div>
 
@@ -1119,7 +1135,8 @@ const APP = {
   get footer(){ return 'v' + this.version; },                      // "v1.0.10"
   latestVersion:'1.1.0',       // what the optional nudge is offering
   latestBuild:22,
-  playStore:'https://play.google.com/store/apps/details?id=za.co.corex_mobile&hl=en_ZA'
+  playStore:'https://play.google.com/store/apps/details?id=za.co.corex_mobile&hl=en_ZA',
+  appStore:'https://apps.apple.com/za/app/corex-os/id6792303320'
 };
 
 /* Monotonic ids. A wall-clock timestamp collides when two records are created
