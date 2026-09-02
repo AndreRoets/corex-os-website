@@ -143,10 +143,15 @@ class WebinarClient
      * the templates and the sending reputation, and a second sender would mean
      * two different-looking emails about one webinar.
      */
-    public function sendJoinLink(string $slug, string $joinUrl): CoreXResult
+    public function sendJoinLink(string $slug, string $joinUrl, ?string $meetingId = null, ?string $passcode = null): CoreXResult
     {
         return $this->send(self::SCOPE_ADMIN, 'POST', "/api/v1/webinars/{$slug}/join-link", [
             'join_url' => $joinUrl,
+            // Sent as empty strings rather than omitted when cleared, so CoreX
+            // can tell "there is no passcode" from "this caller said nothing
+            // about the passcode" — the latter must leave what is stored alone.
+            'join_meeting_id' => (string) $meetingId,
+            'join_passcode' => (string) $passcode,
         ]);
     }
 

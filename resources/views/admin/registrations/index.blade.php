@@ -86,13 +86,53 @@
                   : Js::from('Nobody has registered yet, so this just saves the link. Continue?') }})">
             @csrf
 
-            <div class="min-w-[18rem] flex-1">
-                <label for="join_url" class="sr-only">Joining link</label>
-                <input id="join_url" name="join_url" type="url" required
-                       value="{{ old('join_url', $joinUrl) }}"
-                       placeholder="https://zoom.us/j/123456789"
-                       class="w-full rounded-md border bg-[color:var(--color-bg-soft)] px-3.5 py-2.5 text-sm text-ink placeholder:text-[color:var(--color-faint)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-brand)]/40 focus:border-[color:var(--color-brand)] @error('join_url') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
-                @error('join_url') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+            @php
+                $panelField = 'w-full rounded-md border bg-[color:var(--color-bg-soft)] px-3.5 py-2.5 text-sm text-ink placeholder:text-[color:var(--color-faint)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-brand)]/40 focus:border-[color:var(--color-brand)]';
+            @endphp
+
+            <div class="w-full space-y-3">
+                <div>
+                    <label for="join_url" class="mb-1 block text-xs font-medium text-ink">Joining link</label>
+                    <input id="join_url" name="join_url" type="url" required
+                           value="{{ old('join_url', $joinUrl) }}"
+                           placeholder="https://us06web.zoom.us/j/82437708791?pwd=…"
+                           class="{{ $panelField }} @error('join_url') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                    @error('join_url') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Optional, and worth having. A Zoom link carries an encoded
+                     `pwd` token that joins in one click — but anyone who types
+                     the Meeting ID into the Zoom app instead is asked for the
+                     passcode, and it cannot be worked out from the link. --}}
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div>
+                        <label for="join_meeting_id" class="mb-1 block text-xs font-medium text-ink">
+                            Meeting ID <span class="font-normal text-[color:var(--color-faint)]">(optional)</span>
+                        </label>
+                        <input id="join_meeting_id" name="join_meeting_id" type="text"
+                               value="{{ old('join_meeting_id', $webinar['join_meeting_id'] ?? '') }}"
+                               placeholder="824 3770 8791"
+                               class="{{ $panelField }} font-mono @error('join_meeting_id') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                        @error('join_meeting_id') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label for="join_passcode" class="mb-1 block text-xs font-medium text-ink">
+                            Passcode <span class="font-normal text-[color:var(--color-faint)]">(optional)</span>
+                        </label>
+                        <input id="join_passcode" name="join_passcode" type="text"
+                               value="{{ old('join_passcode', $webinar['join_passcode'] ?? '') }}"
+                               placeholder="0ABcMc"
+                               autocapitalize="off" autocorrect="off" spellcheck="false"
+                               class="{{ $panelField }} font-mono @error('join_passcode') border-[#e11d48] @else border-[color:var(--color-border)] @enderror">
+                        @error('join_passcode') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+                <p class="text-xs text-[color:var(--color-faint)]">
+                    Copy these straight from your Zoom invitation. The link alone is enough for most people;
+                    the Meeting ID and passcode are for anyone joining from the Zoom app.
+                </p>
             </div>
 
             <x-btn type="submit" size="md">

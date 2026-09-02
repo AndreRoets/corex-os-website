@@ -74,13 +74,24 @@ class RegistrationController extends Controller
     {
         $validated = $request->validate([
             'join_url' => ['required', 'url', 'max:500'],
+            // Both optional. A Zoom link carries an encoded `pwd` token that
+            // joins in one click, but anyone typing the Meeting ID into the
+            // Zoom app instead needs the human passcode — and there is no way
+            // to derive one from the other.
+            'join_meeting_id' => ['nullable', 'string', 'max:100'],
+            'join_passcode' => ['nullable', 'string', 'max:100'],
         ], [
             'join_url.required' => 'Paste the joining link first.',
             'join_url.url' => 'That does not look like a web address. It should start with https://',
         ]);
 
         try {
-            $result = $this->corex->sendJoinLink($slug, $validated['join_url']);
+            $result = $this->corex->sendJoinLink(
+                $slug,
+                $validated['join_url'],
+                $validated['join_meeting_id'] ?? null,
+                $validated['join_passcode'] ?? null,
+            );
         } catch (CoreXUnavailable $e) {
             return back()->with('admin_error', $e->isAuthFailure
                 ? 'CoreX rejected our credentials — check COREX_WEBINAR_ADMIN_TOKEN on the server.'

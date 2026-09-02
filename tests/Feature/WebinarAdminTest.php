@@ -557,6 +557,54 @@ class WebinarAdminTest extends TestCase
     }
 
     /**
+     * A Zoom link carries an encoded `pwd` token, not the human passcode, so
+     * anyone joining by Meeting ID in the Zoom app needs it spelled out. It
+     * cannot be derived from the link.
+     */
+    public function test_the_meeting_id_and_passcode_travel_with_the_link(): void
+    {
+        Http::fake(['*/join-link' => Http::response(['ok' => true, 'notified' => 2])]);
+
+        $this->actingAs($this->admin())
+            ->post(route('admin.webinars.join-link', self::SLUG), [
+                'join_url' => 'https://us06web.zoom.us/j/82437708791?pwd=qYHFilPvbAdY4EVMBurh9XYun4Rcga.1',
+                'join_meeting_id' => '824 3770 8791',
+                'join_passcode' => '0ABcMc',
+            ])
+            ->assertRedirect();
+
+        Http::assertSent(function (Request $request) {
+            $body = $request->data();
+
+            $this->assertSame('824 3770 8791', $body['join_meeting_id']);
+            // Case-sensitive, and never normalised — Zoom passcodes are.
+            $this->assertSame('0ABcMc', $body['join_passcode']);
+
+            return true;
+        });
+    }
+
+    public function test_the_meeting_id_and_passcode_are_optional(): void
+    {
+        Http::fake(['*/join-link' => Http::response(['ok' => true, 'notified' => 1])]);
+
+        $this->actingAs($this->admin())
+            ->post(route('admin.webinars.join-link', self::SLUG), [
+                'join_url' => 'https://zoom.us/j/123456789',
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        Http::assertSent(function (Request $request) {
+            // Sent as empty strings, not omitted — CoreX must be able to tell
+            // "there is no passcode" from "this caller said nothing about it".
+            $this->assertSame('', $request->data()['join_passcode']);
+
+            return true;
+        });
+    }
+
+    /**
      * The website must never send this itself. CoreX owns the registrant list,
      * the templates and the sending reputation; a second sender would mean two
      * different-looking emails about one webinar.
