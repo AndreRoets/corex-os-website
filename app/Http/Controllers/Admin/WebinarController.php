@@ -10,7 +10,8 @@ use App\Support\Sast;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * Create, edit and archive webinars — all of it living in CoreX.
@@ -56,38 +57,39 @@ class WebinarController extends Controller
 
     public function __construct(private readonly WebinarClient $corex) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         $includeArchived = $request->boolean('archived');
 
         try {
             $result = $this->corex->webinars($includeArchived);
         } catch (CoreXUnavailable $e) {
-            return view('admin.webinars.index', [
+            return Inertia::render('Admin/Webinars/Index', [
                 'webinars' => [],
                 'includeArchived' => $includeArchived,
                 'problem' => $this->problem($e),
             ]);
         }
 
-        return view('admin.webinars.index', [
+        return Inertia::render('Admin/Webinars/Index', [
             'webinars' => $this->rows($result),
             'includeArchived' => $includeArchived,
             'problem' => $result->notFound() ? $this->notLiveYet() : null,
         ]);
     }
 
-    public function create(): View
+    public function create(): Response
     {
-        return view('admin.webinars.form', [
+        return Inertia::render('Admin/Webinars/Form', [
             'webinar' => null,
             'slug' => null,
             'registrationCount' => 0,
             'unknownFields' => [],
+            'contactEmail' => config('corex.contact_email'),
         ]);
     }
 
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): RedirectResponse
     {
         $this->validateTimes($request);
 
@@ -110,7 +112,7 @@ class WebinarController extends Controller
             ->with('admin_status', 'Webinar created. The registration link is in the list below.');
     }
 
-    public function edit(string $slug): View|RedirectResponse
+    public function edit(string $slug): Response|RedirectResponse
     {
         try {
             $result = $this->corex->adminWebinar($slug);
@@ -125,7 +127,7 @@ class WebinarController extends Controller
 
         $webinar = array_merge($listRow, (array) $result->get('webinar'));
 
-        return view('admin.webinars.form', [
+        return Inertia::render('Admin/Webinars/Form', [
             'webinar' => $webinar,
             'slug' => $slug,
             'registrationCount' => (int) ($listRow['registration_count'] ?? 0),
@@ -135,6 +137,7 @@ class WebinarController extends Controller
                 ['access_ends_days_after', 'reminder_hours_before'],
                 fn (string $field) => ! array_key_exists($field, $webinar),
             )),
+            'contactEmail' => config('corex.contact_email'),
         ]);
     }
 

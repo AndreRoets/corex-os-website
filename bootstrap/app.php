@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,7 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // turn a locked door into a 500.
         $middleware->redirectGuestsTo(fn () => route('login'));
 
-        $middleware->redirectUsersTo(fn () => route('admin.webinars.index'));
+        $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+
+        // Every admin screen is an Inertia page; the public marketing pages stay
+        // Blade and simply ignore the shared props this adds.
+        $middleware->web(append: [HandleInertiaRequests::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

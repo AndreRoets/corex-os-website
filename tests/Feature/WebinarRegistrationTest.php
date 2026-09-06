@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Support\Sast;
 use Carbon\CarbonImmutable;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -18,6 +19,8 @@ use Tests\TestCase;
  */
 class WebinarRegistrationTest extends TestCase
 {
+    use RefreshDatabase;
+
     private const PUBLIC_TOKEN = 'cx_site_pubtest.public-secret';
 
     private const ADMIN_TOKEN = 'cx_site_admtest.admin-secret';

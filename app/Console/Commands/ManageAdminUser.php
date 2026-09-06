@@ -10,12 +10,16 @@ use function Laravel\Prompts\password as promptPassword;
 use function Laravel\Prompts\text;
 
 /**
- * Create or update an admin account for the webinar console.
+ * Create or update an admin account for the webinar console, from the
+ * command line rather than the browser.
  *
- * This is the only way an account comes into existence. There is no
+ * Accounts can also be created and edited from the console's own Users
+ * screen (App\Http\Controllers\Admin\UserController) once someone is already
+ * signed in — this command exists for the very first account, and as a way
+ * back in if the last remaining one is locked out. There is still no
  * self-registration form and no emailed password reset, because the console
- * behind it can read every registrant's name, company, email and phone number.
- * Anyone who can run this command already has the server.
+ * behind it can read every registrant's name, company, email and phone
+ * number. Anyone who can run this command already has the server.
  */
 class ManageAdminUser extends Command
 {

@@ -10,7 +10,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -29,7 +30,7 @@ class RegistrationController extends Controller
 
     public function __construct(private readonly WebinarClient $corex) {}
 
-    public function index(Request $request, string $slug): View|RedirectResponse
+    public function index(Request $request, string $slug): Response|RedirectResponse
     {
         $page = max(1, (int) $request->integer('page', 1));
         $search = trim((string) $request->query('q', ''));
@@ -52,7 +53,7 @@ class RegistrationController extends Controller
 
         $registrations = (array) $result->get('registrations');
 
-        return view('admin.registrations.index', [
+        return Inertia::render('Admin/Registrations/Index', [
             'slug' => $slug,
             'webinar' => (array) $result->get('webinar'),
             'registrations' => $this->sortNewestFirst($this->filter($registrations, $search)),

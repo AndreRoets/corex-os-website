@@ -3,11 +3,14 @@
 namespace Tests\Feature;
 
 use App\Mail\DemoRequested;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class DemoRequestTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_a_demo_request_is_emailed_to_the_demo_inbox(): void
     {
         Mail::fake();

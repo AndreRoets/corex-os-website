@@ -9,6 +9,7 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Inertia\Testing\AssertableInertia as AssertInertia;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -123,7 +124,7 @@ class WebinarAdminTest extends TestCase
         $this->post(route('login.store'), [
             'email' => 'johan@corexweb.co.za',
             'password' => 'a-long-enough-passphrase',
-        ])->assertRedirect(route('admin.webinars.index'));
+        ])->assertRedirect(route('admin.dashboard'));
 
         $this->assertAuthenticatedAs($user);
 
@@ -179,9 +180,10 @@ class WebinarAdminTest extends TestCase
     {
         $this->get(route('login'))
             ->assertOk()
-            ->assertSee('Sign in')
-            ->assertSee('there is no reset link by design')
-            ->assertDontSee('Create an account');
+            ->assertInertia(fn (AssertInertia $page) => $page->component('Auth/Login'));
+
+        // No self-registration route exists at all — see
+        // test_there_is_no_self_registration_or_password_reset_route().
     }
 
     public function test_the_create_form_renders_with_its_defaults(): void
@@ -191,15 +193,15 @@ class WebinarAdminTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('admin.webinars.create'))
             ->assertOk()
-            ->assertSee('Link name')
-            ->assertSee('Leave blank to build it from the title.')
-            // The joining link is NOT set here — it lives on the registrants
-            // screen, where saving it also emails it to everyone signed up.
-            ->assertDontSee('Joining link')
-            ->assertDontSee('name="join_url"', false)
-            // The defaults the help text promises.
-            ->assertSee('value="3"', false)
-            ->assertSee('value="24"', false);
+            ->assertInertia(fn (AssertInertia $page) => $page
+                ->component('Admin/Webinars/Form')
+                ->where('webinar', null)
+                ->where('registrationCount', 0)
+                ->where('unknownFields', [])
+                // The joining link is NOT set here — it lives on the
+                // registrants screen, where saving it also emails it to
+                // everyone signed up. There is simply no field for it.
+            );
 
         // A blank form asks CoreX for nothing.
         Http::assertNothingSent();
@@ -221,7 +223,7 @@ class WebinarAdminTest extends TestCase
         $this->post(route('login.store'), [
             'email' => 'andre@corexos.co.za',
             'password' => 'Mineme098@',
-        ])->assertRedirect(route('admin.webinars.index'));
+        ])->assertRedirect(route('admin.dashboard'));
 
         $this->assertAuthenticated();
 
@@ -249,11 +251,14 @@ class WebinarAdminTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('admin.webinars.index'))
             ->assertOk()
-            ->assertSee('CoreX OS — a walkthrough', false)
-            ->assertSee('Open for registration')
-            ->assertSee('47')
-            // The link this screen exists to hand out.
-            ->assertSee('https://corexos.co.za/webinars/'.self::SLUG);
+            ->assertInertia(fn (AssertInertia $page) => $page
+                ->component('Admin/Webinars/Index')
+                ->where('webinars.0.title', 'CoreX OS — a walkthrough')
+                ->where('webinars.0.status_label', 'Open for registration')
+                ->where('webinars.0.registration_count', 47)
+                // The link this screen exists to hand out.
+                ->where('webinars.0.registration_url', 'https://corexos.co.za/webinars/'.self::SLUG)
+            );
 
         Http::assertSent(function (Request $request) {
             $this->assertSame('Bearer '.self::ADMIN_TOKEN, $request->header('Authorization')[0]);
@@ -346,27 +351,26 @@ class WebinarAdminTest extends TestCase
      * different day from the start — and "12:00 AM" is midnight, so against a
      * 10:00 AM start it reads as earlier the same day.
      */
-    public function test_the_form_asks_for_one_date_and_two_times(): void
+    /**
+     * The form itself (one date field, two time selects, "12:00 noon" /
+     * "12:00 midnight" spelled out rather than an AM/PM control) is now
+     * rendered client-side by resources/js/Pages/Admin/Webinars/Form.jsx and
+     * resources/js/sast.js, so it is not something a Laravel HTTP test can
+     * see. The guarantees that used to live here are covered elsewhere: the
+     * server never accepts or sends `ends_at` / `duration_minutes` — see
+     * test_creating_a_webinar_sends_the_time_with_an_explicit_sast_offset()
+     * — and an impossible end time is still refused server-side — see
+     * test_an_end_time_before_the_start_is_refused().
+     */
+    public function test_the_create_form_sends_no_corex_requests(): void
     {
         Http::fake();
 
         $this->actingAs($this->admin())
             ->get(route('admin.webinars.create'))
-            ->assertOk()
-            ->assertSee('type="date"', false)
-            ->assertSee('name="date"', false)
-            ->assertSee('name="start_time"', false)
-            ->assertSee('name="end_time"', false)
-            // Spelled out, because an AM/PM control is where "12:00 AM" gets
-            // chosen for midday and then refused for being earlier than 10:00.
-            ->assertSee('12:00 noon')
-            ->assertSee('12:00 midnight')
-            ->assertDontSee('type="time"', false)
-            // No second date to disagree with the first.
-            ->assertDontSee('name="ends_at"', false)
-            // And nobody converting "two till three" into minutes.
-            ->assertDontSee('How long (minutes)')
-            ->assertDontSee('name="duration_minutes"', false);
+            ->assertOk();
+
+        Http::assertNothingSent();
     }
 
     public function test_corex_validation_errors_render_against_their_own_fields(): void
@@ -400,13 +404,17 @@ class WebinarAdminTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('admin.webinars.edit', self::SLUG))
             ->assertOk()
-            ->assertSee('People have already registered.')
-            ->assertSee('keep the end date they')
-            // The prefilled values are the SAST wall-clock time, not UTC, and
-            // the finish time is derived from the stored duration.
-            ->assertSee('value="2026-09-10"', false)
-            ->assertSee('14:00')
-            ->assertSee('15:00');
+            ->assertInertia(fn (AssertInertia $page) => $page
+                ->component('Admin/Webinars/Form')
+                // The "people have already registered" warning is rendered
+                // client-side (see Form.jsx) whenever this is above zero.
+                ->where('registrationCount', 47)
+                // The wall-clock SAST value, not UTC — resources/js/sast.js
+                // derives 2026-09-10 / 14:00 / 15:00 (start + 60 minutes)
+                // from these two fields.
+                ->where('webinar.starts_at', '2026-09-10T14:00:00+02:00')
+                ->where('webinar.duration_minutes', 60)
+            );
     }
 
     /**
@@ -479,23 +487,23 @@ class WebinarAdminTest extends TestCase
             'meta' => ['current_page' => 1, 'per_page' => 100, 'total' => 2, 'last_page' => 1],
         ])]);
 
-        $response = $this->actingAs($this->admin())
+        $this->actingAs($this->admin())
             ->get(route('admin.webinars.registrations', self::SLUG))
             ->assertOk()
-            ->assertSee('Jane Smith')
-            ->assertSee('Acme Properties')
-            ->assertSee('jane@acme.co.za')
-            ->assertSee('+27 82 000 0000')
-            ->assertSee('Active')
-            ->assertSee('Not yet');
-
-        // Newest first — the reason to open this screen is "who came in since
-        // I last looked".
-        $body = $response->getContent();
-        $this->assertLessThan(
-            strpos($body, 'Jane Smith'),
-            strpos($body, 'Thabo Dlamini'),
-        );
+            ->assertInertia(fn (AssertInertia $page) => $page
+                ->component('Admin/Registrations/Index')
+                // Newest first — the reason to open this screen is "who came
+                // in since I last looked".
+                ->where('registrations.0.first_name', 'Thabo')
+                ->where('registrations.0.company_name', 'Ridge Realty')
+                ->where('registrations.0.reminder_sent_at', '2026-09-09T14:00:00+02:00')
+                ->where('registrations.1.first_name', 'Jane')
+                ->where('registrations.1.company_name', 'Acme Properties')
+                ->where('registrations.1.email', 'jane@acme.co.za')
+                ->where('registrations.1.phone', '+27 82 000 0000')
+                ->where('registrations.1.demo_access_status', 'Active')
+                ->where('registrations.1.reminder_sent_at', null)
+            );
     }
 
     public function test_registrant_data_is_never_on_a_public_route(): void
@@ -525,12 +533,17 @@ class WebinarAdminTest extends TestCase
     {
         Http::fake(['*' => Http::response(['ok' => true, 'webinars' => [$this->webinarRow()]])]);
 
+        // The "View registrants" control itself is rendered client-side (see
+        // Webinars/Index.jsx) from the webinar's slug — assert the slug and
+        // count it needs are actually in the props.
         $this->actingAs($this->admin())
             ->get(route('admin.webinars.index'))
             ->assertOk()
-            // A labelled control, not a bare number nobody realises is a link.
-            ->assertSee('View registrants')
-            ->assertSee(route('admin.webinars.registrations', self::SLUG));
+            ->assertInertia(fn (AssertInertia $page) => $page
+                ->component('Admin/Webinars/Index')
+                ->where('webinars.0.slug', self::SLUG)
+                ->where('webinars.0.registration_count', 47)
+            );
     }
 
     public function test_pasting_the_joining_link_saves_it_and_emails_the_registrants(): void

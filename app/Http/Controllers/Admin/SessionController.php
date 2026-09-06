@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * The CoreX team's login to this website's admin console.
@@ -22,10 +23,12 @@ use Illuminate\View\View;
  * their behalf, not the tokens themselves.
  *
  * There is no self-registration and no emailed password reset. Accounts are
- * created from the command line by whoever administers the site
- * (`php artisan corex:admin`). A public reset form on a console that exposes a
- * registrant list is an invitation: it turns "know an admin's email address"
- * into a foothold, and there is no support desk here to notice.
+ * created either from this console's own Users screen (Admin\UserController,
+ * which requires being signed in already) or from the command line
+ * (`php artisan corex:admin`) for the very first account. A public reset form
+ * on a console that exposes a registrant list is an invitation: it turns
+ * "know an admin's email address" into a foothold, and there is no support
+ * desk here to notice.
  */
 class SessionController extends Controller
 {
@@ -40,13 +43,15 @@ class SessionController extends Controller
 
     private const DECAY_SECONDS = 15 * 60;
 
-    public function create(): View|RedirectResponse
+    public function create(): Response|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('admin.webinars.index');
+            return redirect()->route('admin.dashboard');
         }
 
-        return view('admin.login');
+        return Inertia::render('Auth/Login', [
+            'status' => session('status'),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -89,7 +94,7 @@ class SessionController extends Controller
         // beforehand does not become an authenticated one.
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.webinars.index'));
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     public function destroy(Request $request): RedirectResponse

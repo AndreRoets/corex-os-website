@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
         // details, so a well-known throwaway password is a way in, not a
         // convenience. Accounts are real accounts.
         $this->call(AdminUserSeeder::class);
+        $this->call(PageSeeder::class);
     }
 }

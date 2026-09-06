@@ -1,4 +1,4 @@
-<x-layouts.app>
+<x-layouts.app :page="$page">
     <x-sections.hero />
     <x-sections.commitment />
     <x-sections.problem />

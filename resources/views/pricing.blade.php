@@ -1,4 +1,5 @@
 <x-layouts.app
+    :page="$page"
     title="Pricing — CoreX OS"
     description="Two plans, one upgrade path. CoreX Team is R450 per agent, flat, up to 10 agents. CoreX Agency is R1 495 base + R295 per agent with seats that get cheaper as you grow. Every module, Ellie AI and compliance included."
 >
