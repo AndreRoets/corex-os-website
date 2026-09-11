@@ -68,6 +68,7 @@ class PageRoutes
             'up',
             'webinars',
             'demo',
+            'enquire',
         ];
     }
 }

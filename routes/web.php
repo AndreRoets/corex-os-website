@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\WebinarController as AdminWebinarController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DemoRequestController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\PricingEnquiryController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WebinarRegistrationController;
@@ -23,6 +24,12 @@ use Illuminate\Support\Facades\Route;
 Route::post('/demo', [DemoRequestController::class, 'store'])
     ->middleware('throttle:8,1')
     ->name('demo.store');
+
+// The "40+ agents" enquiry box on the pricing calculator. Lands in the same
+// inbox as demo requests.
+Route::post('/enquire', [PricingEnquiryController::class, 'store'])
+    ->middleware('throttle:8,1')
+    ->name('pricing.enquire');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap.xml');
 Route::get('/robots.txt', RobotsController::class)->name('robots.txt');

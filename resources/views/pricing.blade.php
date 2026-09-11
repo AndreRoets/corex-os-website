@@ -34,6 +34,11 @@
             ['11 – 20', 'R250', 'Every seat past ten drops automatically.'],
             ['21 +', 'R195', 'Volume rate for agencies running at scale.'],
         ];
+
+        // After an enquiry (sent, or bounced back with errors) the calculator
+        // reopens on the 40+ enquiry box rather than the default headcount.
+        $enquiryOpen = session()->has('pricing_enquiry_success') || old('enquiry_form');
+        $fieldBase = 'w-full rounded-md border bg-[color:var(--color-bg-soft)] px-3.5 py-2.5 text-sm text-ink placeholder:text-[color:var(--color-faint)] transition duration-300 focus:outline-none focus:ring-2 focus:ring-[color:var(--color-brand)]/40 focus:border-[color:var(--color-brand)]';
     @endphp
 
     {{-- Hero --}}
@@ -142,6 +147,7 @@
                         <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-[color:var(--color-faint)]">Who it&rsquo;s for</p>
                         <p class="mt-1.5 text-sm leading-relaxed text-[color:var(--color-muted)]">
                             Growing and multi-branch agencies (10+ agents) where the base fee spreads across many seats.
+                            Running 40+ agents? <a href="#calculator" class="font-medium text-[color:var(--color-brand-400)] hover:underline">Enquire for a tailored quote</a>.
                         </p>
                     </div>
 
@@ -156,19 +162,20 @@
     </section>
 
     {{-- Calculator --}}
-    <section class="relative pb-20 sm:pb-28">
+    <section id="calculator" class="relative scroll-mt-24 pb-20 sm:pb-28">
         <div class="mx-auto max-w-5xl px-5 sm:px-8">
             <div class="reveal mb-8 text-center">
                 <x-eyebrow icon="sliders" class="justify-center">Size it to your team</x-eyebrow>
                 <p class="mt-3 text-sm text-[color:var(--color-muted)]">
                     Slide to your headcount — we&rsquo;ll price both plans and point you at the one that costs less.
+                    Past 40 agents, we&rsquo;ll quote you directly.
                 </p>
             </div>
 
             <div
                 class="reveal card overflow-hidden p-6 sm:p-10"
                 x-data="{
-                    agents: 8,
+                    agents: {{ $enquiryOpen ? 40 : 8 }},
                     max: 40,
                     branches: 1,
                     annual: false,
@@ -253,8 +260,145 @@
 
                 <div class="my-8 h-px bg-[color:var(--color-border)]"></div>
 
+                {{-- 40+ agents: pricing is bespoke, so the numbers give way to an enquiry box. --}}
+                <div x-show="isMaxed" x-cloak>
+                    <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+                        <div>
+                            <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-[color:var(--color-brand-400)]">40+ agents · tailored pricing</p>
+                            <h3 class="mt-3 text-2xl font-semibold tracking-tight text-ink text-balance">
+                                At this size, we price it <span class="text-gradient">around your agency.</span>
+                            </h3>
+                            <p class="mt-3 text-sm leading-relaxed text-[color:var(--color-muted)]">
+                                Beyond 40 agents the seat tiers, branch count and rollout all shape the number. Tell us
+                                where you are and we&rsquo;ll come back with a quote — not a calculator.
+                            </p>
+                            <ul class="mt-6 space-y-2.5">
+                                @foreach ([
+                                    'Volume seat rates below the published tiers',
+                                    'Multi-branch setup and per-branch onboarding',
+                                    'Migration from your current systems',
+                                    'Reply within one business day',
+                                ] as $point)
+                                    <li class="flex items-start gap-3 text-sm text-[color:var(--color-muted)]">
+                                        <x-icon name="check" class="mt-0.5 w-4 h-4 shrink-0 text-[color:var(--color-brand)]" />
+                                        {{ $point }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <div class="rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-soft)] p-5 sm:p-6">
+                            @if (session('pricing_enquiry_success'))
+                                <div class="flex flex-col items-center py-6 text-center" role="status">
+                                    <span class="grid h-14 w-14 place-items-center rounded-full bg-[color:var(--color-brand)]/15 text-[color:var(--color-brand)] ring-1 ring-inset ring-[color:var(--color-brand)]/30">
+                                        <x-icon name="check" class="w-7 h-7" />
+                                    </span>
+                                    <h3 class="mt-5 text-xl font-semibold text-ink">Enquiry received</h3>
+                                    <p class="mt-2 max-w-sm text-sm text-[color:var(--color-muted)]">{{ session('pricing_enquiry_success') }}</p>
+                                </div>
+                            @else
+                                <form
+                                    method="POST"
+                                    action="{{ route('pricing.enquire') }}"
+                                    x-data="{ submitting: false }"
+                                    @submit="submitting = true"
+                                    class="space-y-4"
+                                    novalidate
+                                >
+                                    @csrf
+                                    <input type="hidden" name="enquiry_form" value="1">
+                                    <input type="hidden" name="branches" :value="branches">
+
+                                    @if ($errors->any())
+                                        <div class="rounded-md border border-[#e11d48]/40 bg-[#e11d48]/10 px-4 py-3 text-sm text-[#fb7185]" role="alert">
+                                            Please check the highlighted fields and try again.
+                                        </div>
+                                    @endif
+
+                                    <div class="grid gap-4 sm:grid-cols-2">
+                                        <div>
+                                            <label for="enq-name" class="mb-1.5 block text-sm font-medium text-ink">Your name</label>
+                                            <input id="enq-name" name="name" type="text" value="{{ old('name') }}" required autocomplete="name"
+                                                   class="{{ $fieldBase }} @error('name') border-[#e11d48] @else border-[color:var(--color-border)] @enderror" placeholder="Thabo Dlamini">
+                                            @error('name') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                                        </div>
+                                        <div>
+                                            <label for="enq-agency" class="mb-1.5 block text-sm font-medium text-ink">Agency</label>
+                                            <input id="enq-agency" name="agency" type="text" value="{{ old('agency') }}" required autocomplete="organization"
+                                                   class="{{ $fieldBase }} @error('agency') border-[#e11d48] @else border-[color:var(--color-border)] @enderror" placeholder="Coastal Realty">
+                                            @error('agency') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="grid gap-4 sm:grid-cols-2">
+                                        <div>
+                                            <label for="enq-email" class="mb-1.5 block text-sm font-medium text-ink">Work email</label>
+                                            <input id="enq-email" name="email" type="email" value="{{ old('email') }}" required autocomplete="email"
+                                                   class="{{ $fieldBase }} @error('email') border-[#e11d48] @else border-[color:var(--color-border)] @enderror" placeholder="thabo@coastalrealty.co.za">
+                                            @error('email') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                                        </div>
+                                        <div>
+                                            <label for="enq-phone" class="mb-1.5 block text-sm font-medium text-ink">Phone <span class="text-[color:var(--color-faint)]">(optional)</span></label>
+                                            <input id="enq-phone" name="phone" type="tel" value="{{ old('phone') }}" autocomplete="tel"
+                                                   class="{{ $fieldBase }} @error('phone') border-[#e11d48] @else border-[color:var(--color-border)] @enderror" placeholder="+27 82 000 0000">
+                                            @error('phone') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="enq-agents" class="mb-1.5 block text-sm font-medium text-ink">Roughly how many agents?</label>
+                                        <input id="enq-agents" name="agents" type="text" value="{{ old('agents') }}" inputmode="numeric"
+                                               class="{{ $fieldBase }} @error('agents') border-[#e11d48] @else border-[color:var(--color-border)] @enderror" placeholder="e.g. 65">
+                                        @error('agents') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="enq-message" class="mb-1.5 block text-sm font-medium text-ink">Anything we should know? <span class="text-[color:var(--color-faint)]">(optional)</span></label>
+                                        <textarea id="enq-message" name="message" rows="3"
+                                                  class="{{ $fieldBase }} resize-y @error('message') border-[#e11d48] @else border-[color:var(--color-border)] @enderror" placeholder="Branches, provinces, what you run today…">{{ old('message') }}</textarea>
+                                        @error('message') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    {{-- Honeypot: hidden from users, catches bots. --}}
+                                    <div class="hidden" aria-hidden="true">
+                                        <label for="enq-website">Leave this field empty</label>
+                                        <input id="enq-website" name="website" type="text" tabindex="-1" autocomplete="off">
+                                    </div>
+
+                                    <div>
+                                        <label class="flex items-start gap-3 text-sm text-[color:var(--color-muted)]">
+                                            <input name="consent" type="checkbox" value="1" @checked(old('consent')) required
+                                                   class="mt-0.5 h-4 w-4 shrink-0 rounded border-[color:var(--color-border)] bg-[color:var(--color-bg-soft)] text-[color:var(--color-brand)] focus:ring-[color:var(--color-brand)]/40">
+                                            <span>I agree to be contacted about CoreX OS pricing. We&rsquo;ll only use your details for that — in line with POPIA.</span>
+                                        </label>
+                                        @error('consent') <p class="mt-1.5 text-xs text-[#fb7185]">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <x-btn size="lg" class="w-full" type="submit" ::disabled="submitting" x-bind:class="submitting && 'opacity-70 pointer-events-none'">
+                                        <span x-show="!submitting" class="inline-flex items-center gap-2">
+                                            Enquire about 40+ agents
+                                            <x-icon name="arrow-right" class="w-4 h-4" />
+                                        </span>
+                                        <span x-show="submitting" x-cloak class="inline-flex items-center gap-2">
+                                            <svg class="w-4 h-4 motion-safe:animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" opacity="0.3"/>
+                                                <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                                            </svg>
+                                            Sending…
+                                        </span>
+                                    </x-btn>
+
+                                    <p class="text-center text-xs text-[color:var(--color-faint)]">
+                                        Or email <a href="mailto:{{ config('mail.demo.address') }}" class="text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ config('mail.demo.address') }}</a>. No spam, ever.
+                                    </p>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Results --}}
-                <div class="grid gap-4 sm:grid-cols-2">
+                <div class="grid gap-4 sm:grid-cols-2" x-show="!isMaxed">
                     {{-- Team result --}}
                     <div class="relative rounded-xl border p-5 transition duration-300"
                          :class="recommend === 'team' && teamAvailable
@@ -307,7 +451,7 @@
                     </div>
                 </div>
 
-                <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center" x-show="!isMaxed">
                     <x-btn href="{{ route('home') }}#demo" size="lg" class="shrink-0">
                         Book a demo
                         <x-icon name="arrow-right" class="w-4 h-4" />
