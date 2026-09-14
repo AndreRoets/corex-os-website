@@ -11,7 +11,7 @@
                     Two plans, <span class="text-gradient">one upgrade path.</span>
                 </h2>
                 <p class="mt-2 text-sm leading-relaxed text-[color:var(--color-muted)]">
-                    Start at R450 an agent, flat — or move to the platform plan as you grow. Every module included in both.
+                    Start at R450 an agent, flat — or move to the platform plan as you grow. Every module and a free agency website included in both.
                 </p>
             </div>
             <x-btn href="{{ route('pricing') }}" size="lg" class="shrink-0">

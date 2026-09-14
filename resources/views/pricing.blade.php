@@ -1,7 +1,7 @@
 <x-layouts.app
     :page="$page"
     title="Pricing — CoreX OS"
-    description="Two plans, one upgrade path. CoreX Team is R450 per agent, flat, up to 10 agents. CoreX Agency is R1 495 base + R295 per agent with seats that get cheaper as you grow. Every module, Ellie AI and compliance included."
+    description="Two plans, one upgrade path. CoreX Team is R450 per agent, flat, up to 10 agents. CoreX Agency is R1 495 base + R295 per agent with seats that get cheaper as you grow. Every module, Ellie AI, compliance and a free agency website included."
 >
     {{-- Range slider styling, scoped to this page. --}}
     <style>
@@ -18,6 +18,7 @@
             ['signature', 'DocuPerfect documents + e-signature included'],
             ['shield-check', 'FICA / POPIA / PPRA compliance engine'],
             ['link', 'Portal syndication — P24 &amp; Private Property'],
+            ['globe', 'Free agency website included — no extra cost'],
             ['building', 'Single branch'],
         ];
 
