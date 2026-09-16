@@ -21,7 +21,6 @@ class UpdateSiteSettingRequest extends FormRequest
             'default_meta_description' => ['nullable', 'string', 'max:500'],
             'default_og_image' => ['nullable', 'string', 'max:255'],
             'default_twitter_handle' => ['nullable', 'string', 'max:100'],
-            'contact_recipient_email' => ['nullable', 'email', 'max:255'],
 
             'ga4_measurement_id' => ['nullable', 'string', 'max:50'],
             'gtm_container_id' => ['nullable', 'string', 'max:50'],

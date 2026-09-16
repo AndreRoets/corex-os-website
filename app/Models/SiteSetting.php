@@ -16,7 +16,6 @@ class SiteSetting extends Model
         'default_meta_description',
         'default_og_image',
         'default_twitter_handle',
-        'contact_recipient_email',
         'ga4_measurement_id',
         'gtm_container_id',
         'google_search_console_verification',

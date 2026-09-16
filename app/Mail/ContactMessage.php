@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\ContactRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
@@ -13,16 +14,16 @@ class ContactMessage extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * @param  array<string, string|null>  $contact  Validated contact-form fields.
-     */
-    public function __construct(public array $contact) {}
+    public function __construct(public ContactRequest $enquiry) {}
 
     public function envelope(): Envelope
     {
+        $topic = $this->enquiry->topicLabel();
+
         return new Envelope(
-            subject: "Website enquiry — {$this->contact['name']}",
-            replyTo: [new Address($this->contact['email'], $this->contact['name'])],
+            subject: 'Website enquiry'.($topic ? " ({$topic})" : '')." — {$this->enquiry->name}",
+            // Replying to the notification replies to the person who wrote.
+            replyTo: [new Address($this->enquiry->email, $this->enquiry->name)],
         );
     }
 
@@ -30,7 +31,11 @@ class ContactMessage extends Mailable
     {
         return new Content(
             markdown: 'mail.contact-message',
-            with: ['contact' => $this->contact],
+            with: [
+                'enquiry' => $this->enquiry,
+                'channel' => $this->enquiry->channel(),
+                'adminUrl' => route('admin.enquiries.show', $this->enquiry),
+            ],
         );
     }
 }

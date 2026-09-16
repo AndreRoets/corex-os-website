@@ -2,9 +2,16 @@
 
 namespace App\Http\Requests;
 
+use App\Models\ContactRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class ContactRequest extends FormRequest
+/**
+ * The contact page. The same shape as StoreDemoRequest wherever the two ask
+ * the same question, because both land in the same inbox and the person
+ * reading them should not have to learn two formats.
+ */
+class StoreContactRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -17,15 +24,26 @@ class ContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'message' => ['required', 'string', 'max:5000'],
+            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email:rfc', 'max:180'],
+            'phone' => ['nullable', 'string', 'max:40'],
+            'agency' => ['nullable', 'string', 'max:160'],
+            'topic' => ['nullable', Rule::in(array_keys(ContactRequest::TOPICS))],
+            'message' => ['required', 'string', 'min:2', 'max:5000'],
+            'consent' => ['accepted'],
+            // Honeypot — must stay empty. Bots tend to fill every field.
+            'website' => ['nullable', 'prohibited'],
+        ];
+    }
 
-            // A field a real visitor never sees or fills in. A bot that fills
-            // every field it finds trips `max:0`; a human leaves it exactly
-            // the empty string `present` requires, so the failure never shows.
-            'company' => ['present', 'max:0'],
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'consent.accepted' => 'Please agree to be contacted so we can reply to you.',
+            'website.prohibited' => 'Something went wrong. Please try again.',
         ];
     }
 }

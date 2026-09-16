@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContactRequest;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -18,6 +19,8 @@ class DashboardController extends Controller
         return Inertia::render('Admin/Dashboard', [
             'pageCount' => Page::count(),
             'userCount' => User::count(),
+            'enquiryCount' => ContactRequest::count(),
+            'enquiriesLast30Days' => ContactRequest::where('created_at', '>=', now()->subDays(30))->count(),
             'integrations' => [
                 ['key' => 'ga4', 'label' => 'Google Analytics 4', 'configured' => filled($settings->ga4_measurement_id)],
                 ['key' => 'gtm', 'label' => 'Google Tag Manager', 'configured' => filled($settings->gtm_container_id)],

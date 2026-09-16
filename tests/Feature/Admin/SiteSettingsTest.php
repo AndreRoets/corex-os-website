@@ -73,11 +73,4 @@ class SiteSettingsTest extends TestCase
         $this->assertStringContainsString('GTM-XYZ789', $body);
         $this->assertStringContainsString('verify-me', $body);
     }
-
-    public function test_the_contact_recipient_email_must_be_a_valid_address(): void
-    {
-        $this->actingAs($this->admin())->put(route('admin.marketing.update'), [
-            'contact_recipient_email' => 'not-an-email',
-        ])->assertSessionHasErrors('contact_recipient_email');
-    }
 }

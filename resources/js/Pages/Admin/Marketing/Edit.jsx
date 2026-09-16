@@ -9,7 +9,6 @@ export default function MarketingEdit({ settings }) {
         default_meta_description: settings.default_meta_description ?? '',
         default_og_image: settings.default_og_image ?? '',
         default_twitter_handle: settings.default_twitter_handle ?? '',
-        contact_recipient_email: settings.contact_recipient_email ?? '',
         ga4_measurement_id: settings.ga4_measurement_id ?? '',
         gtm_container_id: settings.gtm_container_id ?? '',
         google_search_console_verification: settings.google_search_console_verification ?? '',
@@ -50,9 +49,6 @@ export default function MarketingEdit({ settings }) {
                     <ImagePicker label="Default OG image" value={data.default_og_image} onChange={(url) => setData('default_og_image', url)} error={errors.default_og_image} />
                     <Field label="Default Twitter handle" htmlFor="default_twitter_handle" error={errors.default_twitter_handle}>
                         <TextInput id="default_twitter_handle" placeholder="@corexos" value={data.default_twitter_handle} error={errors.default_twitter_handle} onChange={(e) => setData('default_twitter_handle', e.target.value)} />
-                    </Field>
-                    <Field label="Contact form recipient" htmlFor="contact_recipient_email" error={errors.contact_recipient_email} hint="Falls back to the site's default from-address if left blank.">
-                        <TextInput id="contact_recipient_email" type="email" value={data.contact_recipient_email} error={errors.contact_recipient_email} onChange={(e) => setData('contact_recipient_email', e.target.value)} />
                     </Field>
                 </Card>
 

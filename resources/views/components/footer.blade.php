@@ -20,7 +20,7 @@
             ['#control', 'Total control'],
             ['#open-development', 'Open development'],
             ['#demo', 'Book a demo'],
-            ['mailto:info@corexweb.co.za', 'Contact'],
+            [route('contact'), 'Contact us'],
         ],
     ];
 @endphp

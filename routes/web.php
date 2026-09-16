@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EnquiryController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\RegistrationController;
@@ -101,6 +102,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::put('/marketing', [SiteSettingController::class, 'update'])->name('marketing.update');
 
     Route::get('/sitemap', [AdminSitemapController::class, 'index'])->name('sitemap');
+
+    // Messages from the contact page, with the channel that produced each one.
+    // The only visitor data this site keeps itself — see AppModelsContactRequest.
+    Route::get('/enquiries', [EnquiryController::class, 'index'])->name('enquiries.index');
+    Route::get('/enquiries/export.csv', [EnquiryController::class, 'download'])->name('enquiries.download');
+    Route::get('/enquiries/{enquiry}', [EnquiryController::class, 'show'])->whereNumber('enquiry')->name('enquiries.show');
 
     Route::post('/media', [AdminMediaController::class, 'store'])->name('media.store');
 

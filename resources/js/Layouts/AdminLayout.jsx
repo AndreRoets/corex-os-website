@@ -5,6 +5,7 @@ const NAV = [
     ['admin.dashboard', 'Dashboard'],
     ['admin.pages.index', 'Pages'],
     ['admin.marketing.edit', 'Marketing'],
+    ['admin.enquiries.index', 'Enquiries'],
     ['admin.sitemap', 'Sitemap'],
     ['admin.users.index', 'Users'],
     ['admin.webinars.index', 'Webinars'],
@@ -67,7 +68,8 @@ export default function AdminLayout({ title, heading, children }) {
             <footer className="mx-auto max-w-7xl px-5 pb-10 sm:px-8">
                 <p className="border-t border-[color:var(--color-border)] pt-5 text-xs text-[color:var(--color-faint)]">
                     Webinars, registrants and demo access all live in CoreX OS. This console reads and writes them
-                    live — nothing on this page is stored on the website.
+                    live — none of that is stored on the website. Contact enquiries are the one exception: they are
+                    the site's own, so their source can be tracked.
                 </p>
             </footer>
         </>

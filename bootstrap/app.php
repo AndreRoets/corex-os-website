@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CaptureAttribution;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,7 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Every admin screen is an Inertia page; the public marketing pages stay
         // Blade and simply ignore the shared props this adds.
-        $middleware->web(append: [HandleInertiaRequests::class]);
+        //
+        // CaptureAttribution remembers where each session came from, for the
+        // contact page. Appended so it runs after the group's own StartSession.
+        $middleware->web(append: [HandleInertiaRequests::class, CaptureAttribution::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

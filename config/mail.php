@@ -120,7 +120,8 @@ return [
     | Demo Request Recipient
     |--------------------------------------------------------------------------
     |
-    | Where "Book a demo" enquiries from the marketing site are delivered.
+    | Where "Book a demo" enquiries, pricing enquiries and contact-page
+    | messages from the marketing site are delivered. One inbox, deliberately.
     |
     */
 

@@ -1,7 +1,8 @@
+import { Link } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { Card, Badge } from '../../Components/UI';
 
-export default function Dashboard({ pageCount, userCount, integrations }) {
+export default function Dashboard({ pageCount, userCount, enquiryCount, enquiriesLast30Days, integrations }) {
     return (
         <AdminLayout
             title="Dashboard"
@@ -12,7 +13,7 @@ export default function Dashboard({ pageCount, userCount, integrations }) {
                 </div>
             }
         >
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-3">
                 <Card className="p-6">
                     <p className="text-xs uppercase tracking-wider text-[color:var(--color-faint)]">Pages</p>
                     <p className="mt-2 text-3xl font-semibold text-ink">{pageCount}</p>
@@ -23,6 +24,14 @@ export default function Dashboard({ pageCount, userCount, integrations }) {
                     <p className="text-xs uppercase tracking-wider text-[color:var(--color-faint)]">Admin users</p>
                     <p className="mt-2 text-3xl font-semibold text-ink">{userCount}</p>
                     <p className="mt-1 text-sm text-[color:var(--color-muted)]">Managed via the Users screen.</p>
+                </Card>
+
+                <Card className="p-6">
+                    <p className="text-xs uppercase tracking-wider text-[color:var(--color-faint)]">Enquiries</p>
+                    <p className="mt-2 text-3xl font-semibold text-ink">{enquiryCount}</p>
+                    <p className="mt-1 text-sm text-[color:var(--color-muted)]">
+                        {enquiriesLast30Days} in the last 30 days. <Link href={route('admin.enquiries.index')} className="text-ink underline-offset-2 hover:underline">See where they came from</Link>.
+                    </p>
                 </Card>
             </div>
 
