@@ -5,7 +5,8 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-/* Class-based dark mode: `.dark` on <html>. Dark is the default (see layout). */
+/* Class-based dark mode: `.dark` on <html>. Light is the default (see layout);
+   dark only applies once a visitor has chosen it with the theme toggle. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {

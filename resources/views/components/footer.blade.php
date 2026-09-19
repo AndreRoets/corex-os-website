@@ -17,6 +17,7 @@
         ],
         'Company' => [
             ['/pricing', 'Pricing'],
+            [route('take-on'), 'Moving to CoreX'],
             ['#control', 'Total control'],
             ['#open-development', 'Open development'],
             ['#demo', 'Book a demo'],

@@ -24,12 +24,47 @@
         </a>
 
         <div class="hidden lg:flex items-center gap-1">
-            @foreach ($links as [$href, $label])
-                @php $t = \Illuminate\Support\Str::after($href, '#'); @endphp
-                <a href="{{ route('home') }}#{{ $t }}"
-                   @click="if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.revealSection('{{ $t }}') }"
-                   class="rounded-md px-3 py-2 text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300">{{ $label }}</a>
-            @endforeach
+            {{-- The home-page sections, grouped under one menu. Closes on Escape
+                 (returning focus to its button), on an outside click, and when
+                 focus tabs out of it. --}}
+            <div
+                class="relative"
+                x-data="{ open: false }"
+                @keydown.escape="if (open) { open = false; $refs.coreXButton.focus() }"
+                @click.outside="open = false"
+                @focusout="if (! $el.contains($event.relatedTarget)) open = false"
+            >
+                <button
+                    type="button"
+                    x-ref="coreXButton"
+                    @click="open = ! open"
+                    :aria-expanded="open.toString()"
+                    aria-expanded="false"
+                    aria-controls="nav-corex-menu"
+                    class="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-[color:var(--color-muted)] hover:text-ink transition duration-300"
+                    :class="open && 'text-ink'"
+                >
+                    CoreX
+                    <x-icon name="chevron-down" class="w-4 h-4 transition-transform duration-300" x-bind:class="open && 'rotate-180'" />
+                </button>
+
+                <div
+                    id="nav-corex-menu"
+                    x-show="open"
+                    x-cloak
+                    x-transition.opacity.duration.200ms
+                    class="card absolute left-0 top-full mt-2 w-52 p-1.5 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.35)]"
+                >
+                    @foreach ($links as [$href, $label])
+                        @php $t = \Illuminate\Support\Str::after($href, '#'); @endphp
+                        <a href="{{ route('home') }}#{{ $t }}"
+                           @click="open = false; if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.revealSection('{{ $t }}') }"
+                           class="block rounded-md px-3 py-2 text-sm text-[color:var(--color-muted)] hover:bg-[color:var(--color-surface-2)] hover:text-ink transition duration-300">{{ $label }}</a>
+                    @endforeach
+                </div>
+            </div>
+            <a href="{{ route('take-on') }}"
+               class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('take-on') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Moving to CoreX</a>
             <a href="{{ route('mobile-app') }}"
                class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('mobile-app') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Mobile App</a>
             <a href="{{ route('pricing') }}"
@@ -103,12 +138,30 @@
         </div>
 
         <div class="mt-8 flex flex-col gap-1">
-            @foreach ($links as [$href, $label])
-                @php $t = \Illuminate\Support\Str::after($href, '#'); @endphp
-                <a href="{{ route('home') }}#{{ $t }}"
-                   @click="if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.goToSection('{{ $t }}') }"
-                   class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">{{ $label }}</a>
-            @endforeach
+            <div x-data="{ open: false }">
+                <button
+                    type="button"
+                    @click="open = ! open"
+                    :aria-expanded="open.toString()"
+                    aria-expanded="false"
+                    aria-controls="mobile-corex-menu"
+                    class="flex w-full items-center justify-between rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300"
+                >
+                    CoreX
+                    <x-icon name="chevron-down" class="w-5 h-5 text-[color:var(--color-muted)] transition-transform duration-300" x-bind:class="open && 'rotate-180'" />
+                </button>
+                <div id="mobile-corex-menu" x-show="open" x-cloak x-collapse>
+                    <div class="ml-3 flex flex-col gap-1 border-l border-[color:var(--color-border)] pl-2">
+                        @foreach ($links as [$href, $label])
+                            @php $t = \Illuminate\Support\Str::after($href, '#'); @endphp
+                            <a href="{{ route('home') }}#{{ $t }}"
+                               @click="if (document.getElementById('{{ $t }}')) { $event.preventDefault(); $store.site.goToSection('{{ $t }}') }"
+                               class="rounded-md px-3 py-2.5 text-base text-[color:var(--color-muted)] hover:bg-[color:var(--color-surface-2)] hover:text-ink transition duration-300">{{ $label }}</a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            <a href="{{ route('take-on') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Moving to CoreX</a>
             <a href="{{ route('mobile-app') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Mobile App</a>
             <a href="{{ route('pricing') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Pricing</a>
             <a href="{{ route('contact') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Contact</a>

@@ -54,5 +54,14 @@ class PageSeeder extends Seeder
             'sitemap_priority' => '0.5',
             'sitemap_frequency' => 'yearly',
         ]);
+
+        Page::updateOrCreate(['key' => 'take-on'], [
+            'name' => 'Moving to CoreX',
+            'slug' => 'take-on',
+            'meta_title' => 'Moving to CoreX — how take-on works',
+            'meta_description' => 'How agencies move to CoreX OS: no take-on fee, your onboarding month free, and we handle the migration from your current system.',
+            'sitemap_priority' => '0.7',
+            'sitemap_frequency' => 'monthly',
+        ]);
     }
 }

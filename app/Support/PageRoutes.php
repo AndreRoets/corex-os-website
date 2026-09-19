@@ -38,6 +38,7 @@ class PageRoutes
             'pricing' => [PageController::class, 'pricing'],
             'mobile-app' => [PageController::class, 'mobileApp'],
             'contact' => [ContactController::class, 'show'],
+            'take-on' => [PageController::class, 'takeOn'],
         ];
     }
 
