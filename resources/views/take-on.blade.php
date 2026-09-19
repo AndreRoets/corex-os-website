@@ -143,11 +143,18 @@
                         </ol>
 
                         @unless ($primary)
-                            <p class="mt-8 rounded-md border border-amber-400/60 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">
-                                During the trial, CoreX can't feed your listings to Property24 or Private Property. The
-                                portals don't allow the same stock to come from two systems, so portal feeds switch over
-                                only once you've left your current CRM. Billing starts from the month after your free month.
-                            </p>
+                            <div class="mt-8 space-y-3 rounded-md border border-amber-400/60 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-100">
+                                <p>
+                                    <span class="font-semibold">Your trial is your free onboarding month.</span> It starts
+                                    once you've signed the CoreX agreement, and billing starts the month after, whether or
+                                    not you've switched over from your current CRM.
+                                </p>
+                                <p>
+                                    During the trial, CoreX can't feed your listings to Property24 or Private Property. The
+                                    portals don't allow the same stock to come from two systems, so portal feeds switch over
+                                    only once you've left your current CRM.
+                                </p>
+                            </div>
                         @endunless
                     </div>
                 @endforeach
@@ -173,14 +180,6 @@
                         </ul>
                     </div>
                 @endforeach
-            </div>
-
-            <div class="mt-14 flex flex-col gap-4 border-t border-[color:var(--color-border)] pt-10 sm:flex-row sm:items-center sm:gap-8">
-                <p class="shrink-0 text-5xl font-semibold tracking-tight text-ink sm:text-6xl">4,753</p>
-                <p class="max-w-xl text-sm leading-relaxed text-[color:var(--color-muted)]">
-                    Listings moved onto CoreX in a single day when our own multi-branch agency went live. CoreX is built
-                    and run inside a working estate agency, so the take-on process is one we've been through ourselves.
-                </p>
             </div>
         </div>
     </section>
