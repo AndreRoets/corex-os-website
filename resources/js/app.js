@@ -80,7 +80,7 @@ Alpine.store('site', {
         if (meta) meta.setAttribute('content', dark ? '#050505' : '#FFFFFF');
 
         try {
-            /* Remembered for next visit, and shared with /mobile-app. */
+            /* Remembered for next visit. */
             localStorage.setItem('corex-theme', this.theme);
         } catch (e) {
             /* storage unavailable — ignore */

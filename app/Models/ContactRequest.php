@@ -31,6 +31,18 @@ class ContactRequest extends Model
         'other' => 'Something else',
     ];
 
+    /**
+     * Topics no sender can choose — each one is set by a form that already
+     * knows what it is about. Kept out of TOPICS so they never appear in the
+     * contact page's dropdown and so StoreContactRequest cannot be used to
+     * post one, while topicLabel() still has a name for them.
+     *
+     * @var array<string, string>
+     */
+    public const SYSTEM_TOPICS = [
+        'mobile-demo' => 'Mobile app demo login',
+    ];
+
     protected $fillable = [
         'name',
         'email',
@@ -64,7 +76,11 @@ class ContactRequest extends Model
 
     public function topicLabel(): ?string
     {
-        return $this->topic ? (self::TOPICS[$this->topic] ?? $this->topic) : null;
+        if (! $this->topic) {
+            return null;
+        }
+
+        return (self::TOPICS + self::SYSTEM_TOPICS)[$this->topic] ?? $this->topic;
     }
 
     /**

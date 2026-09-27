@@ -28,8 +28,7 @@
     <style>[x-cloak]{display:none!important}</style>
 
     {{-- Theme, applied before paint so there's no flash of the wrong one.
-         Light is the default; dark is only used if the visitor chose it before.
-         The key is shared with /mobile-app, so the choice follows them across. --}}
+         Light is the default; dark is only used if the visitor chose it before. --}}
     <script>
         (function () {
             var dark = false;

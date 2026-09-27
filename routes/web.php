@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\WebinarController as AdminWebinarController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DemoRequestController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\MobileDemoAccessController;
 use App\Http\Controllers\PricingEnquiryController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
@@ -172,6 +173,13 @@ $contactSlug = $pages->get('contact')?->slug ?? 'contact';
 Route::post('/'.ltrim($contactSlug, '/'), [ContactController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('contact.store');
+
+// Likewise the mobile app page's "send me the demo login" form: same address
+// as the page, so renaming the slug moves both.
+$mobileAppSlug = $pages->get('mobile-app')?->slug ?? 'mobile-app';
+Route::post('/'.ltrim($mobileAppSlug, '/'), [MobileDemoAccessController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('mobile-app.demo');
 
 try {
     $redirects = PageRedirect::query()->with('page')->get();

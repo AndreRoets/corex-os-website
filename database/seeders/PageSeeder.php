@@ -38,12 +38,13 @@ class PageSeeder extends Seeder
         Page::updateOrCreate(['key' => 'mobile-app'], [
             'name' => 'Mobile App',
             'slug' => 'mobile-app',
-            'meta_title' => 'CoreX OS — Mobile App',
-            'meta_description' => 'A clickable, fully simulated replica of the CoreX OS mobile app, wrapped in a guided tour.',
-            // A demo simulator, not indexable marketing content.
-            'robots_index' => false,
-            'sitemap_priority' => '0.1',
-            'sitemap_frequency' => 'yearly',
+            'meta_title' => 'Mobile app — CoreX OS',
+            'meta_description' => 'Download the CoreX OS mobile app for Android or iPhone, and try it right now with a demo login — listings, deals, contacts and documents in your pocket.',
+            // This used to be a noindex simulator. It is now the app's download
+            // page, which is exactly the sort of page we want found.
+            'robots_index' => true,
+            'sitemap_priority' => '0.7',
+            'sitemap_frequency' => 'monthly',
         ]);
 
         Page::updateOrCreate(['key' => 'contact'], [

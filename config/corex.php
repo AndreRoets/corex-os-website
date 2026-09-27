@@ -60,4 +60,28 @@ return [
     */
     'contact_email' => env('COREX_CONTACT_EMAIL', 'info@corexweb.co.za'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Mobile app
+    |--------------------------------------------------------------------------
+    |
+    | The two store listings, and the shared demo login the /mobile-app page
+    | hands out once someone has left their details.
+    |
+    | The login is deliberately NOT a secret: it is a read-mostly sandbox
+    | account in CoreX, seeded with demo data, and the whole point is that we
+    | give it away. It lives in config rather than in a template so rotating it
+    | is an env change, and so the page and the email that follows can never
+    | disagree about what the password is.
+    |
+    */
+
+    'mobile_app' => [
+        'android_url' => env('COREX_APP_ANDROID_URL', 'https://play.google.com/store/apps/details?id=za.co.corex_mobile&hl=en_ZA'),
+        'ios_url' => env('COREX_APP_IOS_URL', 'https://apps.apple.com/za/app/corex-os/id6792303320'),
+
+        'demo_email' => env('COREX_APP_DEMO_EMAIL', 'Demo@corexweb.co.za'),
+        'demo_password' => env('COREX_APP_DEMO_PASSWORD', 'Corex@mobiledemo'),
+    ],
+
 ];
