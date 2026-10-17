@@ -16,6 +16,7 @@
             ['#features', 'Prospecting'],
         ],
         'Company' => [
+            [route('features'), 'Features'],
             ['/pricing', 'Pricing'],
             [route('take-on'), 'Moving to CoreX'],
             ['#control', 'Total control'],

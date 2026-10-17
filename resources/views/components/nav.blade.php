@@ -67,6 +67,8 @@
                class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('take-on') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Moving to CoreX</a>
             <a href="{{ route('mobile-app') }}"
                class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('mobile-app') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Mobile App</a>
+            <a href="{{ route('features') }}"
+               class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('features') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Features</a>
             <a href="{{ route('pricing') }}"
                class="rounded-md px-3 py-2 text-sm {{ request()->routeIs('pricing') ? 'text-ink' : 'text-[color:var(--color-muted)]' }} hover:text-ink transition duration-300">Pricing</a>
             <a href="{{ route('contact') }}"
@@ -163,6 +165,7 @@
             </div>
             <a href="{{ route('take-on') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Moving to CoreX</a>
             <a href="{{ route('mobile-app') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Mobile App</a>
+            <a href="{{ route('features') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Features</a>
             <a href="{{ route('pricing') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Pricing</a>
             <a href="{{ route('contact') }}" class="rounded-md px-3 py-3 text-base text-ink hover:bg-[color:var(--color-surface-2)] transition duration-300">Contact</a>
         </div>

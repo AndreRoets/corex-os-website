@@ -35,6 +35,15 @@ class PageSeeder extends Seeder
             'sitemap_frequency' => 'monthly',
         ]);
 
+        Page::updateOrCreate(['key' => 'features'], [
+            'name' => 'Features',
+            'slug' => 'features',
+            'meta_title' => 'Every feature, every plan — CoreX OS',
+            'meta_description' => 'Everything CoreX OS does, in one place. Listings, deals, contacts, presentations, compliance, portals and more, all included on every plan.',
+            'sitemap_priority' => '0.8',
+            'sitemap_frequency' => 'monthly',
+        ]);
+
         Page::updateOrCreate(['key' => 'mobile-app'], [
             'name' => 'Mobile App',
             'slug' => 'mobile-app',

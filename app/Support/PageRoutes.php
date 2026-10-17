@@ -36,6 +36,7 @@ class PageRoutes
         return [
             'home' => [PageController::class, 'home'],
             'pricing' => [PageController::class, 'pricing'],
+            'features' => [PageController::class, 'features'],
             'mobile-app' => [PageController::class, 'mobileApp'],
             'contact' => [ContactController::class, 'show'],
             'take-on' => [PageController::class, 'takeOn'],

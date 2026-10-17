@@ -66,7 +66,7 @@ class SeoEndpointsTest extends TestCase
             ->assertInertia(fn (AssertInertia $page) => $page
                 ->component('Admin/Sitemap/Index')
                 ->has('sections', 1)
-                ->where('sections.0.url_count', 1)
+                ->where('sections.0.url_count', 2)
             );
     }
 }

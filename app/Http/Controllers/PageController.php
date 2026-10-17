@@ -19,6 +19,11 @@ class PageController extends Controller
         return view('pricing', ['page' => Page::where('key', 'pricing')->first()]);
     }
 
+    public function features(): View
+    {
+        return view('features', ['page' => Page::where('key', 'features')->first()]);
+    }
+
     public function mobileApp(): View
     {
         return view('mobile-app', ['page' => Page::where('key', 'mobile-app')->first()]);
