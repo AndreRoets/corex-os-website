@@ -19,7 +19,7 @@ class FeaturesPageTest extends TestCase
             ->assertOk()
             ->assertSee('Everything is included')
             ->assertSee('Deals &amp; Pipeline', false)
-            ->assertSee('Settlement and payslip printing')
+            ->assertSee('Deal Register V2 (list, search and filters)')
             ->assertDontSee('Merge duplicate');
     }
 

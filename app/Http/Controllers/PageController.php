@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Support\Features\FeatureInventory;
 use App\Support\Sast;
 use Carbon\CarbonImmutable;
 use Illuminate\View\View;
@@ -21,7 +22,10 @@ class PageController extends Controller
 
     public function features(): View
     {
-        return view('features', ['page' => Page::where('key', 'features')->first()]);
+        return view('features', [
+            'page' => Page::where('key', 'features')->first(),
+            'categories' => FeatureInventory::categories(),
+        ]);
     }
 
     public function mobileApp(): View
