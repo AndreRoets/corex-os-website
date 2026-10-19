@@ -30,8 +30,11 @@ class RedirectFrontControllerUrls
             return $next($request);
         }
 
-        $target = CanonicalUrl::cleanPath($path).($query !== null && $query !== '' ? '?'.$query : '');
+        // Absolute, on the canonical host: given a bare path, the URL generator
+        // would prefix the request's base URL — which for these requests IS
+        // "/index.php" — and redirect straight back here.
+        $target = CanonicalUrl::to(CanonicalUrl::cleanPath($path)).($query !== null && $query !== '' ? '?'.$query : '');
 
-        return redirect($target, 301);
+        return redirect()->away($target, 301);
     }
 }

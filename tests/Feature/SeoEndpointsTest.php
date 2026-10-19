@@ -175,6 +175,26 @@ class SeoEndpointsTest extends TestCase
         $this->get('/index.php/')->assertStatus(301)->assertRedirect('/');
     }
 
+    public function test_index_php_redirects_do_not_loop_behind_php_fpm(): void
+    {
+        // PHP-FPM sets SCRIPT_NAME to the front controller, so for these URLs
+        // the request's base URL is "/index.php" — the case the plain test
+        // requests above never exercise.
+        $server = ['SCRIPT_NAME' => '/index.php', 'SCRIPT_FILENAME' => public_path('index.php'), 'PHP_SELF' => '/index.php'];
+
+        // Absolute URIs: a relative one is resolved against the previous
+        // request's base URL, which after the first call is "/index.php" too.
+        foreach ([
+            'https://corexweb.co.za/index.php' => 'https://corexweb.co.za',
+            'https://corexweb.co.za/index.php/pricing?utm_source=x' => 'https://corexweb.co.za/pricing?utm_source=x',
+        ] as $uri => $expected) {
+            $response = $this->call('GET', $uri, [], [], [], $server);
+
+            $response->assertStatus(301);
+            $this->assertSame($expected, $response->headers->get('Location'));
+        }
+    }
+
     public function test_only_the_whole_index_php_segment_is_redirected(): void
     {
         $this->get('/index.phpx')->assertNotFound();
