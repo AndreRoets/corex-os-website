@@ -17,7 +17,7 @@ class SitemapBuilder
     private const PREVIEW_LIMIT = 50;
 
     /**
-     * @return Collection<int, array{key: string, label: string, description: string, urls: list<array{loc: string, priority: string, frequency: string}>}>
+     * @return Collection<int, array{key: string, label: string, description: string, urls: list<array{loc: string, lastmod: ?string, priority: string, frequency: string}>}>
      */
     public function sections(): Collection
     {
@@ -32,7 +32,7 @@ class SitemapBuilder
     }
 
     /**
-     * @return list<array{loc: string, priority: string, frequency: string}>
+     * @return list<array{loc: string, lastmod: ?string, priority: string, frequency: string}>
      */
     public function urls(): array
     {
@@ -40,7 +40,7 @@ class SitemapBuilder
     }
 
     /**
-     * @return list<array{loc: string, priority: string, frequency: string}>
+     * @return list<array{loc: string, lastmod: ?string, priority: string, frequency: string}>
      */
     private function pageUrls(): array
     {
@@ -49,8 +49,11 @@ class SitemapBuilder
             ->where('robots_index', true)
             ->orderBy('slug')
             ->get()
+            // APP_URL rather than url(): a sitemap fetched on www. or the bare IP
+            // must still list the one host we want indexed.
             ->map(fn (Page $page) => [
-                'loc' => url(PageRoutes::pathFor($page->key, $page->slug)),
+                'loc' => CanonicalUrl::to(PageRoutes::pathFor($page->key, $page->slug)),
+                'lastmod' => $page->updated_at?->toAtomString(),
                 'priority' => $page->sitemap_priority,
                 'frequency' => $page->sitemap_frequency,
             ])

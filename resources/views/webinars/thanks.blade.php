@@ -12,6 +12,7 @@
 <x-layouts.app
     title="You're registered — CoreX OS"
     description="Your CoreX OS webinar registration is confirmed."
+    robots="noindex, follow"
 >
     <section class="relative overflow-hidden py-20 sm:py-28">
         <div class="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-[0.3] [mask-image:radial-gradient(ellipse_55%_55%_at_50%_40%,black,transparent)]"></div>

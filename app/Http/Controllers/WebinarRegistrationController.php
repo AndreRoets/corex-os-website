@@ -8,6 +8,7 @@ use App\Services\CoreX\WebinarClient;
 use App\Support\Sast;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
@@ -30,7 +31,7 @@ class WebinarRegistrationController extends Controller
     /**
      * The registration page, or the closed state.
      */
-    public function show(string $slug): View
+    public function show(string $slug): Response|View
     {
         try {
             $result = $this->corex->show($slug);
@@ -38,11 +39,12 @@ class WebinarRegistrationController extends Controller
             return $this->unavailable($e, $slug);
         }
 
-        // Unknown slug, archived, or past — CoreX answers all three the same
-        // way on purpose, so nobody can map the sales calendar by guessing
-        // slugs. To a visitor they are one state: you cannot sign up here.
+        // Unknown or archived — CoreX answers both with a 404 on purpose, so
+        // nobody can map the sales calendar by guessing slugs. There is no page
+        // here, so it is a real 404 to a crawler; a person holding an old link
+        // still gets the calm closed state rather than an error screen.
         if ($result->notFound()) {
-            return view('webinars.closed', ['webinar' => []]);
+            return response()->view('webinars.closed', ['webinar' => []], 404);
         }
 
         $webinar = (array) $result->get('webinar');

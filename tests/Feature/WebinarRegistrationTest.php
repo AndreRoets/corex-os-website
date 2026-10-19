@@ -113,16 +113,25 @@ class WebinarRegistrationTest extends TestCase
         $this->get(route('webinars.show', self::SLUG))
             ->assertOk()
             ->assertSee('Registration has closed')
-            ->assertDontSee('Save your seat');
+            ->assertDontSee('Save your seat')
+            // A real page, but one with nothing left to find in a search.
+            ->assertSee('<meta name="robots" content="noindex, follow">', false);
     }
 
-    public function test_an_unknown_webinar_shows_the_closed_state(): void
+    /**
+     * CoreX answers unknown and archived slugs with the same 404. There is no
+     * page at that address, so a crawler must be told so — a 200 would leave
+     * every dead webinar link in the index as a soft 404. The person who
+     * followed an old link still gets the calm closed state, not an error.
+     */
+    public function test_an_unknown_webinar_is_a_real_404_with_the_closed_state(): void
     {
         Http::fake(['*' => Http::response(['ok' => false, 'message' => 'Not open.'], 404)]);
 
         $this->get(route('webinars.show', 'no-such-webinar'))
-            ->assertOk()
-            ->assertSee('Registration has closed');
+            ->assertNotFound()
+            ->assertSee('Registration has closed')
+            ->assertSee('<meta name="robots" content="noindex, follow">', false);
     }
 
     // ── The registration cut-off ────────────────────────────────────
@@ -205,9 +214,36 @@ class WebinarRegistrationTest extends TestCase
         Http::fake(['*' => Http::response(['ok' => false, 'message' => 'Not open.'], 404)]);
 
         $this->get(route('webinars.show', self::SLUG))
-            ->assertOk()
+            ->assertNotFound()
             ->assertSee('Still interested?')
             ->assertSee(config('corex.contact_email'));
+    }
+
+    public function test_the_thank_you_page_is_never_indexed(): void
+    {
+        Http::fake(['*/register' => Http::response([
+            'ok' => true, 'registered' => true, 'throttled' => false,
+        ]), '*' => Http::response($this->webinarPayload())]);
+
+        $this->followingRedirects()
+            ->post(route('webinars.register', self::SLUG), [
+                'first_name' => 'Jan',
+                'last_name' => 'van der Merwe',
+                'email' => 'jan@acme.co.za',
+                'company_name' => 'Acme Properties',
+            ])
+            ->assertOk()
+            ->assertSee('You&rsquo;re registered, Jan', false)
+            ->assertSee('<meta name="robots" content="noindex, follow">', false);
+    }
+
+    public function test_an_open_webinar_page_stays_indexable(): void
+    {
+        Http::fake(['*' => Http::response($this->webinarPayload())]);
+
+        $this->get(route('webinars.show', self::SLUG))
+            ->assertOk()
+            ->assertSee('<meta name="robots" content="index, follow">', false);
     }
 
     public function test_a_successful_registration_lands_on_the_thank_you_page(): void

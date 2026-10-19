@@ -20,6 +20,7 @@
                         eyebrow="Contact us"
                         eyebrow-icon="mail"
                         align="left"
+                        level="h1"
                         title='Talk to the <span class="text-gradient">CoreX OS team.</span>'
                     >
                         A question about the platform, pricing, help on an existing account, or something else

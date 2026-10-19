@@ -2,6 +2,8 @@
 
 use App\Http\Middleware\CaptureAttribution;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\NoindexForeignHosts;
+use App\Http\Middleware\RedirectFrontControllerUrls;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -26,6 +28,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // CaptureAttribution remembers where each session came from, for the
         // contact page. Appended so it runs after the group's own StartSession.
         $middleware->web(append: [HandleInertiaRequests::class, CaptureAttribution::class]);
+
+        // Global, so they cover every response — robots.txt, redirects and 404s
+        // included, not just the pages that run the web group. The /index.php
+        // redirect goes first: nothing else needs to see a duplicate URL.
+        $middleware->prepend(RedirectFrontControllerUrls::class);
+        $middleware->append(NoindexForeignHosts::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

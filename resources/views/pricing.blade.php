@@ -27,19 +27,11 @@
 
     @php
         // The published price list. Each band is [from, to, monthly price in rand].
-        // The calculator below reads the same array, so the two can't disagree.
-        $bands = [
-            [1, 1, 450],
-            [2, 2, 900],
-            [3, 5, 1495],
-            [6, 10, 2495],
-            [11, 15, 3295],
-            [16, 20, 3995],
-            [21, 25, 4595],
-            [26, 30, 5095],
-        ];
-        $branchRate = 750;
-        $quoteFrom = 31;
+        // The calculator below and the page's structured data read the same
+        // list, so none of them can disagree.
+        $bands = \App\Support\Pricing::BANDS;
+        $branchRate = \App\Support\Pricing::BRANCH_RATE;
+        $quoteFrom = \App\Support\Pricing::QUOTE_FROM;
         $rand = fn (int|float $n) => 'R'.number_format($n);
 
         $included = [

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\CanonicalUrl;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -34,10 +35,15 @@ class SiteSetting extends Model
         return $settings;
     }
 
+    /**
+     * An admin's own robots.txt verbatim, or the generated one. The sitemap
+     * address is built from APP_URL, never the request, so robots.txt fetched
+     * on www. or the bare IP still points crawlers at the one real host.
+     */
     public function defaultRobotsTxt(): string
     {
         return $this->robots_txt !== null && $this->robots_txt !== ''
             ? $this->robots_txt
-            : "User-agent: *\nDisallow: /admin\n\nSitemap: ".url('/sitemap.xml')."\n";
+            : "User-agent: *\nDisallow: /admin\nDisallow: /login\n\nSitemap: ".CanonicalUrl::to('/sitemap.xml')."\n";
     }
 }

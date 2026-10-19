@@ -22,6 +22,7 @@
 <x-layouts.app
     title="Registration closed — CoreX OS"
     description="Registration for this CoreX OS webinar has closed."
+    robots="noindex, follow"
 >
     <section class="relative overflow-hidden py-24 sm:py-32">
         <div class="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-[0.25] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_40%,black,transparent)]"></div>

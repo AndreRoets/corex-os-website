@@ -20,8 +20,8 @@ class PageSeeder extends Seeder
         Page::updateOrCreate(['key' => 'home'], [
             'name' => 'Home',
             'slug' => 'home',
-            'meta_title' => 'CoreX OS — The Real Estate Operating System',
-            'meta_description' => 'CoreX OS is the all-in-one operating system for a real estate agency — listings, deals, documents, e-signature, compliance and a domain AI in one source of truth. Book a demo.',
+            'meta_title' => 'Real Estate Software South Africa | CoreX OS',
+            'meta_description' => 'CoreX OS is the estate agent CRM and real estate software for South African agencies: listings, deals, rentals, e-sign, FICA compliance and portal feeds.',
             'sitemap_priority' => '1.0',
             'sitemap_frequency' => 'weekly',
         ]);
@@ -29,8 +29,8 @@ class PageSeeder extends Seeder
         Page::updateOrCreate(['key' => 'pricing'], [
             'name' => 'Pricing',
             'slug' => 'pricing',
-            'meta_title' => 'Pricing — CoreX OS',
-            'meta_description' => 'One price per band, unlimited agents within it. From R450 a month for one agent to R5,095 for up to 30, set automatically by your active agents. No setup fees.',
+            'meta_title' => 'Estate Agent CRM Pricing, South Africa | CoreX OS',
+            'meta_description' => 'Real estate software pricing from R450 a month for one agent to R5,095 for up to 30. Website, Property24 feeds, e-sign and data take-on included.',
             'sitemap_priority' => '0.8',
             'sitemap_frequency' => 'monthly',
         ]);
@@ -38,8 +38,8 @@ class PageSeeder extends Seeder
         Page::updateOrCreate(['key' => 'features'], [
             'name' => 'Features',
             'slug' => 'features',
-            'meta_title' => 'Every feature, every plan — CoreX OS',
-            'meta_description' => 'Everything CoreX OS does, in one place. Listings, deals, contacts, presentations, compliance, portals and more, all included on every plan.',
+            'meta_title' => 'Estate Agent CRM & Property Management Software | CoreX OS',
+            'meta_description' => 'Every CoreX OS feature on every plan: estate agent CRM, listings, deals, rentals and property management, e-signature, FICA compliance and portal feeds.',
             'sitemap_priority' => '0.8',
             'sitemap_frequency' => 'monthly',
         ]);
@@ -47,8 +47,8 @@ class PageSeeder extends Seeder
         Page::updateOrCreate(['key' => 'mobile-app'], [
             'name' => 'Mobile App',
             'slug' => 'mobile-app',
-            'meta_title' => 'Mobile app — CoreX OS',
-            'meta_description' => 'Download the CoreX OS mobile app for Android or iPhone, and try it right now with a demo login — listings, deals, contacts and documents in your pocket.',
+            'meta_title' => 'Estate Agent CRM App for Android & iPhone | CoreX OS',
+            'meta_description' => 'The CoreX OS app puts your estate agent CRM in your pocket: listings, deals, contacts and documents. Download for Android or iPhone, or try the demo.',
             // This used to be a noindex simulator. It is now the app's download
             // page, which is exactly the sort of page we want found.
             'robots_index' => true,
@@ -59,8 +59,8 @@ class PageSeeder extends Seeder
         Page::updateOrCreate(['key' => 'contact'], [
             'name' => 'Contact',
             'slug' => 'contact',
-            'meta_title' => 'Contact — CoreX OS',
-            'meta_description' => 'Get in touch with the CoreX OS team — questions, support, or anything else.',
+            'meta_title' => 'Contact CoreX OS | Real Estate Software South Africa',
+            'meta_description' => 'Talk to the CoreX OS team about real estate software for your South African agency: a demo, pricing, support or moving from your current CRM.',
             'sitemap_priority' => '0.5',
             'sitemap_frequency' => 'yearly',
         ]);
@@ -68,8 +68,8 @@ class PageSeeder extends Seeder
         Page::updateOrCreate(['key' => 'take-on'], [
             'name' => 'Moving to CoreX',
             'slug' => 'take-on',
-            'meta_title' => 'Moving to CoreX — how take-on works',
-            'meta_description' => 'How agencies move to CoreX OS: no take-on fee, your onboarding month free, and we handle the migration from your current system.',
+            'meta_title' => 'Switch Your Estate Agent CRM, No Take-On Fee | CoreX OS',
+            'meta_description' => 'Moving to CoreX OS costs nothing to start: no take-on fee, a free onboarding month, and we migrate your listings and contacts from your current CRM.',
             'sitemap_priority' => '0.7',
             'sitemap_frequency' => 'monthly',
         ]);
