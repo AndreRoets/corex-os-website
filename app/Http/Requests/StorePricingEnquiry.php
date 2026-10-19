@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * The "40+ agents" enquiry box on the pricing page. Deliberately the same
+ * The "31+ agents" enquiry box on the pricing page. Deliberately the same
  * shape as StoreDemoRequest so the sales inbox sees one familiar format.
  */
 class StorePricingEnquiry extends FormRequest

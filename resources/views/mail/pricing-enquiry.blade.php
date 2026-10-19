@@ -1,7 +1,7 @@
 @component('mail::message')
 # New pricing enquiry — large agency
 
-**{{ $enquiry['name'] }}** from **{{ $enquiry['agency'] }}** is running 40+ agents and asked for a tailored quote.
+**{{ $enquiry['name'] }}** from **{{ $enquiry['agency'] }}** is running 31+ agents and asked for a tailored quote.
 
 @component('mail::table')
 | | |
@@ -10,7 +10,7 @@
 | **Agency** | {{ $enquiry['agency'] }} |
 | **Email** | [{{ $enquiry['email'] }}](mailto:{{ $enquiry['email'] }}) |
 | **Phone** | {{ $enquiry['phone'] ?: '—' }} |
-| **Agents** | {{ $enquiry['agents'] ?: '40+' }} |
+| **Agents** | {{ $enquiry['agents'] ?: '31+' }} |
 | **Branches** | {{ $enquiry['branches'] ?: '—' }} |
 @endcomponent
 

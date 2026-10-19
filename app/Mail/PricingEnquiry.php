@@ -23,7 +23,7 @@ class PricingEnquiry extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Pricing enquiry (40+ agents) — {$this->enquiry['agency']}",
+            subject: "Pricing enquiry (31+ agents) — {$this->enquiry['agency']}",
             // Replying to the notification replies to the person who asked.
             replyTo: [new Address($this->enquiry['email'], $this->enquiry['name'])],
         );

@@ -30,7 +30,7 @@ class PageSeeder extends Seeder
             'name' => 'Pricing',
             'slug' => 'pricing',
             'meta_title' => 'Pricing — CoreX OS',
-            'meta_description' => 'Two plans, one upgrade path. CoreX Team is R450 per agent, flat, up to 10 agents. CoreX Agency is R1 495 base + R295 per agent with seats that get cheaper as you grow.',
+            'meta_description' => 'One price per band, unlimited agents within it. From R450 a month for one agent to R5,095 for up to 30, set automatically by your active agents. No setup fees.',
             'sitemap_priority' => '0.8',
             'sitemap_frequency' => 'monthly',
         ]);

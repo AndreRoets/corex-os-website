@@ -12,7 +12,7 @@ use Throwable;
 class PricingEnquiryController extends Controller
 {
     /**
-     * Handle a large-agency (40+ agents) enquiry from the pricing calculator.
+     * Handle a large-agency (31+ agents) enquiry from the pricing calculator.
      *
      * Mirrors DemoRequestController: logged first so nothing is lost, then
      * emailed to the same inbox the demo requests go to.

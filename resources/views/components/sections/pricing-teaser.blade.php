@@ -8,10 +8,10 @@
             <div class="max-w-xl">
                 <x-eyebrow icon="sliders" class="mb-4">Simple pricing</x-eyebrow>
                 <h2 class="text-xl font-semibold tracking-tight text-ink sm:text-2xl text-balance">
-                    Two plans, <span class="text-gradient">one upgrade path.</span>
+                    One price per band, <span class="text-gradient">unlimited agents within it.</span>
                 </h2>
                 <p class="mt-2 text-sm leading-relaxed text-[color:var(--color-muted)]">
-                    Start at R450 an agent, flat — or move to the platform plan as you grow. Every module and a free agency website included in both.
+                    From R450 a month for one agent. Your band is set automatically by your active agents — no plan to choose. Every module, your agency website and no setup fees.
                 </p>
             </div>
             <x-btn href="{{ route('pricing') }}" size="lg" class="shrink-0">

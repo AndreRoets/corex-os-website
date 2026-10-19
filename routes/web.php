@@ -27,7 +27,7 @@ Route::post('/demo', [DemoRequestController::class, 'store'])
     ->middleware('throttle:8,1')
     ->name('demo.store');
 
-// The "40+ agents" enquiry box on the pricing calculator. Lands in the same
+// The "31+ agents" enquiry box on the pricing calculator. Lands in the same
 // inbox as demo requests.
 Route::post('/enquire', [PricingEnquiryController::class, 'store'])
     ->middleware('throttle:8,1')
