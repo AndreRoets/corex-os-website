@@ -20,7 +20,7 @@ return new class extends Migration
             'slug' => 'rental-management-software',
             'is_active' => true,
             'meta_title' => 'Rental Management Software & CRM, South Africa | CoreX OS',
-            'meta_description' => 'The rental CRM for South African letting agents: online tenant applications and vetting, leases and renewals, inspections, deposit comparisons and maintenance.',
+            'meta_description' => 'The rental CRM for South African letting agents: online tenant applications and vetting, leases and renewals, lease notices, inspections and maintenance.',
             'robots_index' => true,
             'robots_follow' => true,
             'og_type' => 'website',

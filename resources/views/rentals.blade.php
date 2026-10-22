@@ -1,44 +1,45 @@
 <x-layouts.app
     :page="$page"
     title="Rental Management Software & CRM, South Africa | CoreX OS"
-    description="The rental CRM for South African letting agents: online tenant applications and vetting, leases and renewals, inspections, deposit comparisons and maintenance."
+    description="The rental CRM for South African letting agents: online tenant applications and vetting, leases and renewals, lease notices, inspections and maintenance."
 >
     @php
         // Each step names only what FeatureInventory's Rentals list backs up.
         $lifecycle = [
-            ['file-text', 'Apply', 'Applicants get a private link to complete the application, upload documents and sign, with autosave.'],
-            ['shield-check', 'Vet and approve', 'Your affordability formula, your credit bureau, your checklist. Approve or decline with standard reasons.'],
-            ['signature', 'Sign the lease', 'Send a lease for e-signature from your own templates and clause library, or upload one and send it as is.'],
-            ['scan', 'Move in', 'A photo inspection and inventory, room by room, with a read-only report link for the tenant.'],
-            ['sliders', 'Maintain', 'Fault reports become work orders for contractors, with quotes compared and the job tracked to done.'],
-            ['refresh', 'Renew or move out', 'Renew or terminate the lease, then compare move-out against move-in, item by item, against the deposit.'],
+            ['file-text', 'Apply', 'A private link with autosave, document uploads and signed credit check consent, behind a PIN or ID check if you want one.'],
+            ['shield-check', 'Review and approve', 'Your checklist, your named approvers. Highlight documents, capture income and expenses, then approve, decline or ask for more.'],
+            ['signature', 'Sign the lease', 'The approved application becomes a lease, e-signed from your template in order: agent, tenants, landlords.'],
+            ['scan', 'Move in', 'Photo inspection and inventory, signed through a link, with a read-only report link for the tenant.'],
+            ['sliders', 'Maintain', 'Faults from staff, tenants or landlords become work orders. Contractors quote and close jobs through a secure link.'],
+            ['refresh', 'Renew or move out', 'Renewals, breach and vacate notices, then a move-in vs move-out comparison with findings you can charge to the tenant.'],
         ];
 
         $split = [
             ['layers', 'CoreX handles', 'check', [
-                'Rental applications, documents and e-signature',
-                'Applicant vetting: affordability, credit bureau choice, checklists and decline reasons',
-                'Lease records, renewals and terminations, with expiry dates on the calendar',
-                'Move-in and move-out inspections and inventories, with tenant report links',
-                'Deposit damage comparison between move-in and move-out',
-                'Fault reports, work orders and contractor quotes',
-                'Tenants and landlords as contacts, in the same CRM as your sales',
+                'Applications, review, approval and credit check consent',
+                'Leases, renewals, month-to-month and escalations on record',
+                'Breach, vacate and Consumer Protection Act lease-expiry notices',
+                'Move-in, move-out, routine and interim inspections and inventories',
+                'Move-in vs move-out findings, each markable as a tenant charge',
+                'Faults, work orders, contractor quotes and landlord approvals',
+                'Landlords and tenants in the client app, and in the same CRM as your sales',
             ]],
             ['rand', 'Your accounting system handles', 'circle-dot', [
-                'Collecting rent',
-                'Your trust account',
+                'Collecting rent, and tracking arrears',
+                'Your trust account and deposit investment',
                 'Paying landlords and contractors',
+                'Municipal and utility recharges',
                 'Landlord and tenant financial statements',
             ]],
         ];
 
         $connected = [
             ['users', 'One contact list', 'Tenants, landlords, buyers and sellers in one CRM, with a stage-by-stage rentals board alongside the buyer pipeline.'],
-            ['shield-check', 'PPRA inspection pack', 'The regulator pack includes your rental register next to the practitioner, sales and mandate registers, as PDF or CSV.'],
-            ['calendar', 'Lease dates on the calendar', 'Lease expiry lands on the same calendar as mandates, FICA expiry and deal deadlines, automatically.'],
-            ['smartphone', 'Landlords in the client app', 'Landlords sign in to the CoreX client app with a one-time code or a password.'],
-            ['file-text', 'Document packs split for you', 'Upload a bundle of PDFs and split it into documents filed against the right rental application.'],
-            ['sparkles', 'Ellie, the CoreX AI', 'Ask about property law or your own leases, listings and contacts, from inside the system.'],
+            ['chart', 'Command centre and reports', 'A rentals command centre, rental reports to print, PDF or export, property rental history and landlord activity.'],
+            ['calendar', 'Lease dates on the calendar', 'Lease expiry and escalation dates land on the same calendar as mandates, FICA expiry and deal deadlines.'],
+            ['smartphone', 'Landlords and tenants in the app', 'Switched on per person. Tenants and landlords log faults; landlords approve quotes above your spending limit.'],
+            ['shield-check', 'PPRA inspection pack', 'Sampled rental files are bundled into the pack the agency hands to the regulator.'],
+            ['database', 'Bulk take-on, including reOS', 'Bring your existing rentals across in bulk, including an import from reOS.'],
         ];
 
         $linkClass = 'font-medium text-ink underline decoration-[color:var(--color-brand)] decoration-2 underline-offset-4 hover:text-[color:var(--color-brand-600)] transition duration-300';
@@ -121,8 +122,8 @@
     <section class="relative py-20 sm:py-28">
         <div class="mx-auto max-w-6xl px-5 sm:px-8">
             <x-section-heading eyebrow="Scope" eyebrow-icon="target" title='A rental CRM, <span class="text-gradient">not an accounting package</span>'>
-                CoreX runs the letting workflow. It does not handle money, so you keep the rental accounting
-                system you already trust, and CoreX runs everything around it.
+                CoreX runs the letting workflow. It does not handle money: keep reOS or the rental accounting
+                system you already trust, and CoreX runs everything around it, with the payment reference on each lease.
             </x-section-heading>
 
             <div class="mt-14 grid items-start gap-5 md:grid-cols-2">
