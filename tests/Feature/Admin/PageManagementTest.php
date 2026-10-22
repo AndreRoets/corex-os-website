@@ -38,7 +38,7 @@ class PageManagementTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (AssertInertia $page) => $page
                 ->component('Admin/Pages/Index')
-                ->has('pages', 6)
+                ->has('pages', 7)
             );
     }
 

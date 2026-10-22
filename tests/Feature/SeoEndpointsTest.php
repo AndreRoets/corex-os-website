@@ -170,9 +170,11 @@ class SeoEndpointsTest extends TestCase
 
     public function test_index_php_urls_redirect_permanently_to_the_clean_path(): void
     {
-        $this->get('/index.php/pricing?utm_source=x&page=2')->assertStatus(301)->assertRedirect('/pricing?utm_source=x&page=2');
-        $this->get('/index.php')->assertStatus(301)->assertRedirect('/');
-        $this->get('/index.php/')->assertStatus(301)->assertRedirect('/');
+        // Absolute and on the canonical host — a bare path would resolve
+        // against the "/index.php" base URL and loop (see 8d80c67).
+        $this->get('/index.php/pricing?utm_source=x&page=2')->assertStatus(301)->assertRedirect(self::SITE.'/pricing?utm_source=x&page=2');
+        $this->get('/index.php')->assertStatus(301)->assertRedirect(self::SITE);
+        $this->get('/index.php/')->assertStatus(301)->assertRedirect(self::SITE);
     }
 
     public function test_index_php_redirects_do_not_loop_behind_php_fpm(): void
@@ -376,14 +378,14 @@ class SeoEndpointsTest extends TestCase
     {
         Page::factory()->create(['key' => 'home', 'slug' => 'home']);
 
-        // home, plus the features and take-on rows their migrations insert.
+        // home, plus the features, take-on and rentals rows their migrations insert.
         $this->actingAs(User::factory()->create())
             ->get(route('admin.sitemap'))
             ->assertOk()
             ->assertInertia(fn (AssertInertia $page) => $page
                 ->component('Admin/Sitemap/Index')
                 ->has('sections', 1)
-                ->where('sections.0.url_count', 3)
+                ->where('sections.0.url_count', 4)
             );
     }
 

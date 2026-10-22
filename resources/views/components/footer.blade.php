@@ -17,6 +17,7 @@
         ],
         'Company' => [
             [route('features'), 'Features'],
+            [route('rentals'), 'Rental CRM'],
             ['/pricing', 'Pricing'],
             [route('take-on'), 'Moving to CoreX'],
             ['#control', 'Total control'],

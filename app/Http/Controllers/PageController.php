@@ -28,6 +28,18 @@ class PageController extends Controller
         ]);
     }
 
+    /**
+     * The rental CRM page lists the Rentals features from the same inventory
+     * /features renders, so it can never claim more than the product does.
+     */
+    public function rentals(): View
+    {
+        return view('rentals', [
+            'page' => Page::where('key', 'rentals')->first(),
+            'features' => FeatureInventory::categories()['Rentals'] ?? [],
+        ]);
+    }
+
     public function mobileApp(): View
     {
         return view('mobile-app', ['page' => Page::where('key', 'mobile-app')->first()]);

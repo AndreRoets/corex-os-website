@@ -20,6 +20,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WebinarRegistrationController;
 use App\Models\Page;
 use App\Models\PageRedirect;
+use App\Support\IndexNow;
 use App\Support\PageRoutes;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,13 @@ Route::post('/enquire', [PricingEnquiryController::class, 'store'])
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap.xml');
 Route::get('/robots.txt', RobotsController::class)->name('robots.txt');
+
+// IndexNow's proof of ownership: the key, served as plain text at /{key}.txt.
+// Only registered once a key is configured — see App\Support\IndexNow.
+if ($indexNowKey = IndexNow::key()) {
+    Route::get('/'.$indexNowKey.'.txt', fn () => response($indexNowKey, 200, ['Content-Type' => 'text/plain']))
+        ->name('indexnow.key');
+}
 
 // Filename only — no path traversal, and it is always something this site
 // generated (see Admin\MediaController@store), never a name a caller chose.

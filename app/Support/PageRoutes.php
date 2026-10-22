@@ -40,6 +40,7 @@ class PageRoutes
             'mobile-app' => [PageController::class, 'mobileApp'],
             'contact' => [ContactController::class, 'show'],
             'take-on' => [PageController::class, 'takeOn'],
+            'rentals' => [PageController::class, 'rentals'],
         ];
     }
 

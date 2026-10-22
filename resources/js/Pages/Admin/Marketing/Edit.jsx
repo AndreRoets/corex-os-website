@@ -12,11 +12,13 @@ export default function MarketingEdit({ settings }) {
         ga4_measurement_id: settings.ga4_measurement_id ?? '',
         gtm_container_id: settings.gtm_container_id ?? '',
         google_search_console_verification: settings.google_search_console_verification ?? '',
+        bing_site_verification: settings.bing_site_verification ?? '',
         google_ads_conversion_id: settings.google_ads_conversion_id ?? '',
         google_ads_conversion_label: settings.google_ads_conversion_label ?? '',
         head_scripts: settings.head_scripts ?? '',
         body_scripts: settings.body_scripts ?? '',
         robots_txt: settings.robots_txt ?? '',
+        same_as: settings.same_as ?? '',
     });
 
     const submit = (e) => {
@@ -50,6 +52,9 @@ export default function MarketingEdit({ settings }) {
                     <Field label="Default Twitter handle" htmlFor="default_twitter_handle" error={errors.default_twitter_handle}>
                         <TextInput id="default_twitter_handle" placeholder="@corexos" value={data.default_twitter_handle} error={errors.default_twitter_handle} onChange={(e) => setData('default_twitter_handle', e.target.value)} />
                     </Field>
+                    <Field label="Company profiles" htmlFor="same_as" error={errors.same_as} hint="One URL per line: LinkedIn, Capterra, G2, Google Business Profile… Search engines and AI assistants use these to confirm CoreX OS is one company.">
+                        <Textarea id="same_as" rows={4} className="font-mono text-xs" placeholder="https://www.linkedin.com/company/…" value={data.same_as} error={errors.same_as} onChange={(e) => setData('same_as', e.target.value)} />
+                    </Field>
                 </Card>
 
                 <Card className="space-y-4 p-6">
@@ -63,6 +68,9 @@ export default function MarketingEdit({ settings }) {
                     </Field>
                     <Field label="Search Console verification" htmlFor="google_search_console_verification" error={errors.google_search_console_verification}>
                         <TextInput id="google_search_console_verification" value={data.google_search_console_verification} error={errors.google_search_console_verification} onChange={(e) => setData('google_search_console_verification', e.target.value)} />
+                    </Field>
+                    <Field label="Bing verification" htmlFor="bing_site_verification" error={errors.bing_site_verification} hint="The content value of Bing Webmaster Tools' msvalidate.01 meta tag.">
+                        <TextInput id="bing_site_verification" value={data.bing_site_verification} error={errors.bing_site_verification} onChange={(e) => setData('bing_site_verification', e.target.value)} />
                     </Field>
                     <Field label="Google Ads conversion ID" htmlFor="google_ads_conversion_id" error={errors.google_ads_conversion_id}>
                         <TextInput id="google_ads_conversion_id" value={data.google_ads_conversion_id} error={errors.google_ads_conversion_id} onChange={(e) => setData('google_ads_conversion_id', e.target.value)} />

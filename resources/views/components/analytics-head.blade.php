@@ -6,6 +6,10 @@
     <meta name="google-site-verification" content="{{ $settings->google_search_console_verification }}">
 @endif
 
+@if ($settings->bing_site_verification)
+    <meta name="msvalidate.01" content="{{ $settings->bing_site_verification }}">
+@endif
+
 @if ($settings->gtm_container_id)
     <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],

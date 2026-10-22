@@ -73,5 +73,14 @@ class PageSeeder extends Seeder
             'sitemap_priority' => '0.7',
             'sitemap_frequency' => 'monthly',
         ]);
+
+        Page::updateOrCreate(['key' => 'rentals'], [
+            'name' => 'Rental CRM',
+            'slug' => 'rental-management-software',
+            'meta_title' => 'Rental Management Software & CRM, South Africa | CoreX OS',
+            'meta_description' => 'The rental CRM for South African letting agents: online tenant applications and vetting, leases and renewals, inspections, deposit comparisons and maintenance.',
+            'sitemap_priority' => '0.8',
+            'sitemap_frequency' => 'monthly',
+        ]);
     }
 }

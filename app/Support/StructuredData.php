@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Models\SiteSetting;
+
 /**
  * The schema.org @graph the layout prints in every public page's head.
  *
@@ -22,24 +24,40 @@ class StructuredData
         $root = CanonicalUrl::root();
         $organizationId = $root.'/#organization';
 
+        // Profiles elsewhere are what let a search engine or AI assistant tie
+        // "CoreX OS" to one company — and tell it apart from unrelated
+        // products with a similar name. Entered in admin → Marketing.
+        $organizationProfiles = SiteSetting::current()->sameAsUrls();
+
+        // The app store listings are the same product, published elsewhere.
+        $appListings = array_values(array_filter([
+            config('corex.mobile_app.android_url'),
+            config('corex.mobile_app.ios_url'),
+        ]));
+
         $graph = [
-            [
+            array_filter([
                 '@type' => 'Organization',
                 '@id' => $organizationId,
                 'name' => 'CoreX OS',
+                'alternateName' => 'CoreX',
                 'url' => $root,
                 'logo' => CanonicalUrl::to('images/corex-mark.png'),
                 'email' => config('corex.contact_email'),
                 'areaServed' => 'South Africa',
-            ],
-            [
+                'sameAs' => $organizationProfiles,
+            ]),
+            array_filter([
                 '@type' => 'SoftwareApplication',
                 '@id' => $root.'/#software',
                 'name' => 'CoreX OS',
+                'alternateName' => 'CoreX',
                 'url' => $root,
                 'applicationCategory' => 'BusinessApplication',
+                'applicationSubCategory' => 'Real estate agency software, estate agent CRM and rental CRM',
                 'operatingSystem' => 'Web, Android, iOS',
-                'description' => 'The all-in-one operating system for a real estate agency — listings, contacts, deals, documents, e-signature, compliance and a domain AI in a single source of truth.',
+                'description' => 'The all-in-one operating system for a South African real estate agency — listings, contacts, deals, rentals (tenant applications, leases, inspections and maintenance), documents, e-signature, PPRA and FICA compliance and a domain AI in a single source of truth.',
+                'sameAs' => $appListings,
                 'publisher' => ['@id' => $organizationId],
                 'offers' => [
                     '@type' => 'AggregateOffer',
@@ -49,7 +67,7 @@ class StructuredData
                     'offerCount' => count(Pricing::BANDS),
                     'url' => self::urlForRoute('pricing'),
                 ],
-            ],
+            ]),
         ];
 
         if ($routeName === 'home') {
@@ -75,6 +93,7 @@ class StructuredData
         // pricing page has none to offer yet, so it gets no FAQPage.
         $faqs = match ($routeName) {
             'take-on' => TakeOnFaq::items(),
+            'rentals' => RentalsFaq::items(),
             default => [],
         };
 

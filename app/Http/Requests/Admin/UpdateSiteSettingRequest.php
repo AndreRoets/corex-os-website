@@ -25,12 +25,14 @@ class UpdateSiteSettingRequest extends FormRequest
             'ga4_measurement_id' => ['nullable', 'string', 'max:50'],
             'gtm_container_id' => ['nullable', 'string', 'max:50'],
             'google_search_console_verification' => ['nullable', 'string', 'max:255'],
+            'bing_site_verification' => ['nullable', 'string', 'max:255'],
             'google_ads_conversion_id' => ['nullable', 'string', 'max:50'],
             'google_ads_conversion_label' => ['nullable', 'string', 'max:100'],
 
             'head_scripts' => ['nullable', 'string'],
             'body_scripts' => ['nullable', 'string'],
             'robots_txt' => ['nullable', 'string'],
+            'same_as' => ['nullable', 'string', 'max:5000'],
         ];
     }
 }

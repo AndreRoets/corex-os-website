@@ -6,7 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdatePageRequest;
 use App\Models\Page;
 use App\Models\PageRedirect;
+use App\Support\CanonicalUrl;
+use App\Support\IndexNow;
+use App\Support\PageRoutes;
 use Illuminate\Http\RedirectResponse;
+
+use function Illuminate\Support\defer;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -44,6 +49,13 @@ class PageController extends Controller
                 ['old_slug' => $oldSlug, 'page_id' => $page->id],
                 ['status_code' => 301],
             );
+        }
+
+        // Tell Bing and the other IndexNow engines straight away, after the
+        // response has gone, so a slow endpoint never holds up the save.
+        if ($page->is_active && $page->robots_index) {
+            $url = CanonicalUrl::to(PageRoutes::pathFor($page->key, $page->slug));
+            defer(fn () => IndexNow::submit([$url]));
         }
 
         return redirect()

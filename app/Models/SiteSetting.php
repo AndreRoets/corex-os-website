@@ -20,12 +20,31 @@ class SiteSetting extends Model
         'ga4_measurement_id',
         'gtm_container_id',
         'google_search_console_verification',
+        'bing_site_verification',
         'google_ads_conversion_id',
         'google_ads_conversion_label',
         'head_scripts',
         'body_scripts',
         'robots_txt',
+        'same_as',
     ];
+
+    /**
+     * The company's profiles elsewhere, for the Organization's sameAs. One URL
+     * per line in the admin field; blank lines and anything that is not an
+     * http(s) URL are dropped rather than printed into the structured data.
+     *
+     * @return list<string>
+     */
+    public function sameAsUrls(): array
+    {
+        return collect(preg_split('/\R/', (string) $this->same_as))
+            ->map(fn (string $line) => trim($line))
+            ->filter(fn (string $url) => filter_var($url, FILTER_VALIDATE_URL) && preg_match('#^https?://#i', $url))
+            ->unique()
+            ->values()
+            ->all();
+    }
 
     public static function current(): self
     {
