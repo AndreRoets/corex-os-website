@@ -19,7 +19,27 @@ export default function MarketingEdit({ settings }) {
         body_scripts: settings.body_scripts ?? '',
         robots_txt: settings.robots_txt ?? '',
         same_as: settings.same_as ?? '',
+        company_legal_name: settings.company_legal_name ?? '',
+        company_registration_number: settings.company_registration_number ?? '',
+        company_street_address: settings.company_street_address ?? '',
+        company_locality: settings.company_locality ?? '',
+        company_region: settings.company_region ?? '',
+        company_postal_code: settings.company_postal_code ?? '',
+        company_telephone: settings.company_telephone ?? '',
+        company_founding_year: settings.company_founding_year ?? '',
     });
+
+    // [field, label, hint, placeholder] for the company details card.
+    const companyFields = [
+        ['company_legal_name', 'Registered company name', 'Exactly as registered with CIPC.', 'Company Name (Pty) Ltd'],
+        ['company_registration_number', 'CIPC registration number', null, '2024/123456/07'],
+        ['company_street_address', 'Street address', 'Must match the Google Business Profile word for word.', null],
+        ['company_locality', 'Town or city', null, null],
+        ['company_region', 'Province', null, 'e.g. Gauteng'],
+        ['company_postal_code', 'Postal code', null, null],
+        ['company_telephone', 'Phone', 'International format, matching the Google Business Profile.', '+27 …'],
+        ['company_founding_year', 'Year founded', null, null],
+    ];
 
     const submit = (e) => {
         e.preventDefault();
@@ -78,6 +98,22 @@ export default function MarketingEdit({ settings }) {
                     <Field label="Google Ads conversion label" htmlFor="google_ads_conversion_label" error={errors.google_ads_conversion_label}>
                         <TextInput id="google_ads_conversion_label" value={data.google_ads_conversion_label} error={errors.google_ads_conversion_label} onChange={(e) => setData('google_ads_conversion_label', e.target.value)} />
                     </Field>
+                </Card>
+
+                <Card className="space-y-4 p-6 lg:col-span-2">
+                    <div>
+                        <h2 className="text-sm font-semibold uppercase tracking-wider text-[color:var(--color-faint)]">Company details</h2>
+                        <p className="mt-1 text-sm text-[color:var(--color-muted)]">
+                            Shown in the site footer and given to search engines, so they can tell CoreX OS apart from other products called CoreX. Leave a field blank to hide it.
+                        </p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        {companyFields.map(([name, label, hint, placeholder]) => (
+                            <Field key={name} label={label} htmlFor={name} error={errors[name]} hint={hint ?? undefined}>
+                                <TextInput id={name} placeholder={placeholder ?? undefined} value={data[name]} error={errors[name]} onChange={(e) => setData(name, e.target.value)} />
+                            </Field>
+                        ))}
+                    </div>
                 </Card>
 
                 <Card className="space-y-4 p-6 lg:col-span-2">

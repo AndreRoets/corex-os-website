@@ -75,6 +75,59 @@ class SearchProfilesTest extends TestCase
         $this->assertDatabaseHas('site_settings', ['bing_site_verification' => 'XYZ', 'same_as' => 'https://example.com/corex']);
     }
 
+    // ── Company details ──────────────────────────────────────────────
+
+    public function test_company_details_stay_out_of_the_page_until_entered(): void
+    {
+        $organization = $this->graph()['Organization'];
+
+        foreach (['legalName', 'identifier', 'telephone', 'address', 'foundingDate'] as $key) {
+            $this->assertArrayNotHasKey($key, $organization);
+        }
+
+        $this->get('/')->assertDontSee('Reg. no.');
+    }
+
+    public function test_company_details_reach_the_structured_data_and_the_footer_alike(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->put(route('admin.marketing.update'), [
+                'company_legal_name' => 'Example Holdings (Pty) Ltd',
+                'company_registration_number' => '2020/123456/07',
+                'company_street_address' => '1 Example Road',
+                'company_locality' => 'Durban',
+                'company_region' => 'KwaZulu-Natal',
+                'company_postal_code' => '4001',
+                'company_telephone' => '+27 31 000 0000',
+                'company_founding_year' => '2020',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $organization = $this->graph()['Organization'];
+
+        $this->assertSame('Example Holdings (Pty) Ltd', $organization['legalName']);
+        $this->assertSame('2020/123456/07', $organization['identifier']['value']);
+        $this->assertSame('+27 31 000 0000', $organization['telephone']);
+        $this->assertSame('2020', $organization['foundingDate']);
+        $this->assertSame([
+            '@type' => 'PostalAddress',
+            'streetAddress' => '1 Example Road',
+            'addressLocality' => 'Durban',
+            'addressRegion' => 'KwaZulu-Natal',
+            'postalCode' => '4001',
+            'addressCountry' => 'ZA',
+        ], $organization['address']);
+
+        $this->get('/')->assertSee('Example Holdings (Pty) Ltd · Reg. no. 2020/123456/07 · 1 Example Road, Durban, KwaZulu-Natal, 4001 · +27 31 000 0000');
+    }
+
+    public function test_a_founding_year_in_the_future_is_rejected(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->put(route('admin.marketing.update'), ['company_founding_year' => (string) (date('Y') + 1)])
+            ->assertSessionHasErrors('company_founding_year');
+    }
+
     // ── IndexNow ─────────────────────────────────────────────────────
 
     public function test_the_key_file_is_not_served_without_a_key(): void

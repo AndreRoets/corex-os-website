@@ -27,7 +27,31 @@ class SiteSetting extends Model
         'body_scripts',
         'robots_txt',
         'same_as',
+        'company_legal_name',
+        'company_registration_number',
+        'company_street_address',
+        'company_locality',
+        'company_region',
+        'company_postal_code',
+        'company_telephone',
+        'company_founding_year',
     ];
+
+    /**
+     * The company address as one line, in the order a South African address
+     * is written, or null while none of it has been entered.
+     */
+    public function companyAddressLine(): ?string
+    {
+        $parts = array_filter([
+            $this->company_street_address,
+            $this->company_locality,
+            $this->company_region,
+            $this->company_postal_code,
+        ]);
+
+        return $parts === [] ? null : implode(', ', $parts);
+    }
 
     /**
      * The company's profiles elsewhere, for the Organization's sameAs. One URL

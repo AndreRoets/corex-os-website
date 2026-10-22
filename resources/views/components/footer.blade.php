@@ -1,4 +1,12 @@
 @php
+    $company = \App\Models\SiteSetting::current();
+    $companyFacts = array_values(array_filter([
+        $company->company_legal_name,
+        $company->company_registration_number ? 'Reg. no. '.$company->company_registration_number : null,
+        $company->companyAddressLine(),
+        $company->company_telephone,
+    ]));
+
     $cols = [
         'Platform' => [
             ['#pillars', 'Four Pillars'],
@@ -65,9 +73,16 @@
         </div>
 
         <div class="mt-14 flex flex-col-reverse items-start gap-4 border-t border-[color:var(--color-border)] pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-xs text-[color:var(--color-faint)]">
-                &copy; {{ date('Y') }} CoreX OS, a product of R R Technologies. All rights reserved.
-            </p>
+            <div class="space-y-1">
+                <p class="text-xs text-[color:var(--color-faint)]">
+                    &copy; {{ date('Y') }} CoreX OS, a product of R R Technologies. All rights reserved.
+                </p>
+                {{-- Entered in admin → Marketing; the same facts go into the
+                     Organization structured data, so the two always agree. --}}
+                @if ($companyFacts !== [])
+                    <p class="text-xs text-[color:var(--color-faint)]">{{ implode(' · ', $companyFacts) }}</p>
+                @endif
+            </div>
             <p class="text-xs text-[color:var(--color-faint)]">
                 Regulated real estate practice · PPRA · Property Practitioners Act 22 of 2019
             </p>

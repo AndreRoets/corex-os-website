@@ -27,7 +27,25 @@ class StructuredData
         // Profiles elsewhere are what let a search engine or AI assistant tie
         // "CoreX OS" to one company — and tell it apart from unrelated
         // products with a similar name. Entered in admin → Marketing.
-        $organizationProfiles = SiteSetting::current()->sameAsUrls();
+        $settings = SiteSetting::current();
+        $organizationProfiles = $settings->sameAsUrls();
+
+        // The company's hard facts, each printed only once entered. They must
+        // match the Google Business Profile, which is why they live in admin.
+        $address = $settings->companyAddressLine() === null ? null : array_filter([
+            '@type' => 'PostalAddress',
+            'streetAddress' => $settings->company_street_address,
+            'addressLocality' => $settings->company_locality,
+            'addressRegion' => $settings->company_region,
+            'postalCode' => $settings->company_postal_code,
+            'addressCountry' => 'ZA',
+        ]);
+
+        $registration = $settings->company_registration_number ? [
+            '@type' => 'PropertyValue',
+            'propertyID' => 'CIPC registration number',
+            'value' => $settings->company_registration_number,
+        ] : null;
 
         // The app store listings are the same product, published elsewhere.
         $appListings = array_values(array_filter([
@@ -41,9 +59,14 @@ class StructuredData
                 '@id' => $organizationId,
                 'name' => 'CoreX OS',
                 'alternateName' => 'CoreX',
+                'legalName' => $settings->company_legal_name,
+                'identifier' => $registration,
                 'url' => $root,
                 'logo' => CanonicalUrl::to('images/corex-mark.png'),
                 'email' => config('corex.contact_email'),
+                'telephone' => $settings->company_telephone,
+                'address' => $address,
+                'foundingDate' => $settings->company_founding_year ? (string) $settings->company_founding_year : null,
                 'areaServed' => 'South Africa',
                 'sameAs' => $organizationProfiles,
             ]),

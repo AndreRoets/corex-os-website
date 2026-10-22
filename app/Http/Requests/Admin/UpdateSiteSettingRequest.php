@@ -33,6 +33,15 @@ class UpdateSiteSettingRequest extends FormRequest
             'body_scripts' => ['nullable', 'string'],
             'robots_txt' => ['nullable', 'string'],
             'same_as' => ['nullable', 'string', 'max:5000'],
+
+            'company_legal_name' => ['nullable', 'string', 'max:255'],
+            'company_registration_number' => ['nullable', 'string', 'max:50'],
+            'company_street_address' => ['nullable', 'string', 'max:255'],
+            'company_locality' => ['nullable', 'string', 'max:100'],
+            'company_region' => ['nullable', 'string', 'max:100'],
+            'company_postal_code' => ['nullable', 'string', 'max:10'],
+            'company_telephone' => ['nullable', 'string', 'max:30'],
+            'company_founding_year' => ['nullable', 'integer', 'min:1900', 'max:'.date('Y')],
         ];
     }
 }
