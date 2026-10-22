@@ -65,6 +65,9 @@ class RentalsPageTest extends TestCase
     public function test_the_page_is_in_the_sitemap_and_linked_from_every_page(): void
     {
         $this->get('/sitemap.xml')->assertSee('/rental-management-software</loc>', false);
+
+        // Header (desktop and mobile menus) as well as the footer.
+        $this->assertSame(3, substr_count($this->get('/pricing')->getContent(), 'href="'.route('rentals').'"'));
         $this->get('/')->assertSee(route('rentals'));
     }
 
