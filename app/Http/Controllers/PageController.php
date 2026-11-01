@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Support\Features\FeatureInventory;
 use App\Support\Sast;
+use App\Support\WebsiteShowcase;
 use Carbon\CarbonImmutable;
 use Illuminate\View\View;
 
@@ -37,6 +38,27 @@ class PageController extends Controller
         return view('rentals', [
             'page' => Page::where('key', 'rentals')->first(),
             'features' => FeatureInventory::categories()['Rentals'] ?? [],
+        ]);
+    }
+
+    public function websites(): View
+    {
+        return view('websites', [
+            'page' => Page::where('key', 'websites')->first(),
+            'liveSites' => WebsiteShowcase::liveSites(),
+            'templates' => WebsiteShowcase::templates(),
+        ]);
+    }
+
+    /**
+     * One example template, full size. Also what each card on the websites
+     * page frames, scaled down. Kept out of the index: a fictional agency.
+     */
+    public function websiteTemplate(string $template): View
+    {
+        return view('website-templates.preview', [
+            'key' => $template,
+            'template' => WebsiteShowcase::templates()[$template],
         ]);
     }
 

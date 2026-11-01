@@ -14,6 +14,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DemoRequestController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MobileDemoAccessController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PricingEnquiryController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
@@ -22,6 +23,7 @@ use App\Models\Page;
 use App\Models\PageRedirect;
 use App\Support\IndexNow;
 use App\Support\PageRoutes;
+use App\Support\WebsiteShowcase;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/demo', [DemoRequestController::class, 'store'])
@@ -189,8 +191,15 @@ Route::post('/'.ltrim($mobileAppSlug, '/'), [MobileDemoAccessController::class, 
     ->middleware('throttle:6,1')
     ->name('mobile-app.demo');
 
+// Each example template's full preview, under the websites page's address.
+// Only the known keys match, so anything else under it is a plain 404.
+$websitesSlug = $pages->get('websites')?->slug ?? 'websites';
+Route::get('/'.ltrim($websitesSlug, '/').'/{template}', [PageController::class, 'websiteTemplate'])
+    ->whereIn('template', array_keys(WebsiteShowcase::templates()))
+    ->name('websites.template');
+
 try {
-    $redirects = PageRedirect::query()->with('page')->get();
+    $redirects =PageRedirect::query()->with('page')->get();
 } catch (Throwable) {
     $redirects = collect();
 }

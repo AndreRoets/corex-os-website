@@ -82,5 +82,14 @@ class PageSeeder extends Seeder
             'sitemap_priority' => '0.8',
             'sitemap_frequency' => 'monthly',
         ]);
+
+        Page::updateOrCreate(['key' => 'websites'], [
+            'name' => 'Agency websites',
+            'slug' => 'real-estate-website-templates',
+            'meta_title' => 'Real Estate Website Design, Free With CoreX | CoreX OS',
+            'meta_description' => 'Every CoreX plan includes an agency website, designed for you. See live agency sites and six example real estate website templates, or ask for something entirely your own.',
+            'sitemap_priority' => '0.7',
+            'sitemap_frequency' => 'monthly',
+        ]);
     }
 }

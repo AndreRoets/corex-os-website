@@ -378,14 +378,14 @@ class SeoEndpointsTest extends TestCase
     {
         Page::factory()->create(['key' => 'home', 'slug' => 'home']);
 
-        // home, plus the features, take-on and rentals rows their migrations insert.
+        // home, plus the features, take-on, rentals and websites rows their migrations insert.
         $this->actingAs(User::factory()->create())
             ->get(route('admin.sitemap'))
             ->assertOk()
             ->assertInertia(fn (AssertInertia $page) => $page
                 ->component('Admin/Sitemap/Index')
                 ->has('sections', 1)
-                ->where('sections.0.url_count', 4)
+                ->where('sections.0.url_count', 5)
             );
     }
 

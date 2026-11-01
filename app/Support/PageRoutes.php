@@ -41,6 +41,7 @@ class PageRoutes
             'contact' => [ContactController::class, 'show'],
             'take-on' => [PageController::class, 'takeOn'],
             'rentals' => [PageController::class, 'rentals'],
+            'websites' => [PageController::class, 'websites'],
         ];
     }
 
